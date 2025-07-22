@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>Rescue Me</title>
+</head>
+<body>
+    <header class="top-header">
+        <div class="menu">
+            <span class="san" id="menu-toggle">&#9776;</span>
+            <i class="ring fa fa-bell"></i>
+        </div>
+        <div class="logo">
+            <a href="home-page.html"><img src="images/platego.png" alt="logo icon"></a>
+        </div>
+        <div class="profile">
+            <span id="welcome-message">Welcome </span>
+            <img id="profile-picture" src="" alt="Profile Picture">
+        </div>
+        <div class="main">
+            <a href="car-finder.html"><img src="images/search.png" alt="search icon"></a>
+            <img src="images/message.png" alt="message icon">
+            <a href="my-cars.html"><img src="images/car.png" alt="car icon"></a> 
+        </div>
+    </header>
+
+    <div class="side-menu" id="side-menu">
+        <div class="profile-info">
+            <img id="profile-picture-menu" src="" alt="Profile Picture">
+            <a href="edit-profile.html"><i class="fa-solid fa-pencil"></i></a>
+            <p id="profile-name"></p>
+            <p id="profile-email"></p>
+            <p id="car-count"></p>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="rescue-me.html"><i class="fa-solid fa-triangle-exclamation"></i> Rescue me</a></li>
+                <li><a href="volunteering-list.html"><i class="fa-solid fa-heart"></i> Volunteering list</a></li>
+                <li><a href="my-cars.html"><i class="fa-solid fa-car"></i> Car management</a></li>
+                <li><a href="report_history.html"><i class="fa-solid fa-clipboard-list"></i> Report list</a></li>
+            </ul>
+        </nav>
+        <div class="toggle-switches">
+            <label>Road Updates
+                <label class="switch">
+                    <input type="checkbox" id="road-updates">
+                    <span class="slider"></span>
+                </label>
+            </label>
+            <label>Volunteer Updates
+                <label class="switch">
+                    <input type="checkbox" id="volunteer-updates-switch">
+                    <span class="slider"></span>
+                </label>
+            </label>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="settings.html"><i class="fa-solid fa-gear"></i> Settings</a></li>
+                <li><a href="login.html" id="logout"><i class="fa-solid fa-sign-out-alt"></i> Log out</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <main>
+        <h1>Rescue Me</h1>
+        <form id="rescue-form" class="rescue-form">
+            <label for="rescue-location">Location:</label>
+            <input type="text" id="rescue-location" name="location" required readonly>
+            
+            <label for="rescue-time">Time:</label>
+            <input type="datetime-local" id="rescue-time" name="time" required readonly>
+            
+            <label for="rescue-reason">Reason:</label>
+            <select id="rescue-reason" name="reason" required>
+                <option value="flat_tire">Flat Tire</option>
+                <option value="engine_problem">Engine Problem</option>
+                <option value="out_of_fuel">Out of Fuel</option>
+                <option value="accident">Accident</option>
+                <option value="other">Other</option>
+            </select>
+            
+            <button type="submit">Submit</button>
+        </form>
+    </main>
+
+    <script src="js/rescue-me.js"></script>
+</body>
+</html>

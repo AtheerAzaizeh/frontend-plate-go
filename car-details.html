@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script defer src="js/car-details.js"></script>
+    <title>Car Details</title>
+</head>
+<body>
+    <header class="top-header">
+        <div class="menu">
+            <span class="san">&#9776;</span>
+            <i class="ring fa fa-bell"></i>
+        </div>
+        <div class="logo">
+            <a href="home-page.html"><img src="images/platego.png" alt="logo icon"></a>
+        </div>
+        <div class="profile">
+            <span id="welcome-message">Welcome </span>
+            <img id="profile-picture" src="" alt="Profile Picture">
+        </div>
+        <div class="main">
+            <a href="car-finder.html"><img src="images/search.png" alt="search icon"></a>
+            <img src="images/message.png" alt="message icon">
+            <a href="my-cars.html"><img src="images/car.png" alt="car icon"></a>  
+        </div>
+        <div class="back">
+            <a href="car-finder.html" class="back-button">
+                <i class="fa-solid fa-arrow-left"></i>
+            </a>
+        </div>
+    </header>
+
+    <div class="car-info-wrapper">
+        <div class="plate-image-wrapper">
+            <img src="images/plate.jpg" alt="Plate Image">
+            <div class="car-plate-number" id="car-plate-number"></div>
+        </div>
+        <div class="car-image-wrapper" id="car-image-wrapper"></div>
+        <div class="car-details-wrapper">
+            <div id="car-company" class="car-detail"></div>
+            <hr>
+            <div id="car-model" class="car-detail"></div>
+            <hr>
+            <div id="car-color" class="car-detail"></div>
+            <hr>
+            <div id="car-year" class="car-detail"></div>
+        </div>
+        <button class="report-action-button" id="make-report-button">Make a Report</button>
+    </div>
+
+    <div id="report-form-modal" class="report-form-modal">
+        <div class="report-form-content">
+            <span class="close-button" id="close-report-form">&times;</span>
+            <h3>Report Reason</h3>
+            <select id="report-reason">
+                <option value="car_blocking">Car blocking</option>
+                <option value="lights_on">Lights on</option>
+                <option value="child_forgotten">Child forgotten</option>
+                <option value="mechanical_issue">Mechanical issue</option>
+            </select>
+            <button id="submit-report-reason">Next</button>
+        </div>
+    </div>
+
+    <div id="location-form-modal" class="location-form-modal">
+        <div class="location-form-content">
+            <span class="close-button" id="close-location-form">&times;</span>
+            <h3>Enter Location</h3>
+            <input type="text" id="report-location" placeholder="Enter location">
+            <button id="locate-me-button">Locate Me</button>
+            <button id="submit-location">Submit</button>
+        </div>
+    </div>
+
+    <div id="car-not-found-popup" class="modal-popup">
+        <div class="modal-popup-content">
+            <span class="close-button" id="close-not-found-popup">&times;</span>
+            <p>Car not found!</p>
+        </div>
+    </div>
+
+<div id="successModal" class="modal">
+    <div class="modal-content">
+        <span class="close" id="close-success-modal">&times;</span>
+        <p>Report created successfully!</p>
+        <button id="send-message-button">Send a Message</button>
+    </div>
+</div>
+
+<script>
+    document.getElementById('send-message-button').addEventListener('click', function() {
+        window.location.href = `messages.html?carID=${currentCar.carID}`;
+    });
+</script>
+
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+</body>
+</html>
+
+

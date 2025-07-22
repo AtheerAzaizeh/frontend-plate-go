@@ -1,0 +1,116 @@
+{
+    "reports": [
+        {
+            "id": 1,
+            "model": "mazda 3 2009",
+            "color": "white",
+            "numberOfReports": "7",
+            "image": "images/car1.jpg",
+            "plate": "38-439-69",
+            "reason": "car blocking",
+            "location": "Herzl 88, Ramat Gan",
+            "date": "2024-03-24 15:00",
+            "status": "undone",
+            "urgent": true,
+            "map": "images/map.png"
+        },
+        {
+            "id": 2,
+            "model": "mitsubishi outlander 2016",
+            "color": "silver",
+            "numberOfReports": "13",
+            "image": "images/car2.jpg",
+            "plate": "77-348-39",
+            "reason": "child forgotten",
+            "location": "rothschild 15, Petah Tikva",
+            "date": "2024-03-01 08:05",
+            "status": "undone",
+            "urgent": true,
+            "map": "images/map2.png"
+        },
+        {
+            "id": 3,
+            "model": "hyundai elantra 2017",
+            "color": "silver",
+            "numberOfReports": "24",
+            "image": "images/car3.jpg",
+            "plate": "54-667-37",
+            "reason": "lights on",
+            "location": "Bialek 76, Ramat Gan",
+            "date": "2024-02-12 19:37",
+            "status": "call done",
+            "urgent": false,
+            "map": "images/map3.png"
+        },
+        {
+            "id": 4,
+            "model": "subaru xv 2019",
+            "color": "white",
+            "numberOfReports": "9",
+            "image": "images/car4.jpeg",
+            "plate": "63-50-70",
+            "reason": "car blocking",
+            "location": "Rotcheld 27, Tel Aviv",
+            "date": "2024-02-05 11:55",
+            "status": "call done",
+            "urgent": false,
+            "map": "images/map4.png"
+        },
+        {
+            "id": 5,
+            "model": "mitsubishi outlander 2016",
+            "color": "silver",
+            "numberOfReports": "13",
+            "image": "images/car2.jpg",
+            "plate": "77-348-39",
+            "reason": "child forgotten",
+            "location": "rothschild 15, Petah Tikva",
+            "date": "2024-03-01 08:05",
+            "status": "undone",
+            "urgent": true,
+            "map": "images/map2.png"
+        }
+    ],
+    "updates": [
+        {
+            "issue": "Flat Tire",
+            "location": "Jabotinsky Road, Bnei Brak",
+            "date": "2024-03-06 19:14"
+        },
+        {
+            "issue": "Engine Heat",
+            "location": "Bialek 13, Ramat Gan",
+            "date": "2024-03-05 17:43"
+        },
+        {
+            "issue": "Key forgotten inside the car",
+            "location": "Shalom 36, Holon",
+            "date": "2024-03-05 13:35"
+        },
+        {
+            "issue": "Empty Battery",
+            "location": "Alenby 87, Tel Aviv",
+            "date": "2024-03-03 22:00"
+        },
+        {
+            "issue": "Car Blocking",
+            "location": "Herzl 88, Ramat Gan",
+            "date": "2024-03-24 15:00"
+        },
+        {
+            "issue": "Child Forgotten",
+            "location": "Rothschild 15, Petah Tikva",
+            "date": "2024-03-01 08:05"
+        },
+        {
+            "issue": "Lights On",
+            "location": "Bialek 76, Ramat Gan",
+            "date": "2024-02-12 19:37"
+        },
+        {
+            "issue": "Car Blocking",
+            "location": "Rothschild 27, Tel Aviv",
+            "date": "2024-02-05 11:55"
+        }
+    ]
+}

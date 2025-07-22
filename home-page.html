@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>Plate & Go</title>
+</head>
+<body>
+    <div id="overlay"></div>
+    <header class="top-header">
+        <div class="menu">
+            <span class="san" id="menu-toggle">&#9776;</span>
+            <a href="notifications.html" class="ring"><i class="fa fa-bell"></i></a>
+        </div>
+        <div class="logo">
+            <img src="images/platego.png" alt="Plate&Go">
+        </div>
+        <div class="profile">
+            <span id="welcome-message">Welcome </span>
+            <img id="profile-picture" src="" alt="Profile Picture">
+        </div>
+        <div class="main">
+            <a href="car-finder.html"><img src="images/search.png" alt="search icon"></a>
+            <a href="chat.html"><img src="images/message.png" alt="message icon"></a>
+            <a href="my-cars.html"><img src="images/car.png" alt="car icon"></a> 
+        </div>
+
+    </header>
+
+    <div class="side-menu" id="side-menu">
+        <div class="profile-info">
+            <img id="profile-picture-menu" src="" alt="Profile Picture">
+            <a href="edit-profile.html"><i class="fa-solid fa-pencil"></i></a>
+            <p>Name: <span id="profile-name"></span></p>
+        <p>Email: <span id="profile-email"></span></p>
+        
+           
+        </div>
+        <nav>
+            <ul>
+                <li><a href="rescue-me.html"><i class="fa-solid fa-triangle-exclamation"></i> Rescue me</a></li>
+                <li><a href="#" id="volunteer-link"><i class="fa-solid fa-heart"></i> <span id="volunteer-text">Become a Volunteer</span></a></li>
+                <li><a href="my-cars.html"><i class="fa-solid fa-car"></i> Car management</a></li>
+                <li><a href="report_history.html"><i class="fa-solid fa-clipboard-list"></i> Report list</a></li>
+            </ul>
+        </nav>
+        <div class="toggle-switches">
+            <label>Start volunteering
+                <label class="switch">
+                    <input type="checkbox" id="volunteer-updates-switch">
+                    <span class="slider"></span>
+                </label>
+            </label>
+            
+        </div>
+        <nav>
+            <ul>
+                <li><a href="settings.html"><i class="fa-solid fa-gear"></i> Settings</a></li>
+                <li><a href="index.html" id="logout"><i class="fa-solid fa-sign-out-alt"></i> Log out</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="map">
+        <div id="map"></div>
+    </div>
+
+    <div class="main-content">
+        <div class="report-button" id="make-report-button">Make a <strong> Report</strong></div>
+    </div>
+
+    <div class="volunteer-updates" id="volunteer-updates">
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="js/home-page.js"></script>
+</body>
+</html>
