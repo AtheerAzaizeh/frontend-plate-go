@@ -1,29 +1,26 @@
-document.getElementById('loginForm').addEventListener('submit', function(event) {
+document.getElementById('loginForm').addEventListener('submit', async function (event) {
     event.preventDefault();
 
     const formData = {
-        email: event.target.email.value,
+        emailOrPhone: event.target.email.value,
         password: event.target.password.value
     };
 
-    console.log('Form Data:', formData);
+    try {
+        const res = await fetch(`${BACKEND_URL}/api/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        });
 
-    fetch(`${BACKEND_URL}/api/auth/login`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok ' + response.statusText);
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log('Success:', data);
         const messageDiv = document.getElementById('message');
+
+        if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.message || 'Login failed');
+        }
+
+        const data = await res.json();
         messageDiv.className = 'login-message login-success';
         messageDiv.innerText = 'Login successful!';
         messageDiv.style.display = 'block';
@@ -31,13 +28,14 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
 
-        window.location.href = 'home-page.html';
-    })
-    .catch(error => {
-        console.error('Error:', error);
+        setTimeout(() => {
+            window.location.href = 'home-page.html';
+        }, 1000);
+    } catch (error) {
+        console.error('Login error:', error);
         const messageDiv = document.getElementById('message');
         messageDiv.className = 'login-message login-error';
         messageDiv.innerText = 'Login failed: ' + error.message;
         messageDiv.style.display = 'block';
-    });
+    }
 });
