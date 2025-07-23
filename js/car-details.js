@@ -14,25 +14,38 @@ document.addEventListener('DOMContentLoaded', function() {
     const urlParams = new URLSearchParams(queryString);
     const plateNumber = urlParams.get('plate');
 
-    fetch(`${BACKEND_URL}/api/cars/${plateNumber}`, {
-        headers: {
-            'Authorization': `Bearer ${token}`
-        }
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok ' + response.statusText);
-        }
-        return response.json();
-    })
-    .then(car => {
-        displayCarDetails(car);
-        currentCar = car; 
-    })
-    .catch(error => {
-        console.error('Error fetching car:', error);
-        document.getElementById('car-not-found-popup').style.display = 'block';
-    });
+fetch(`${BACKEND_URL}/api/reports/car/${plateNumber}`, {
+    headers: {
+        'Authorization': `Bearer ${token}`
+    }
+})
+.then(response => {
+    if (!response.ok) {
+        throw new Error('Network response was not ok ' + response.statusText);
+    }
+    return response.json();
+})
+.then(responseData => {
+    const car = responseData.car;
+    currentCar = {
+        plate: car.plate,
+        carCompany: car.carCompany,
+        model: car.model,
+        color: car.color,
+        year: car.year,
+        image: car.image,
+        carID: car._id,
+        userID: car.owner._id,
+        ownerImg: car.owner.img,
+        ownerName: car.owner.firstName
+    };
+    displayCarDetails(currentCar);
+})
+.catch(error => {
+    console.error('Error fetching car:', error);
+    document.getElementById('car-not-found-popup').style.display = 'block';
+});
+
 
     document.getElementById('make-report-button').addEventListener('click', openReportForm);
     document.getElementById('close-report-form').addEventListener('click', closeReportForm);
@@ -40,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('close-location-form').addEventListener('click', closeLocationForm);
     document.getElementById('submit-location').addEventListener('click', submitLocation);
     document.getElementById('close-not-found-popup').addEventListener('click', closeModal);
-    document.getElementById('locate-me-button').addEventListener('click', locateMe);
+    //document.getElementById('locate-me-button').addEventListener('click', locateMe);
 });
 
 let reportReason = '';
@@ -48,7 +61,6 @@ let reportDetails = {};
 let currentCar = null; 
 
 function displayCarDetails(car) {
-    currentCar = car; 
     document.getElementById('car-plate-number').innerText = car.plate;
     document.getElementById('car-image-wrapper').innerHTML = `<img src="${car.image}" alt="Car Image">`;
     document.getElementById('car-company').innerText = `Company: ${car.carCompany}`;
@@ -56,6 +68,7 @@ function displayCarDetails(car) {
     document.getElementById('car-color').innerText = `Color: ${car.color}`;
     document.getElementById('car-year').innerText = `Year: ${car.year}`;
 }
+
 
 function openReportForm() {
     document.getElementById('report-form-modal').style.display = 'block';
@@ -88,19 +101,24 @@ function closeModal() {
 
 function submitLocation() {
     const token = localStorage.getItem('token');
-    const location = document.getElementById('report-location').value;
+
+    const city = document.getElementById('location-city').value;
+    const street = document.getElementById('location-street').value;
+    const number = document.getElementById('location-number').value;
+
     const report = {
         plate: currentCar.plate,
+        reportType: "blocking",
         reason: reportReason,
-        location: location,
-        date: new Date().toISOString().slice(0, 19).replace('T', ' '),
-        image: currentCar.image,
-        map: null,
-        carID: currentCar.carID,
-        userID: currentCar.userID
+        location: {
+            city: city,
+            street: street,
+            number: number
+        },
+        image: currentCar.image
     };
 
-    fetch(`${BACKEND_URL}/api/reports`, {
+    fetch(`${BACKEND_URL}/api/reports/make`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -122,7 +140,6 @@ function submitLocation() {
         console.error('Error creating report:', error);
     });
 }
-
 function showSuccessModal() {
     const successModal = document.getElementById('successModal');
     successModal.style.display = 'block';
