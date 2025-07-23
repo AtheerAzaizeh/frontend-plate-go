@@ -20,7 +20,7 @@ function findCar() {
     const plateInput = document.getElementById('plate-input').value.trim();
     const token = localStorage.getItem('token');
 
-    fetch(`${BACKEND_URL}/api/cars/${plateInput}`, {
+    fetch(`${BACKEND_URL}/api/reports/car/${plateInput}`, {
         headers: {
             'Authorization': `Bearer ${token}`
         }
