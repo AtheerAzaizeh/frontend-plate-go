@@ -1,137 +1,103 @@
 const CLOUDINARY_UPLOAD_URL = "https://api.cloudinary.com/v1_1/dxmqufeag/image/upload";
 const CLOUDINARY_UPLOAD_PRESET = "platego";
 
-// PROFILE IMAGE UPLOAD
+let profileImageUrl = null;
+let carImageUrl = null;
+
 const profileInput = document.getElementById("profileImageInput");
 const profilePreview = document.getElementById("profilePreview");
-let profileImageUrl = null;
+
+const carInput = document.getElementById("carImageInput");
+const carPreview = document.getElementById("carPreview");
 
 profileInput.addEventListener("change", async function () {
   const file = this.files[0];
   if (!file) return;
-
-<<<<<<< Updated upstream
-    fetch(`${BACKEND_URL}/api/users/register`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok ' + response.statusText);
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log('Success:', data);
-        const messageDiv = document.getElementById('message');
-        messageDiv.className = 'signup-message signup-success';
-        messageDiv.innerText = 'Registration successful!';
-        messageDiv.style.display = 'block';
-         window.location.href = 'index.html';
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        const messageDiv = document.getElementById('message');
-        messageDiv.className = 'signup-message signup-error';
-        messageDiv.innerText = 'Registration failed: ' + error.message;
-        messageDiv.style.display = 'block';
-=======
   const formData = new FormData();
   formData.append("file", file);
   formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
 
   try {
-    const res = await fetch(CLOUDINARY_UPLOAD_URL, {
-      method: "POST",
-      body: formData,
->>>>>>> Stashed changes
-    });
+    const res = await fetch(CLOUDINARY_UPLOAD_URL, { method: "POST", body: formData });
     const data = await res.json();
     profileImageUrl = data.secure_url;
     profilePreview.src = profileImageUrl;
   } catch (err) {
-    console.error("Error uploading profile image:", err);
+    console.error("Profile upload error:", err);
   }
 });
-
-// CAR IMAGE UPLOAD
-const carInput = document.getElementById("carImageInput");
-const carPreview = document.getElementById("carPreview");
-let carImageUrl = null;
 
 carInput.addEventListener("change", async function () {
   const file = this.files[0];
   if (!file) return;
-
   const formData = new FormData();
   formData.append("file", file);
   formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
 
   try {
-    const res = await fetch(CLOUDINARY_UPLOAD_URL, {
-      method: "POST",
-      body: formData,
-    });
+    const res = await fetch(CLOUDINARY_UPLOAD_URL, { method: "POST", body: formData });
     const data = await res.json();
     carImageUrl = data.secure_url;
     carPreview.src = carImageUrl;
   } catch (err) {
-    console.error("Error uploading car image:", err);
+    console.error("Car upload error:", err);
   }
 });
 
-// FORM SUBMIT
-document.getElementById('signupForm').addEventListener('submit', function(event) {
-  event.preventDefault();
+function isValidIsraeliPhone(number) {
+  return /^05\d{8}$/.test(number);
+}
+
+const form = document.getElementById("signupForm");
+form.addEventListener("submit", async function (e) {
+  e.preventDefault();
+
+  const phoneNumber = form.phoneNumber.value;
+  if (!isValidIsraeliPhone(phoneNumber)) {
+    alert("Phone number must be Israeli and start with 05");
+    return;
+  }
 
   const formData = {
-    phoneNumber: event.target.phoneNumber.value,
-    firstName: event.target.firstName.value,
-    lastName: event.target.lastName.value,
-    email: event.target.email.value,
-    password: event.target.password.value,
-    address: event.target.address.value,
+    firstName: form.firstName.value,
+    lastName: form.lastName.value,
+    phoneNumber,
+    email: form.email.value,
+    password: form.password.value,
+    role: form.role.value,
+    volunteerStatus: form.volunteerStatus.value,
+    address: form.address.value,
     img: profileImageUrl,
-    cars: [
-      {
-        model: event.target.carModel.value,
-        color: event.target.carColor.value,
-        numberOfReports: 0,
-        image: carImageUrl,
-        plate: event.target.carPlate.value
-      }
-    ]
+
+    carCompany: form.carCompany.value,
+    model: form.model.value,
+    color: form.color.value,
+    year: parseInt(form.year.value),
+    plate: form.plate.value,
+    image: carImageUrl
   };
 
-  console.log("carImageUrl:", carImageUrl);
-  console.log("Sending Form Data:", formData);
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/auth/signup`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData)
+    });
 
+    const result = await res.json();
+    const msg = document.getElementById("message");
+    msg.style.display = "block";
+    msg.innerText = result.message || "Signup completed.";
+    msg.className = res.ok ? "signup-message signup-success" : "signup-message signup-error";
 
-  fetch('https://platego-smi4.onrender.com/api/users/register', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(formData)
-  })
-  .then(response => {
-    if (!response.ok) throw new Error('Network response was not ok ' + response.statusText);
-    return response.json();
-  })
-  .then(data => {
-    const messageDiv = document.getElementById('message');
-    messageDiv.className = 'signup-message signup-success';
-    messageDiv.innerText = 'Registration successful!';
-    messageDiv.style.display = 'block';
-    window.location.href = 'index.html';
-  })
-  .catch(error => {
-    const messageDiv = document.getElementById('message');
-    messageDiv.className = 'signup-message signup-error';
-    messageDiv.innerText = 'Registration failed: ' + error.message;
-    messageDiv.style.display = 'block';
-  });
+    if (res.ok) {
+      setTimeout(() => (window.location.href = "index.html"), 1500);
+    }
+  } catch (err) {
+    console.error("Signup error:", err);
+    const msg = document.getElementById("message");
+    msg.style.display = "block";
+    msg.innerText = "Signup failed. Please try again.";
+    msg.className = "signup-message signup-error";
+  }
 });
