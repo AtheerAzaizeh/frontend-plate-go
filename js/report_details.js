@@ -82,7 +82,7 @@ function confirmDelete() {
     const reportID = report.reportID;
     const token = localStorage.getItem('token');
 
-    fetch(`https://backend-3-vnac.onrender.com/api/reports/${reportID}`, {
+    fetch(`${BACKEND_URL}/api/reports/${reportID}`, {
         method: 'DELETE',
         headers: {
             'Authorization': `Bearer ${token}`

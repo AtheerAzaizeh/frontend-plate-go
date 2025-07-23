@@ -27,7 +27,7 @@ function fetchRescueRequests() {
     const token = localStorage.getItem('token');
     console.log('Fetching Rescue Requests with Token:', token);
 
-    fetch('https://backend-3-vnac.onrender.com/api/rescue-requests', {
+    fetch(`${BACKEND_URL}/api/rescue-requests`, {
         headers: { 'Authorization': `Bearer ${token}` }
     })
     .then(response => {

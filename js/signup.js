@@ -22,7 +22,7 @@ document.getElementById('signupForm').addEventListener('submit', function(event)
 
     console.log('Form Data:', formData);
 
-    fetch('https://backend-3-vnac.onrender.com/api/users/register', {
+    fetch(`${BACKEND_URL}/api/users/register`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

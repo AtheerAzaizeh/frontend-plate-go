@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
             img: document.getElementById('img').value
         };
 
-        fetch(`https://backend-3-vnac.onrender.com/api/users/${user.userID}`, {
+        fetch(`${BACKEND_URL}/api/users/${user.userID}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

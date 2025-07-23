@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
         profilePicture.src = user.img;
     }
 
-    fetch('https://backend-3-vnac.onrender.com/api/cars', {
+    fetch(`${BACKEND_URL}/api/cars`, {
         headers: {
             'Authorization': `Bearer ${token}`
         }
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const numberOfReports = 0;
 
         if (carCompany && model && color && year && plate && image) {
-            fetch('https://backend-3-vnac.onrender.com/api/cars', {
+            fetch(`${BACKEND_URL}/api/cars`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function() {
         optionsButton.addEventListener('click', () => {
             const confirmDelete = confirm('Are you sure you want to delete this car?');
             if (confirmDelete) {
-                fetch(`https://backend-3-vnac.onrender.com/api/cars/${car.carID}`, {
+                fetch(`${BACKEND_URL}/api/cars/${car.carID}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${token}`

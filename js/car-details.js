@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const urlParams = new URLSearchParams(queryString);
     const plateNumber = urlParams.get('plate');
 
-    fetch(`https://backend-3-vnac.onrender.com/api/cars/${plateNumber}`, {
+    fetch(`${BACKEND_URL}/api/cars/${plateNumber}`, {
         headers: {
             'Authorization': `Bearer ${token}`
         }
@@ -100,7 +100,7 @@ function submitLocation() {
         userID: currentCar.userID
     };
 
-    fetch('https://backend-3-vnac.onrender.com/api/reports', {
+    fetch(`${BACKEND_URL}/api/reports`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

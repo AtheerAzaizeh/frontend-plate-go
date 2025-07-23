@@ -17,7 +17,7 @@ function fetchReportsFromBackend() {
     console.log('Fetching reports...');
     const token = localStorage.getItem('token');
 
-    fetch('https://backend-3-vnac.onrender.com/api/reports', {
+    fetch(`${BACKEND_URL}/api/reports`, {
         headers: {
             'Authorization': `Bearer ${token}`
         }
@@ -83,7 +83,7 @@ function deleteReportFromHistory(id, event) {
     event.stopPropagation();
     const token = localStorage.getItem('token');
 
-    fetch(`https://backend-3-vnac.onrender.com/api/reports/${id}`, {
+    fetch(`${BACKEND_URL}/api/reports/${id}`, {
         method: 'DELETE',
         headers: {
             'Authorization': `Bearer ${token}`

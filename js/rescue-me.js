@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         console.log('Sending request:', data);
 
-        fetch('https://backend-3-vnac.onrender.com/api/rescue/request', {
+        fetch(`${BACKEND_URL}/api/rescue/request`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
     fetchVolunteerUpdates();
 
     function fetchVolunteerUpdates() {
-        fetch('https://backend-3-vnac.onrender.com/api/volunteerUpdates', {
+        fetch(`${BACKEND_URL}/api/volunteerUpdates`, {
             headers: { 'Authorization': `Bearer ${token}` }
         })
         .then(response => response.json())
@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const volunteerLink = document.getElementById('volunteer-link');
     const volunteerText = document.getElementById('volunteer-text');
 
-    fetch('https://backend-3-vnac.onrender.com/api/volunteer/status', {
+    fetch(`${BACKEND_URL}/api/volunteer/status`, {
         headers: { 'Authorization': `Bearer ${token}` }
     })
     .then(response => response.json())
@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', function() {
     volunteerLink.addEventListener('click', function(event) {
         event.preventDefault();
 
-        fetch('https://backend-3-vnac.onrender.com/api/volunteer/register', {
+        fetch(`${BACKEND_URL}/api/volunteer/register`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

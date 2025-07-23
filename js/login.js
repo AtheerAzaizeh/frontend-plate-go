@@ -8,7 +8,7 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
 
     console.log('Form Data:', formData);
 
-    fetch('https://backend-3-vnac.onrender.com/api/auth/login', {
+    fetch(`${BACKEND_URL}/api/auth/login`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

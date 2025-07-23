@@ -23,7 +23,7 @@ let currentUser = null;
 
 function fetchChats() {
     const token = localStorage.getItem('token');
-    fetch('https://backend-3-vnac.onrender.com/api/chats/user', {
+    fetch(`${BACKEND_URL}/api/chats/user`, {
         headers: { 'Authorization': `Bearer ${token}` }
     })
     .then(response => {

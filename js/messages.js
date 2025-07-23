@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (carID) {
-        fetch(`https://backend-3-vnac.onrender.com/api/cars/id/${carID}`, {
+        fetch(`${BACKEND_URL}/api/cars/id/${carID}`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
@@ -65,7 +65,7 @@ function loadMessages(carID, chatID) {
         return;
     }
 
-    fetch(`https://backend-3-vnac.onrender.com/api/messages?carID=${carID}&chatID=${chatID}`, {
+    fetch(`${BACKEND_URL}/api/messages?carID=${carID}&chatID=${chatID}`, {
         headers: {
             'Authorization': `Bearer ${token}`
         }
@@ -132,7 +132,7 @@ function sendMessage() {
 
     console.log('Sending message:', message); // Debugging line
 
-    fetch('https://backend-3-vnac.onrender.com/api/messages', {
+    fetch(`${BACKEND_URL}/api/messages`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
