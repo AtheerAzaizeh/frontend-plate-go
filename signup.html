@@ -4,9 +4,16 @@
   <meta charset="UTF-8" />
   <title>Plate&Go | Sign Up</title>
   <link rel="stylesheet" href="css/styles.css" />
+  <link rel="icon" href="./images/platego.png" />
 </head>
 <body>
-  <div class="signup-wrapper">
+  <header class="top-header">
+    <div class="logo">
+      <img src="./images/platego.png" alt="Plate&Go Logo" />
+    </div>
+  </header>
+
+  <main class="signup-wrapper">
     <div class="signup-card">
       <div class="profile-pic-container">
         <img id="profilePreview" src="https://cdn-icons-png.flaticon.com/512/5087/5087579.png" alt="Profile" />
@@ -15,17 +22,21 @@
       </div>
 
       <form id="signupForm" class="signup-form">
-        <input type="text" name="phoneNumber" placeholder="Phone Number" required class="signup-input" />
+        <input type="text" name="phoneNumber" placeholder="Israeli Phone Number" required class="signup-input" />
         <input type="text" name="firstName" placeholder="First Name" required class="signup-input" />
         <input type="text" name="lastName" placeholder="Last Name" required class="signup-input" />
         <input type="email" name="email" placeholder="Email" required class="signup-input" />
         <input type="password" name="password" placeholder="Password" required class="signup-input" />
-        <input type="text" name="address" placeholder="Address" required class="signup-input" />
 
-        <h3>Car Details</h3>
-        <input type="text" name="carModel" placeholder="Car Model" required class="signup-input" />
-        <input type="text" name="carColor" placeholder="Car Color" required class="signup-input" />
-        <input type="text" name="carPlate" placeholder="Car Plate" required class="signup-input" />
+        <input type="text" name="role" placeholder="Role (driver)" required class="signup-input" />
+        <input type="text" name="volunteerStatus" placeholder="Volunteer Status (available)" class="signup-input" />
+        <input type="text" name="address" placeholder="Address (City)" required class="signup-input" />
+
+        <input type="text" name="carCompany" placeholder="Car Company" required class="signup-input" />
+        <input type="text" name="model" placeholder="Car Model" required class="signup-input" />
+        <input type="text" name="color" placeholder="Car Color" required class="signup-input" />
+        <input type="number" name="year" placeholder="Car Year" required class="signup-input" />
+        <input type="text" name="plate" placeholder="Car Plate" required class="signup-input" />
 
         <label for="carImageInput" class="custom-file-label">Upload Car Image</label>
         <input type="file" id="carImageInput" accept="image/*" capture="environment" />
@@ -36,13 +47,9 @@
 
       <div id="message" class="signup-message" style="display: none;"></div>
     </div>
-  </div>
+  </main>
 
-<<<<<<< Updated upstream
-    <script src="js/config.js"></script>
-    <script src="js/signup.js"></script>
-=======
+  <script src="js/config.js"></script>
   <script src="js/signup.js"></script>
->>>>>>> Stashed changes
 </body>
 </html>
