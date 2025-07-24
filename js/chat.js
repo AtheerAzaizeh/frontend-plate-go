@@ -23,7 +23,8 @@ let currentUser = null;
 
 function fetchChats() {
     const token = localStorage.getItem('token');
-    fetch(`${BACKEND_URL}/api/chats/user`, {
+    fetch(`${BACKEND_URL}/api/chats/my`, {
+
         headers: { 'Authorization': `Bearer ${token}` }
     })
     .then(response => {
@@ -32,11 +33,13 @@ function fetchChats() {
         }
         return response.json();
     })
-    .then(chats => {
-        const chatsList = document.getElementById('chats-list');
-        chatsList.innerHTML = '';
+    .then(data => {
+    const chats = data.chats;
+    const chatsList = document.getElementById('chats-list');
+    chatsList.innerHTML = '';
 
-        chats.forEach(chat => {
+    chats.forEach(chat => {
+
             const chatItem = document.createElement('div');
             chatItem.classList.add('chat-item');
             chatItem.dataset.chatId = chat.chatID;
