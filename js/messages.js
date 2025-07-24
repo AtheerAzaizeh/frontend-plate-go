@@ -1,154 +1,163 @@
-document.addEventListener('DOMContentLoaded', () => {
+let currentCar = null;
+let currentUser = null;
+let currentChatID = null;
+
+function isValidObjectId(id) {
+    return /^[0-9a-fA-F]{24}$/.test(id);
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const carID = urlParams.get('carID');
-    const chatID = urlParams.get('chatID') || 'defaultChatID'; // Set a default value for testing
+    const chatID = urlParams.get('chatID');
 
     const token = localStorage.getItem('token');
     const user = localStorage.getItem('user');
 
-    console.log('URL Params:', { carID, chatID }); // Debugging line
-    console.log('Token:', token); // Debugging line
-    console.log('User:', user); // Debugging line
-
-    if (!carID && !chatID) {
-        console.error('Car ID or Chat ID is missing or invalid in the URL.');
+    if (!carID || !token || !user) {
+        console.error('❌ Missing carID, token or user');
         return;
     }
 
-    if (carID) {
-        fetch(`${BACKEND_URL}/api/cars/id/${carID}`, {
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
-            }
-        })
-        .then(response => response.json())
-        .then(car => {
-            currentCar = car;
-            document.getElementById('car-image').src = car.image;
-            document.getElementById('plate-number').innerText = car.plate;
-
-            console.log('Current Car:', currentCar); // Debugging line
-            loadMessages(carID, chatID);
-        })
-        .catch(error => {
-            console.error('Error fetching car details:', error);
-        });
-    } else {
-        console.error('Car ID is missing or invalid in the URL.');
+    try {
+        currentUser = JSON.parse(user);
+    } catch (e) {
+        console.error('❌ Failed to parse current user');
+        return;
     }
 
-    if (user) {
-        try {
-            currentUser = JSON.parse(user);
-            console.log('Current User:', currentUser); // Debugging line
-        } catch (error) {
-            console.error('Error parsing user details:', error);
-        }
+    // Step 1: Get car
+    try {
+        const carRes = await fetch(`${BACKEND_URL}/api/cars/id/${carID}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const car = await carRes.json();
+
+        currentCar = {
+            carID: car._id,
+            plate: car.plate,
+            image: car.image,
+            userID: car.owner._id,
+            ownerImg: car.owner.img
+        };
+
+        document.getElementById('car-image').src = car.image;
+        document.getElementById('plate-number').innerText = car.plate;
+    } catch (err) {
+        console.error('❌ Failed to fetch car', err);
+        return;
+    }
+
+    // Step 2: Check or create chat
+    if (chatID && isValidObjectId(chatID)) {
+        currentChatID = chatID;
+        loadMessages(currentCar.carID, currentChatID);
     } else {
-        console.error('User is not logged in or user details are missing.');
+        try {
+            const chatRes = await fetch(`${BACKEND_URL}/api/chat/create-or-get`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    userIDs: [currentUser._id, currentCar.userID],
+                    carID: currentCar.carID
+                })
+            });
+
+            const data = await chatRes.json();
+            currentChatID = data.chatID;
+
+            // Update URL without reload
+            const newURL = new URL(window.location.href);
+            newURL.searchParams.set('chatID', currentChatID);
+            window.history.replaceState({}, '', newURL.toString());
+
+            loadMessages(currentCar.carID, currentChatID);
+        } catch (err) {
+            console.error('❌ Failed to create or get chat', err);
+        }
     }
 });
 
-let currentCar = null;
-let currentUser = null;
-
 function loadMessages(carID, chatID) {
     const token = localStorage.getItem('token');
+    if (!currentUser || !currentCar || !chatID) return;
 
-    console.log('Inside loadMessages function');
-    console.log('currentUser:', currentUser);
-    console.log('currentCar:', currentCar);
-    console.log('chatID:', chatID);
-
-    if (!currentCar || !currentUser || !chatID) {
-        console.error('currentUser, currentCar, or chatID is not set');
-        return;
-    }
-
-    fetch(`${BACKEND_URL}/api/messages?carID=${carID}&chatID=${chatID}`, {
-        headers: {
-            'Authorization': `Bearer ${token}`
-        }
+    fetch(`${BACKEND_URL}/api/message/${chatID}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
     })
-    .then(response => response.json())
-    .then(messages => {
-        console.log('Fetched messages:', messages); 
-        const messageContent = document.getElementById('message-content');
-        messageContent.innerHTML = '';
+    .then(res => res.json())
+    .then(response => {
+        const messages = response.messages;
+        const container = document.getElementById('message-content');
+        container.innerHTML = '';
+
+        if (!Array.isArray(messages)) {
+            console.warn('⚠️ No messages found');
+            return;
+        }
 
         messages.forEach(message => {
-            const messageBubble = document.createElement('div');
-            messageBubble.classList.add('message-bubble', message.fromUserID === currentUser.userID ? 'sent' : 'received');
+            const isMine = message.sender._id === currentUser._id;
 
-            const messageText = document.createElement('div');
-            messageText.classList.add('message-text');
-            messageText.textContent = message.message;
+            const bubble = document.createElement('div');
+            bubble.className = `message-bubble ${isMine ? 'sent' : 'received'}`;
 
-            const messageTime = document.createElement('span');
-            messageTime.classList.add('message-time');
-            messageTime.textContent = new Date(message.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const profile = document.createElement('img');
+            profile.src = isMine ? currentUser.img : message.sender.img || 'images/other-user.png';
+            profile.alt = message.sender.firstName || 'User';
 
-            // Add profile picture and username
-            const profilePic = document.createElement('img');
-            profilePic.src = message.fromUserID === currentUser.userID ? currentUser.img : 'images/alon.png';
-            profilePic.alt = message.fromUserID === currentUser.userID ? currentUser.firstName : 'Other User';
+            const text = document.createElement('div');
+            text.className = 'message-text';
+            text.textContent = message.message;
 
-            messageBubble.appendChild(profilePic);
-            messageBubble.appendChild(messageText);
-            messageBubble.appendChild(messageTime);
+            const time = document.createElement('span');
+            time.className = 'message-time';
+            time.textContent = new Date(message.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-            messageContent.appendChild(messageBubble);
+            bubble.appendChild(profile);
+            bubble.appendChild(text);
+            bubble.appendChild(time);
+
+            container.appendChild(bubble);
         });
 
-        messageContent.scrollTop = messageContent.scrollHeight;
+        container.scrollTop = container.scrollHeight;
     })
-    .catch(error => console.error('Error fetching messages:', error));
+    .catch(err => console.error('❌ Error fetching messages:', err));
 }
 
 function sendMessage() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const chatID = urlParams.get('chatID') || 'defaultChatID'; // Ensure chatID is retrieved here
-
-    if (!currentUser || !currentCar || !chatID) {
-        console.error('currentUser, currentCar, or chatID is not set');
-        return;
-    }
+    if (!currentChatID || !currentUser || !currentCar) return;
 
     const messageInput = document.getElementById('message-input');
-    const messageText = messageInput.value;
-    if (messageText.trim() === '') {
-        return;
-    }
+    const messageText = messageInput.value.trim();
+    if (!messageText) return;
 
     const token = localStorage.getItem('token');
-    const message = {
-        fromUserID: currentUser.userID,
-        toUserID: currentCar.userID,
-        carID: currentCar.carID, // Ensure `carID` is included
+    const body = {
         message: messageText,
-        date: new Date().toISOString().slice(0, 19).replace('T', ' '),
-        chatID: chatID // Ensure `chatID` is included
+        sender: currentUser._id,
+        date: new Date().toISOString()
     };
 
-    console.log('Sending message:', message); // Debugging line
-
-    fetch(`${BACKEND_URL}/api/messages`, {
+    fetch(`${BACKEND_URL}/api/message/${currentChatID}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(message)
+        body: JSON.stringify(body)
     })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok ' + response.statusText);
-        }
-        return response.json();
+    .then(res => {
+        if (!res.ok) throw new Error('Message send failed');
+        return res.json();
     })
-    .then(data => {
+    .then(() => {
         messageInput.value = '';
-        loadMessages(currentCar.carID, chatID);
+        loadMessages(currentCar.carID, currentChatID);
     })
-    .catch(error => console.error('Error sending message:', error));
+    .catch(err => console.error('❌ Error sending message:', err));
 }

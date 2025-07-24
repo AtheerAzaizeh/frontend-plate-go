@@ -1,1 +1,1 @@
-const BACKEND_URL = "https://platego-smi4.onrender.com";
+const BACKEND_URL = "http://localhost:3000";
