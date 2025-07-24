@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
             navigator.geolocation.getCurrentPosition(position => {
                 const lat = position.coords.latitude;
                 const lng = position.coords.longitude;
-                const apiKey = '4086e24eac344b50b80b7e6f0b357f6d'; 
+                const apiKey = '400d2d81eb784ffeac2632a2082a4615'; 
 
                 fetch(`https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lng}&key=${apiKey}`)
                     .then(response => response.json())
