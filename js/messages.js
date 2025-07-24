@@ -31,15 +31,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         const carRes = await fetch(`${BACKEND_URL}/api/cars/id/${carID}`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
-        const car = await carRes.json();
+        const carData = await carRes.json();
+const car = carData.car; 
 
-        currentCar = {
-            carID: car._id,
-            plate: car.plate,
-            image: car.image,
-            userID: car.owner._id,
-            ownerImg: car.owner.img
-        };
+currentCar = {
+    carID: car._id,
+    plate: car.plate,
+    image: car.image,
+    userID: car.owner._id,
+    ownerImg: car.owner.img
+};
+
 
         document.getElementById('car-image').src = car.image;
         document.getElementById('plate-number').innerText = car.plate;
