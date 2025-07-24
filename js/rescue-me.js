@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         console.log('Sending request:', data);
 
-        fetch(`${BACKEND_URL}/api/rescue/request`, {
+        fetch(`${BACKEND_URL}/api/rescue/create`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
