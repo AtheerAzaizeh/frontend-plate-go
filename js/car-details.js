@@ -47,7 +47,7 @@ fetch(`${BACKEND_URL}/api/reports/car/${plateNumber}`, {
 });
 
 
-    document.getElementById('make-report-button').addEventListener('click', openReportForm);
+    document.getElementById('make-reports-button').addEventListener('click', openReportForm);
     document.getElementById('close-report-form').addEventListener('click', closeReportForm);
     document.getElementById('submit-report-reason').addEventListener('click', submitReportReason);
     document.getElementById('close-location-form').addEventListener('click', closeLocationForm);
