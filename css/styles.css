@@ -1,23 +1,175 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #e0dede;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    height: 100%;
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
 }
 
-.top-header {
-    top: 0;
-    width: 100vh;
-    height: 100px;
-    background-color: #ccc;
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f0f0;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+}
+
+
+.header {
+  background-color: #959595;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 140px;
+}
+
+img {
+  height: 60px;
+}
+
+.signup-wrapper {
+    width: 100%;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 20px;
-    z-index: 1000;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
+}
+
+.signup-card {
+  background-color: #fff;
+  border-radius: 16px;
+  padding: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.profile-pic-container {
+   width: 150px;
+   height: 150px; 
+   display: flex;
+   flex-direction: column;
+   align-items: center; 
+   margin-bottom: 4.5rem;
+   align-self: center;
+}
+
+.profile-pic-container img {
+  width: 100px;
+  height: 100px;
+  border-radius: 100px;
+  object-fit: cover;
+  margin-bottom: 0.5rem;
+  border: 3px solid #ccc;
+}
+
+.custom-file-label {
+  background-color: #ccc;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+  font-size: 14px;
+  margin-bottom: 0.5rem;
+}
+
+input[type="file"] {
+  display: none;
+}
+
+.signup-form {
+  display: flex;
+  flex-direction: column;
+  margin: 0px 104px;
+  gap: 1rem;
+}
+
+.signup-input,
+select {
+  padding: 0.75rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  width: 100%;
+}
+
+.radio-group {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.radio-group label {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  gap: 0.25rem;
+}
+
+.car-image-upload {
+   width: 150px;
+   height: 150px;  
+   display: flex;
+   flex-direction: column;
+   align-items: center; 
+   justify-content: flex-end;
+   margin-top: 24px;
+   align-self: center;
+}
+
+.image-preview {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 2px solid #ccc;
+  margin-bottom: 0.5rem;
+}
+
+.signup-button:hover {
+  background-color: #777;
+}
+
+.signup-message {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.signup-success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.signup-error {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+
+.volunteer-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.signup-button {
+    width: 100%;
+    padding: 12px;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    max-width: 850px;
+    align-self: center;
+}
+
+.signup-button:hover {
+    background-color: #45a049;
 }
 
 .top-header .menu {
@@ -182,6 +334,7 @@ body {
 img {
     display: absolute;
     margin-top: 30px;
+    margin-bottom: 30px;
 }
 
 p {
@@ -868,11 +1021,11 @@ hr {
     width: 100%;
 }
 
-.profile-pic-container {
+/*.profile-pic-container {
     position: relative;
     width: 150px;
     height: 150px;
-}
+}*/
 
 .profile-pic-container img {
     width: 100%;
@@ -1286,113 +1439,6 @@ input:checked + .slider:before {
     border-color: #f5c6cb;
 }
 
-.profile-pic-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 60px;
-  margin-left: 30%;
-}
-
-.profile-pic-container img {
-  width: 100px;
-  height: 100px;
-  object-fit: cover;
-  border-radius: 50%;
-  border: 3px solid #ccc;
-  margin-bottom: 10px;
-}
-
-.custom-file-label {
-  background-color: #2196F3;
-  color: white;
-  padding: 8px 12px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 14px;
-  margin-bottom: 10px;
-  text-align: center;
-  display: inline-block;
-}
-
-#profileImageInput,
-#carImageInput {
-  display: none;
-}
-.signup-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: #f2f2f2;
-    width: 100%;
-    height: 100vh;
-}
-
-.signup-card {
-    background: white;
-    padding: 30px 40px;
-    border-radius: 10px;
-    width: 100%;
-    max-width: 400px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    box-sizing: border-box;
-}
-
-.signup-card h3 {
-    margin-top: 0;
-    font-size: 20px;
-    color: #444;
-    text-align: center;
-}
-
-.signup-input {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 12px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 15px;
-}
-
-.signup-button {
-    width: 100%;
-    padding: 12px;
-    background-color: #4CAF50;
-    border: none;
-    border-radius: 6px;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-}
-
-.signup-button:hover {
-    background-color: #45a049;
-}
-
-.image-preview {
-    max-width: 100%;
-    max-height: 100px;
-    margin-top: 10px;
-    display: block;
-    border-radius: 10px;
-}
-
-@media (max-width: 600px) {
-    .top-header {
-        flex-direction: column;
-        height: auto;
-        padding: 10px;
-    }
-
-    .container {
-        width: 100%;
-        margin: 0;
-    }
-
-    .signup-card {
-        margin: 20px;
-    }
-}
 .chats-container {
     position: fixed;
     top: 123px;
@@ -1463,63 +1509,4 @@ input:checked + .slider:before {
     to { opacity: 1; transform: translateY(0); }
 }
 
-
-@media (max-width: 1000px) {
-    body {
-        width: 100%;
-        margin-left: 0;
-        margin-right: 0;
-    }
-
-    .top-header {
-        width: 100%;
-        padding: 0 10px;
-    }
-
-    .top-header .menu {
-        margin-left: 0;
-    }
-
-    .logo img {
-        margin-left: 200px;
-        justify-content: center;
-
-    }
-
- 
-
-    .top-header .profile {
-        margin-left: 350px;
-    }
-
-    .container,
-    .rect,
-    .map #map,
-    .car-container {
-        width: 100%;
-        margin-left: 0;
-    }
-
-    .rec,
-    .volunteer-updates {
-        width: 100%;
-        margin-left: 0;
-    }
-
-    .add-car-button {
-        margin-left: 0;
-    }
-
-    .image-wrapper img,
-    .plate-input,
-    .find-car-button,
-    .report-history-button {
-        width: 100%;
-        margin-left: 0;
-        margin-top: 10px;
-    }
-
-        
-    
-}
 

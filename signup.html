@@ -1,47 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Plate&Go | Sign Up</title>
-  <link rel="stylesheet" href="css/styles.css" />
-  <link rel="icon" href="./images/platego.png" />
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" href="./images/platego.png">
 </head>
 <body>
-  <header class="top-header">
-    <div class="logo">
-      <img src="./images/platego.png" alt="Plate&Go Logo" />
-    </div>
-  </header>
+  <div class="header">
+      <img src="./images/platego.png" alt="Plate&Go Logo">
+  </div>
 
   <main class="signup-wrapper">
     <div class="signup-card">
-      <div class="profile-pic-container">
-        <img id="profilePreview" src="https://cdn-icons-png.flaticon.com/512/5087/5087579.png" alt="Profile" />
-        <label for="profileImageInput" class="custom-file-label">Upload Profile</label>
-        <input type="file" id="profileImageInput" accept="image/*" capture="user" />
-      </div>
-
+      
       <form id="signupForm" class="signup-form">
-        <input type="text" name="phoneNumber" placeholder="Israeli Phone Number" required class="signup-input" />
-        <input type="text" name="firstName" placeholder="First Name" required class="signup-input" />
-        <input type="text" name="lastName" placeholder="Last Name" required class="signup-input" />
-        <input type="email" name="email" placeholder="Email" required class="signup-input" />
-        <input type="password" name="password" placeholder="Password" required class="signup-input" />
-
-        <input type="text" name="role" placeholder="Role (driver)" required class="signup-input" />
-        <input type="text" name="volunteerStatus" placeholder="Volunteer Status (available)" class="signup-input" />
-        <input type="text" name="address" placeholder="Address (City)" required class="signup-input" />
-
-        <input type="text" name="carCompany" placeholder="Car Company" required class="signup-input" />
-        <input type="text" name="model" placeholder="Car Model" required class="signup-input" />
-        <input type="text" name="color" placeholder="Car Color" required class="signup-input" />
-        <input type="number" name="year" placeholder="Car Year" required class="signup-input" />
-        <input type="text" name="plate" placeholder="Car Plate" required class="signup-input" />
-
-        <label for="carImageInput" class="custom-file-label">Upload Car Image</label>
-        <input type="file" id="carImageInput" accept="image/*" capture="environment" />
-        <img id="carPreview" src="images/car-preview.png" class="image-preview" />
-
+        <div class="profile-pic-container">
+          <img id="profilePreview" src="https://cdn-icons-png.flaticon.com/512/5087/5087579.png" alt="Profile">
+          <label for="profileImageInput" class="custom-file-label">Upload Profile</label>
+          <input type="file" id="profileImageInput" accept="image/*" capture="user">
+        </div>
+        <input type="text" name="phoneNumber" placeholder="Israeli Phone Number" required class="signup-input">
+        <input type="text" name="firstName" placeholder="First Name" required class="signup-input">
+        <input type="text" name="lastName" placeholder="Last Name" required class="signup-input">
+        <input type="email" name="email" placeholder="Email" required class="signup-input">
+        <input type="password" name="password" placeholder="Password" required class="signup-input">
+        <div class="volunteer-group signup-input">
+          <label>Volunteer Status</label>
+          <div class="radio-group">
+            <label>
+              <input type="radio" name="volunteerStatus" value="available" required>
+              Available
+            </label>
+            <label>
+              <input type="radio" name="volunteerStatus" value="notAvailable" required>
+              Not Available
+            </label>
+          </div>
+        </div>
+        <select name="address" id="addressSelect" class="signup-input" required>
+          <option value="">Select City</option>
+        </select>
+        <select name="carCompany" id="carCompanySelect" class="signup-input" required>
+          <option value="">Select Brand</option>
+        </select>
+        <select name="model" id="modelSelect" class="signup-input" required>
+          <option value="">Select Model</option>
+        </select>
+        <select name="color" id="colorSelect" class="signup-input" required>
+          <option value="">Select Color</option>
+        </select>
+        <select name="year" id="yearSelect" class="signup-input" required>
+          <option value="">Select Year</option>
+        </select>
+        <input type="text" name="plate" placeholder="Car Plate" required class="signup-input">
+        <div class="car-image-upload">
+          <input type="file" id="carImageInput" accept="image/*" capture="environment">
+          <img id="carPreview" src="images/car-preview.png" class="image-preview" alt="Car preview">
+          <label for="carImageInput" class="custom-file-label">Upload Car Image</label>
+        </div>
         <button type="submit" class="signup-button">Sign Up</button>
       </form>
 
