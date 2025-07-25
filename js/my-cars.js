@@ -136,6 +136,8 @@ colors.forEach(c => {
 
 document.getElementById("addCarForm").addEventListener("submit", async (e) => {
   e.preventDefault();
+  const form = e.target;
+  const editId = form.getAttribute("data-edit-id");
 
   const carCompany = carCompanySelect.value;
   const model = modelSelect.value;
@@ -147,95 +149,144 @@ document.getElementById("addCarForm").addEventListener("submit", async (e) => {
     return alert("Please fill in all the fields and upload a car image.");
   }
 
+  const carPayload = {
+    carCompany,
+    model,
+    color,
+    year,
+    plate,
+    image: carImageUrl
+  };
+
+  const url = editId
+    ? `${BACKEND_URL}/api/cars/${editId}`
+    : `${BACKEND_URL}/api/cars`;
+
+  const method = editId ? "PUT" : "POST";
+
   try {
-    const res = await fetch(`${BACKEND_URL}/api/cars`, {
-      method: 'POST',
+    const res = await fetch(url, {
+      method,
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify({
-        carCompany,
-        model,
-        color,
-        year,
-        plate,
-        image: carImageUrl
-      })
+      body: JSON.stringify(carPayload)
     });
 
-    if (!res.ok) throw new Error('Failed to add car');
+    if (!res.ok) throw new Error("Failed to save car");
     const car = await res.json();
-    addCarToDOM(car);
-    addCarFormContainer.classList.add('hidden'); 
+
+    if (editId) {
+      window.location.reload();
+    } else {
+      addCarToDOM(car);
+    }
+
+    addCarFormContainer.classList.add("hidden");
+    form.reset();
+    form.removeAttribute("data-edit-id");
+    document.querySelector('.submit-car-btn').textContent = "Add Car";
+
   } catch (err) {
-    console.error("Error adding car:", err);
+    console.error("Error saving car:", err);
   }
 });
 
 
-    function addCarToDOM(car) {
-    const carContainer = document.getElementById('car-container');
+function addCarToDOM(car) {
+  const carContainer = document.getElementById('car-container');
 
-    const existingAddBox = carContainer.querySelector('.add-car-box');
-    if (existingAddBox) {
-        carContainer.removeChild(existingAddBox);
-    }
+  const existingAddBox = carContainer.querySelector('.add-car-box');
+  if (existingAddBox) {
+    carContainer.removeChild(existingAddBox);
+  }
 
-    const carDiv = document.createElement('div');
-    carDiv.classList.add('car-card');
+  const carDiv = document.createElement('div');
+  carDiv.classList.add('car-card');
 
-    carDiv.innerHTML = `
-        <div class="car-options">
-            <button class="options-button">
-                <img src="images/vertical-dots.svg" alt="Options">
-            </button>
-        </div>
-        <div class="car-content">
-            <img src="${car.image}" alt="Car Image" class="car-img">
-            <div class="car-info">
-                <p><strong>${car.carCompany} ${car.model} ${car.year}</strong></p>
-                <p>Plate number: ${car.plate}</p>
-                <p>Number of reports: ${car.numberOfReports || 0}</p>
-                <p>Car Color: ${car.color}</p>
-            </div>
-        </div>
-    `;
+  carDiv.innerHTML = `
+    <div class="car-options">
+      <div class="dropdown-menu hidden">
+        <div class="dropdown-item edit-car" data-id="${car._id}"><i class="fas fa-pen"></i> Edit car</div>
+        <div class="dropdown-item replace-main-car"><i class="fas fa-car-side"></i> Replace to main car</div>
+        <div class="dropdown-item delete-car" data-id="${car._id}"><i class="fas fa-trash"></i> Delete car</div>
+      </div>
+      <img src="images/vertical-dots.svg" class="options-button" alt="Options">
+    </div>
+    <div class="car-content">
+      <img src="${car.image}" alt="Car Image" class="car-img">
+      <div class="car-info">
+        <p><strong>${car.carCompany} ${car.model} ${car.year}</strong></p>
+        <p>Plate number: ${car.plate}</p>
+        <p>Number of reports: ${car.numberOfReports || 0}</p>
+        <p>Car Color: ${car.color}</p>
+      </div>
+    </div>
+  `;
 
-    carContainer.appendChild(carDiv);
+  carContainer.appendChild(carDiv);
 
-    const addcar = document.createElement('div');
-    addcar.classList.add('add-car-box');
+  const addcar = document.createElement('div');
+  addcar.classList.add('add-car-box');
 
-    addcar.innerHTML = `
-        <button class="add-car-button">
-            <img src="images/plus-icon.svg" alt="Add Icon">
-        </button>
-        <p>Add Car</p>`;
+  addcar.innerHTML = `
+    <button class="add-car-button">
+      <img src="images/plus-icon.svg" alt="Add Icon">
+    </button>
+    <p>Add Car</p>`;
 
-    carContainer.appendChild(addcar);
+  carContainer.appendChild(addcar);
 
-        const optionsButton = carDiv.querySelector('.options-button');
-        optionsButton.addEventListener('click', () => {
-            const confirmDelete = confirm('Are you sure you want to delete this car?');
-            if (confirmDelete) {
-                fetch(`${BACKEND_URL}/api/cars/${car._id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                })
-                    .then(response => {
-                        if (response.ok) {
-                            carDiv.remove();
-                        } else {
-                            alert('Failed to delete car.');
-                        }
-                    })
-                    .catch(err => {
-                        console.error('Delete error:', err);
-                    });
-            }
+  const dropdown = carDiv.querySelector('.dropdown-menu');
+  const optionsIcon = carDiv.querySelector('.options-button');
+  const editBtn = carDiv.querySelector('.edit-car');
+  const deleteBtn = carDiv.querySelector('.delete-car');
+
+  optionsIcon.addEventListener('click', (e) => {
+    e.stopPropagation();
+    document.querySelectorAll('.dropdown-menu').forEach(d => d.classList.add('hidden'));
+    dropdown.classList.toggle('hidden');
+  });
+
+  document.addEventListener('click', () => {
+    dropdown.classList.add('hidden');
+  });
+
+  deleteBtn.addEventListener('click', () => {
+    const confirmDelete = confirm('Are you sure you want to delete this car?');
+    if (confirmDelete) {
+      fetch(`${BACKEND_URL}/api/cars/${car._id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+        .then(response => {
+          if (response.ok) {
+            carDiv.remove();
+          } else {
+            alert('Failed to delete car.');
+          }
+        })
+        .catch(err => {
+          console.error('Delete error:', err);
         });
     }
+  });
+
+  editBtn.addEventListener('click', () => {
+    carCompanySelect.value = car.carCompany;
+    modelSelect.innerHTML = `<option value="${car.model}">${car.model}</option>`;
+    yearSelect.innerHTML = `<option value="${car.year}">${car.year}</option>`;
+    colorSelect.value = car.color;
+    document.querySelector("input[name='plate']").value = car.plate;
+    carImageUrl = car.image;
+    carPreview.src = car.image;
+
+    document.getElementById('addCarFormContainer').classList.remove('hidden');
+    document.querySelector('.submit-car-btn').textContent = "Update Car";
+    document.getElementById('addCarForm').setAttribute('data-edit-id', car._id);
+  });
+}
 });
