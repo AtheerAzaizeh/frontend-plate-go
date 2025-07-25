@@ -6,9 +6,14 @@ let carImageUrl = null;
 
 const profileInput = document.getElementById("profileImageInput");
 const profilePreview = document.getElementById("profilePreview");
-
 const carInput = document.getElementById("carImageInput");
 const carPreview = document.getElementById("carPreview");
+
+const addressSelect = document.getElementById("addressSelect");
+const carCompanySelect = document.getElementById("carCompanySelect");
+const modelSelect = document.getElementById("modelSelect");
+const yearSelect = document.getElementById("yearSelect");
+const colorSelect = document.getElementById("colorSelect");
 
 profileInput.addEventListener("change", async function () {
   const file = this.files[0];
@@ -16,7 +21,6 @@ profileInput.addEventListener("change", async function () {
   const formData = new FormData();
   formData.append("file", file);
   formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
-
   try {
     const res = await fetch(CLOUDINARY_UPLOAD_URL, { method: "POST", body: formData });
     const data = await res.json();
@@ -33,7 +37,6 @@ carInput.addEventListener("change", async function () {
   const formData = new FormData();
   formData.append("file", file);
   formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
-
   try {
     const res = await fetch(CLOUDINARY_UPLOAD_URL, { method: "POST", body: formData });
     const data = await res.json();
@@ -42,6 +45,71 @@ carInput.addEventListener("change", async function () {
   } catch (err) {
     console.error("Car upload error:", err);
   }
+});
+
+fetch("../backend/data-json/israel_cities.json")
+  .then(res => res.json())
+  .then(data => {
+    const cityNames = [...new Set(data.map(city => city.city))];
+    cityNames.sort().forEach(city => {
+      const opt = document.createElement("option");
+      opt.value = city;
+      opt.textContent = city;
+      addressSelect.appendChild(opt);
+    });
+  })
+  .catch(console.error);
+
+let carData = {};
+fetch("../backend/data-json/car_data_by_make_model_year.json")
+  .then(res => res.json())
+  .then(data => {
+    carData = data;
+    const brands = Object.keys(data).sort();
+    brands.forEach(brand => {
+      const opt = document.createElement("option");
+      opt.value = brand;
+      opt.textContent = brand;
+      carCompanySelect.appendChild(opt);
+    });
+  })
+  .catch(console.error);
+
+carCompanySelect.addEventListener("change", () => {
+  const brand = carCompanySelect.value;
+  modelSelect.innerHTML = '<option value="">Select Model</option>';
+  yearSelect.innerHTML = '<option value="">Select Year</option>';
+  if (!brand || !carData[brand]) return;
+
+  const models = Object.keys(carData[brand]).sort();
+  models.forEach(model => {
+    const opt = document.createElement("option");
+    opt.value = model;
+    opt.textContent = model;
+    modelSelect.appendChild(opt);
+  });
+});
+
+modelSelect.addEventListener("change", () => {
+  const brand = carCompanySelect.value;
+  const model = modelSelect.value;
+  yearSelect.innerHTML = '<option value="">Select Year</option>';
+  if (!brand || !model || !carData[brand][model]) return;
+
+  carData[brand][model].forEach(year => {
+    const opt = document.createElement("option");
+    opt.value = year;
+    opt.textContent = year;
+    yearSelect.appendChild(opt);
+  });
+});
+
+const colors = ["White", "Black", "Silver", "Gray", "Blue", "Red", "Brown", "Green", "Yellow", "Orange", "Gold", "Beige", "Purple"];
+colors.forEach(c => {
+  const opt = document.createElement("option");
+  opt.value = c;
+  opt.textContent = c;
+  colorSelect.appendChild(opt);
 });
 
 function isValidIsraeliPhone(number) {
@@ -64,11 +132,9 @@ form.addEventListener("submit", async function (e) {
     phoneNumber,
     email: form.email.value,
     password: form.password.value,
-    role: form.role.value,
     volunteerStatus: form.volunteerStatus.value,
     address: form.address.value,
     img: profileImageUrl,
-
     carCompany: form.carCompany.value,
     model: form.model.value,
     color: form.color.value,
