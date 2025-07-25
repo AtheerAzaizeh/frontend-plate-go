@@ -11,9 +11,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 100vh;
 }
-
 
 .header {
   background-color: #959595;
@@ -29,11 +27,12 @@ img {
 }
 
 .signup-wrapper {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: stretch;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  box-sizing: border-box;
 }
 
 .signup-card {
@@ -42,12 +41,14 @@ img {
   padding: 0.5rem;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   width: 100%;
+  max-width: 900px;
   box-sizing: border-box;
 }
 
 .profile-pic-container {
-   width: 150px;
-   height: 150px; 
+   width: 100%;
+   max-width: 200px;
+   max-height: 200px; 
    display: flex;
    flex-direction: column;
    align-items: center; 
@@ -78,15 +79,16 @@ input[type="file"] {
   display: none;
 }
 
-.signup-form {
+.signup-form , .login-form{
   display: flex;
   flex-direction: column;
-  margin: 0px 104px;
+  padding: 0 104px;
   gap: 1rem;
+
 }
 
 .signup-input,
-select {
+select , .login-input {
   padding: 0.75rem 1rem;
   border: 1px solid #ccc;
   border-radius: 8px;
@@ -108,8 +110,9 @@ select {
 }
 
 .car-image-upload {
-   width: 150px;
-   height: 150px;  
+   width: 100%;
+   max-width: 200px;
+   max-height: 200px; 
    display: flex;
    flex-direction: column;
    align-items: center; 
@@ -131,7 +134,7 @@ select {
   background-color: #777;
 }
 
-.signup-message {
+.signup-message , .login-message {
   margin-top: 1rem;
   padding: 0.75rem;
   border-radius: 8px;
@@ -139,16 +142,15 @@ select {
   font-weight: bold;
 }
 
-.signup-success {
+.signup-success , .login-success {
   background-color: #d4edda;
   color: #155724;
 }
 
-.signup-error {
+.signup-error , .login-error {
   background-color: #f8d7da;
   color: #721c24;
 }
-
 
 .volunteer-group {
   display: flex;
@@ -166,11 +168,23 @@ select {
     cursor: pointer;
     max-width: 850px;
     align-self: center;
+    margin-bottom: 3.5rem;
 }
 
 .signup-button:hover {
     background-color: #45a049;
 }
+
+.signup-card p{
+    align-self: center;
+
+}
+
+.login-form h3{
+    margin: 4.5rem;
+    align-self: center;
+}
+
 
 .top-header .menu {
     display: flex;
@@ -335,12 +349,6 @@ img {
     display: absolute;
     margin-top: 30px;
     margin-bottom: 30px;
-}
-
-p {
-    width: 100px;
-    margin-left: -30px;
-    padding: 10px;
 }
 
 #report-list li .pipe {
@@ -1406,37 +1414,6 @@ input:checked + .slider:before {
 
 .rescue-form button:hover {
     background-color: #555;
-}
-
-.login-form {
-    max-width: 400px;
-    margin-top: 100px;
-}
-
-.login-input, .login-button {
-    width: 90%;
-    padding: 10px;
-    margin-bottom: 10px;
-    margin-left: 10px;
-}
-
-.login-message {
-    margin: 20px;
-    padding: 10px;
-    border-radius: 5px;
-    text-align: center;
-}
-
-.login-success {
-    color: #155724;
-    background-color: #d4edda;
-    border-color: #c3e6cb;
-}
-
-.login-error {
-    color: #721c24;
-    background-color: #f8d7da;
-    border-color: #f5c6cb;
 }
 
 .chats-container {
