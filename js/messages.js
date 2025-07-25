@@ -32,9 +32,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const carData = await carRes.json();
-const car = carData.car; 
+        const car = carData.car; 
 
-currentCar = {
+    currentCar = {
     carID: car._id,
     plate: car.plate,
     image: car.image,

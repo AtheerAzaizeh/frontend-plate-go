@@ -17,17 +17,19 @@ function fetchReportsFromBackend() {
     console.log('Fetching reports...');
     const token = localStorage.getItem('token');
 
-    fetch(`${BACKEND_URL}/api/reports`, {
+    fetch(`${BACKEND_URL}/api/reports/my`, {
+
         headers: {
             'Authorization': `Bearer ${token}`
         }
     })
     .then(response => response.json())
-    .then(data => {
-        console.log('Reports fetched:', data);
-        reports = data;
-        displayReports(reports);
-    })
+   .then(data => {
+    console.log('Reports fetched:', data);
+    reports = data.reports;               
+    displayReports(reports);              
+})
+
     .catch(error => console.error('Error fetching reports:', error));
 }
 
@@ -56,11 +58,11 @@ function displayReports(reportList) {
                     ${report.urgent ? '<span>⚠️</span>' : ''}
                 </div>
             </div>
-            <i class="fa fa-trash" data-id="${report.reportID}"></i>
+            <i class="fa fa-trash" data-id="${report._id}"></i>
         `;
         li.onclick = (event) => {
             if (!event.target.classList.contains('fa-trash')) {
-                openReportDetails(report.reportID);
+                openReportDetails(report._id);
             }
         };
         reportListElement.appendChild(li);
@@ -74,7 +76,7 @@ function displayReports(reportList) {
 }
 
 function openReportDetails(id) {
-    const report = reports.find(r => r.reportID === parseInt(id));
+    const report = reports.find(r => r._id === id);
     const reportDetails = JSON.stringify(report);
     window.location.href = `report_detail.html?report=${encodeURIComponent(reportDetails)}`;
 }
@@ -91,7 +93,7 @@ function deleteReportFromHistory(id, event) {
     })
     .then(response => {
         if (response.ok) {
-            reports = reports.filter(r => r.reportID !== parseInt(id));
+            reports = reports.filter(r => r._id !== id);
             displayReports(reports);
             console.log(`Deleted report with ID: ${id}`);
         } else {

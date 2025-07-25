@@ -12,14 +12,21 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     
     const urlParams = new URLSearchParams(window.location.search);
-    const reportDetails = urlParams.get('report');
-    if (reportDetails) {
+ const reportDetails = urlParams.get('report');
+
+try {
+    if (reportDetails && reportDetails !== 'undefined') {
         const report = JSON.parse(decodeURIComponent(reportDetails));
         displayReportDetails(report);
         initializeMap(report.location);
     } else {
-        console.error('Report details are missing or invalid in the URL.');
+        throw new Error('Missing or invalid report parameter');
     }
+} catch (err) {
+    console.error('❌ Error loading report:', err.message);
+    alert('Could not load the report details.');
+}
+
 
     document.getElementById('delete-button').addEventListener('click', showDeleteModal);
     document.getElementById('cancel-delete').addEventListener('click', closeModal);
@@ -33,7 +40,7 @@ function displayReportDetails(report) {
     reportDetailsElement.innerHTML = `
         <p><strong>Plate:</strong><br> ${report.plate} 
         <strong>Reason:</strong> <br>${report.reason}
-        <strong>Location:</strong><br> ${report.location}
+        <p><strong>Location:</strong><br> ${report.location.city}, ${report.location.street} ${report.location.number}</p>
         <strong>Date:</strong><br> ${report.date}</p>
     `;
     const reportImageElement = document.getElementById("report-image");
@@ -79,7 +86,7 @@ function confirmDelete() {
     const urlParams = new URLSearchParams(window.location.search);
     const reportDetails = urlParams.get('report');
     const report = JSON.parse(decodeURIComponent(reportDetails));
-    const reportID = report.reportID;
+    const reportID = report._id;
     const token = localStorage.getItem('token');
 
     fetch(`${BACKEND_URL}/api/reports/${reportID}`, {
