@@ -780,6 +780,54 @@ button {
   to { opacity: 1; transform: scale(1); }
 }
 
+.notification-modal{
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  z-index: 9999;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 0 30px rgba(0,0,0,0.3);
+  width: 320px;
+  height: 320px;
+}
+.notification-modal-content img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.notification-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.notification-modal-body {
+  margin-top: 15px;
+}
+.notification-modal-footer {
+  margin-top: 15px;
+  text-align: right;
+}
+.btn {
+  padding: 8px 16px;
+  margin-left: 5px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.btn.ignore {
+  background-color: white;
+  border: 1px solid #999;
+}
+.btn.approve {
+  background-color: #0066ff;
+  color: white;
+  position: relative;
+}
+
 .text {
     display: absolute;
     margin-top: -40px;

@@ -48,9 +48,24 @@ function fetchNotifications() {
             const viewButton = document.createElement('button');
             viewButton.textContent = 'View';
             viewButton.classList.add('view-btn');
-            viewButton.addEventListener('click', () => {
-                alert(`Notification details:\n\n${notification.message}`);
-            });
+viewButton.addEventListener('click', () => {
+  document.querySelector('.notification-modal').classList.remove('hidden');
+
+  document.getElementById('modal-plate').textContent = notification.carPlate || 'Unknown';
+  document.getElementById('modal-reason').textContent = notification.reason || 'N/A';
+  document.getElementById('modal-car-image').src = notification.carImage || 'images/default-car.png';
+
+  document.getElementById('approve-btn').onclick = () => {
+    const selectedTime = document.getElementById('modal-time').value;
+    alert(`Approved with ${selectedTime} min.`);
+    document.querySelector('.notification-modal').classList.add('hidden');
+  };
+
+  document.getElementById('ignore-btn').onclick = () => {
+    document.querySelector('.notification-modal').classList.add('hidden');
+  };
+});
+
 
             item.appendChild(text);
             item.appendChild(viewButton);

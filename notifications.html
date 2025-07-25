@@ -37,6 +37,27 @@
         <div id="notifications-list">
     </div>
 
+  <div id="notification-modal" class="modal notification-modal hidden">
+  <div class="notification-modal-content">
+    <div class="notification-modal-header">
+      <h3>Car Reported: <span id="modal-plate"></span></h3>
+      <img id="modal-car-image" src="" alt="Car Image" />
+    </div>
+    <div class="notification-modal-body">
+      <p><strong>Report Reason:</strong> <span id="modal-reason"></span></p>
+      <p>
+        <strong>Estimated time?</strong>
+        <select id="modal-time">
+          <option>1</option><option>2</option><option>3</option><option>5</option><option>10</option>
+        </select>
+      </p>
+    </div>
+    <div class="notification-modal-footer">
+      <button id="ignore-btn" class="btn ignore">Ignore</button>
+      <button id="approve-btn" class="btn approve">Approve</button>
+    </div>
+  </div>
+</div>
     
   <!-- Side Menu -->
   <div class="side-menu" id="side-menu">
