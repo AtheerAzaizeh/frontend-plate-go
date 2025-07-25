@@ -1,71 +1,61 @@
+// js/notifications.js
+
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOMContentLoaded event fired');
     const token = localStorage.getItem('token');
-    console.log('Token:', token);
     const user = JSON.parse(localStorage.getItem('user'));
-    console.log('User:', user);
 
-    if (user) {
-        const welcomeMessage = document.getElementById('welcome-message');
-        const profilePicture = document.getElementById('profile-picture');
-
-        console.log('Welcome Message Element:', welcomeMessage);
-        console.log('Profile Picture Element:', profilePicture);
-
-        welcomeMessage.textContent += user.firstName;
-        console.log('Welcome Message Updated:', welcomeMessage.textContent);
-
-        profilePicture.src = user.img;
-        console.log('Profile Picture Updated:', profilePicture.src);
+    if (!token || !user) {
+        window.location.href = 'index.html';
+        return;
     }
 
-    
-    fetchRescueRequests();
+    const welcomeMessage = document.getElementById('welcome-message');
+    const profilePicture = document.getElementById('profile-picture');
+
+    if (user.firstName) {
+        welcomeMessage.textContent += user.firstName;
+    }
+
+    if (user.img) {
+        profilePicture.src = user.img;
+    }
+
+    fetchNotifications();
 });
 
-function fetchRescueRequests() {
+function fetchNotifications() {
     const token = localStorage.getItem('token');
-    console.log('Fetching Rescue Requests with Token:', token);
 
-    fetch(`${BACKEND_URL}/api/rescue-requests`, {
+    fetch(`${BACKEND_URL}/api/notification/my`, {
         headers: { 'Authorization': `Bearer ${token}` }
     })
-    .then(response => {
-        console.log('Fetch Response:', response);
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
+    .then(res => res.json())
+    .then(data => {
+        const list = document.getElementById('notifications-list');
+
+        if (!Array.isArray(data.notifications)) {
+            console.error('Invalid notifications format:', data);
+            return;
         }
-        return response.text(); 
-    })
-    .then(text => {
-        console.log('Response Text:', text); 
-        try {
-            const data = JSON.parse(text); 
-            console.log('Parsed Data:', data);
 
-            const notificationsList = document.getElementById('notifications-list');
-            console.log('Notifications List Element:', notificationsList);
+        data.notifications.forEach(notification => {
+            const item = document.createElement('div');
+            item.classList.add('notification-item');
 
-           
+            const text = document.createElement('p');
+            text.innerHTML = `<strong>📢 ${notification.message}</strong><br/><span>${new Date(notification.createdAt).toLocaleString()}</span>`;
 
-            data.forEach(rescue_request => {
-                console.log('Processing Rescue Request:', rescue_request);
-
-                const notificationItem = document.createElement('div');
-                notificationItem.classList.add('notification-item');
-                console.log('Created Notification Item:', notificationItem);
-
-                const notificationText = document.createElement('span');
-                notificationText.textContent = `${rescue_request.reason} at ${rescue_request.location} on ${new Date(rescue_request.time).toLocaleString()}`;
-                notificationItem.appendChild(notificationText);
-                console.log('Notification Text Added:', notificationText.textContent);
-
-                notificationsList.appendChild(notificationItem);
-                console.log('Notification Item Appended');
+            const viewButton = document.createElement('button');
+            viewButton.textContent = 'View';
+            viewButton.classList.add('view-btn');
+            viewButton.addEventListener('click', () => {
+                alert(`Notification details:\n\n${notification.message}`);
             });
-        } catch (e) {
-            console.error('Error parsing JSON:', e);
-        }
+
+            item.appendChild(text);
+            item.appendChild(viewButton);
+            list.appendChild(item);
+        });
     })
-   .catch(error => console.error('Error fetching rescue requests:', error));
+    .catch(err => console.error('Error loading notifications:', err));
 }
