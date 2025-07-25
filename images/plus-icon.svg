@@ -1,0 +1,5 @@
+<!-- plus-icon.svg -->
+<svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <line y1="23.5" x2="50" y2="23.5" stroke="black" stroke-width="3"/>
+  <line x1="23.5" y1="50" x2="23.5" stroke="black" stroke-width="3"/>
+</svg>

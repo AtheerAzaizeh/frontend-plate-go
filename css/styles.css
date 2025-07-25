@@ -579,15 +579,205 @@ button {
     color: red;
 }
 
-.rec {
-    width: 400px;
+.section-header {
+    display: flex;
+    padding-top: 20px;
+    margin-right: 80%;
+}
+
+.section-header i {
+    font-size: 20px;
+    margin-right: 15px;
+    cursor: pointer;
+}
+
+.section-header h3 {
+    font-size: 24px;
+    margin: 0;
+}
+
+.car-container {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 54px;
+}
+
+.car-card {
+    width: 382px;
+    height: 183px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    position: relative;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    background-color: #D9D9D9;
+    font-family: sans-serif;
+    margin: 54px 0;
+}
+
+.car-content {
+    display: flex;
+    align-items: center;
+}
+
+.car-img {
+    width: 96px;
+    height: 98.46px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-right: 15px;
+}
+
+.car-info p {
+    margin: 10px 24px;
+    font-size: 14px;
+    color: #333;
+}
+
+.car-options {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    margin-top: -30px;
+}
+
+.add-car-box {
+    width: 382px;
+    height: 183px;
+    border: 1px solid #ccc;
+    background-color: #D9D9D9;
+    margin-left: 35px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    font-family: sans-serif;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin: 54px 0px;
+}
+
+.add-car-box:hover {
+    background-color: #cfcfcf;
+}
+
+.add-car-button {
+    font-size: 48px;
+    border: none;
+    background: none;
+    line-height: 1;
+    cursor: pointer;
+    position: relative;
+    margin-bottom: 80px;
+    margin-left: -20px;
+    width: 50px;
     height: 50px;
-    position: fixed;
-    z-index: 1000;
-    background-color: rgb(247, 244, 244);
-    margin-top: 123px;
-    margin-left: 0px;
-    gap: 20px;
+}
+
+.add-car-button::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    border-bottom: 1px dotted #333;
+}
+
+.add-car-box p {
+    font-size: 16px;
+    color: #333;
+    margin-top: -15px;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-content {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 25px 30px;
+  width: 90%;
+  max-width: 500px;
+  position: relative;
+  animation: fadeIn 0.3s ease-out;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+}
+
+.close-modal {
+  position: absolute;
+  top: 12px;
+  right: 15px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #555;
+  cursor: pointer;
+}
+
+.add-car-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.signup-input {
+  padding: 10px;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.car-image-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.image-preview {
+  width: 120px;
+  margin-top: 10px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.custom-file-label {
+  cursor: pointer;
+  color: #007bff;
+  margin-top: 5px;
+}
+
+.submit-car-btn {
+  padding: 12px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  font-size: 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 .text {
@@ -613,15 +803,6 @@ button {
     color: black;
 }
 
-.car-container {
-    margin-top: 200px;
-    width: 360px;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    margin-left: 30px;
-}
 
 .car {
     width: 320px;
@@ -655,24 +836,21 @@ button {
     margin-top: 220px;
 }
 
-.add-car-button {
-    background-color: rgb(247, 244, 244);
-    width: 40px;
-    height: 40px;
-    cursor: pointer;
-    font-size: 24px;
-    position: fixed;
-    align-items: center;
-    justify-content: center;
-    margin-left: 135px;
-    margin-top: -255px;
+.options-button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0px;
+  transition: transform 0.2s ease;
 }
 
-.options-button {
-    position: absolute;
-    top: 5px;
-    right: 10px;
-    cursor: pointer;
+.options-button:hover {
+  transform: scale(1.1);
+}
+
+.options-button img {
+  width: 5px;
+  height: 20px;
 }
 
 .rect {

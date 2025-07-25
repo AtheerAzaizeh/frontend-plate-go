@@ -32,20 +32,44 @@
         <a href="my-cars.html"><img src="images/car.png" alt="car icon"></a> 
     </div>
 
-    <div class="rec">
-        <div class="go">
-            <a href="report_history.html" class="go-button">
-                <i class="fa-solid fa-arrow-left"></i>
-            </a> 
-        </div>
-        <div class="text">
-            <h3>My Cars</h3>
-        </div>
-        <div class="add-car">
-            <button class="add-car-button">+</button>
-        </div>
-    </div>
+  <div class="section-header">
+    <a href="report_history.html" class="back-button"><i class="fa-solid fa-arrow-left"></i></a>
+    <h3>My Cars</h3>
+  </div>
 
-    <div id="car-container" class="car-container"></div>
+  <div id="car-container" class="car-container">
+    
+  </div>
+
+<div id="addCarFormContainer" class="modal hidden">
+  <div class="modal-content">
+    <span class="close-modal">&times;</span>
+    <form id="addCarForm" class="add-car-form">
+      <select name="carCompany" id="carCompanySelect" class="signup-input" required>
+        <option value="">Select Brand</option>
+      </select>
+      <select name="model" id="modelSelect" class="signup-input" required>
+        <option value="">Select Model</option>
+      </select>
+      <select name="color" id="colorSelect" class="signup-input" required>
+        <option value="">Select Color</option>
+      </select>
+      <select name="year" id="yearSelect" class="signup-input" required>
+        <option value="">Select Year</option>
+      </select>
+      <input type="text" name="plate" placeholder="Car Plate" required class="signup-input">
+      
+      <div class="car-image-upload">
+        <input type="file" id="carImageInput" accept="image/*" capture="environment">
+        <img id="carPreview" src="images/car-preview.png" class="image-preview" alt="Car preview">
+        <label for="carImageInput" class="custom-file-label">Upload Car Image</label>
+      </div>
+      
+      <button type="submit" class="submit-car-btn">Add Car</button>
+    </form>
+  </div>
+</div>
+
+
 </body>
 </html>
