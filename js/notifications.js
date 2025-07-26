@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
 function fetchNotifications() {
     const token = localStorage.getItem('token');
 
-    fetch(`${BACKEND_URL}/api/notifications`, {
+    fetch(`${BACKEND_URL}/api/notification`, {
         headers: { 'Authorization': `Bearer ${token}` }
     })
         .then(res => {
