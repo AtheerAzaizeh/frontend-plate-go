@@ -1,95 +1,103 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (user) {
-        const welcomeMessage = document.getElementById('welcome-message');
-        const profilePicture = document.getElementById('profile-picture');
-
-        welcomeMessage.textContent += user.firstName;
-        profilePicture.src = user.img;
-    }
-
-    fetchReportsFromBackend();
-});
+let allReports = [];
 
 document.addEventListener("DOMContentLoaded", () => {
   const user = JSON.parse(localStorage.getItem('user'));
-  if (user) {
-    document.getElementById('welcome-message').textContent += user.firstName;
-    document.getElementById('profile-picture').src = user.img;
-  }
-
-  fetchReportsFromBackend();
-});
-
-let reports = [];
-
-function fetchReportsFromBackend() {
   const token = localStorage.getItem('token');
 
-  fetch(`${BACKEND_URL}/api/reports/my`, {
-    headers: { 'Authorization': `Bearer ${token}` }
+  if (!user || !token) return location.href = 'index.html';
+
+  document.getElementById('welcome-message').textContent += user.firstName;
+  document.getElementById('profile-picture').src = user.img;
+
+  fetchAllReports();
+
+  document.getElementById("searchPlate").addEventListener("input", applyFilters);
+  document.getElementById("filterCity").addEventListener("change", applyFilters);
+  document.getElementById("filterDate").addEventListener("change", applyFilters);
+});
+
+function fetchAllReports() {
+  fetch(`${BACKEND_URL}/api/reports/all`, {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    }
   })
-    .then(response => response.json())
+    .then(res => res.json())
     .then(data => {
-      reports = data.reports;
-      displayReports(reports);
+      allReports = data.reports || [];
+      displayReports(allReports);
+      populateCities(allReports);
     })
-    .catch(error => console.error('Error fetching reports:', error));
+    .catch(err => console.error('Error fetching reports:', err));
 }
 
-function displayReports(reportList) {
-  const reportListElement = document.getElementById("report-list");
-  reportListElement.innerHTML = '';
-  reportList.forEach((report) => {
-    const li = document.createElement("li");
-    li.classList.add("report-item");
-
-    const date = new Date(report.date);
-    const timeString = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    const dateString = date.toLocaleDateString();
-
-    li.innerHTML = `
-      <img class="report-img" src="${report.image || 'images/default-car.png'}" alt="Car Image">
-      <div class="report-info">
-        <h4>${report.plate}</h4>
-        <p>${report.reason}</p>
-        <p><i class="fas fa-map-marker-alt"></i> ${report.location?.street || ''} ${report.location?.number || ''} - ${report.location?.city || ''}</p>
-        <p>${dateString} <span>${timeString}</span></p>
-      </div>
-      <div class="report-status">
-        ${report.reason.toLowerCase().includes("child") ? '<i class="fas fa-exclamation-triangle warning"></i>' : '<i class="fas fa-check-circle success"></i>'}
-      </div>
-    `;
-    li.onclick = () => openReportDetails(report._id);
-    reportListElement.appendChild(li);
+function populateCities(reports) {
+  const citySet = new Set(reports.map(r => r.city).filter(Boolean));
+  const citySelect = document.getElementById("filterCity");
+  citySet.forEach(city => {
+    const option = document.createElement("option");
+    option.value = city;
+    option.textContent = city;
+    citySelect.appendChild(option);
   });
 }
 
-function openReportDetails(id) {
-  const report = reports.find(r => r._id === id);
-  const reportDetails = JSON.stringify(report);
-  window.location.href = `report_detail.html?report=${encodeURIComponent(reportDetails)}`;
+function applyFilters() {
+  const searchPlate = document.getElementById("searchPlate").value.toLowerCase();
+  const filterCity = document.getElementById("filterCity").value;
+  const filterDate = document.getElementById("filterDate").value;
+
+  const filtered = allReports.filter(report => {
+    const matchPlate = report.plate.toLowerCase().includes(searchPlate);
+    const matchCity = !filterCity || report.city === filterCity;
+    const matchDate = !filterDate || formatDate(report.date) === formatDate(filterDate);
+
+    return matchPlate && matchCity && matchDate;
+  });
+
+  displayReports(filtered);
 }
 
+function displayReports(reports) {
+  const list = document.getElementById('report-list');
+  list.innerHTML = '';
 
-function deleteReportFromHistory(id, event) {
-    event.stopPropagation();
-    const token = localStorage.getItem('token');
+  reports.forEach(report => {
+    const item = document.createElement('li');
+    item.className = 'report-item';
 
-    fetch(`${BACKEND_URL}/api/reports/${id}`, {
-        method: 'DELETE',
-        headers: {
-            'Authorization': `Bearer ${token}`
-        }
-    })
-    .then(response => {
-        if (response.ok) {
-            reports = reports.filter(r => r._id !== id);
-            displayReports(reports);
-            console.log(`Deleted report with ID: ${id}`);
-        } else {
-            console.error('Failed to delete report');
-        }
-    })
-    .catch(error => console.error('Error deleting report:', error));
+    item.innerHTML = `
+      <img src="${report.image || 'images/default-car.jpg'}" class="car-img" alt="car" />
+      <div class="report-details">
+        <div class="plate">${report.plate}</div>
+        <div class="desc">${report.reason || 'N/A'}</div>
+      </div>
+      <div class="report-meta">
+        <div class="location">
+          <i class="fa fa-map-marker-alt"></i>
+          <span>${report.location.street} ${report.location.number} ${report.location.city || ''}</span>
+        </div>
+        <div>${formatDate(report.date)}<br>${report.time || ''}</div>
+        <div class="status-icon">${statusIcon(report.reason)}</div>
+      </div>
+    `;
+
+  item.addEventListener('click', () => {
+    window.location.href = `car-details.html?reportId=${report._id}`;
+  });
+
+
+    list.appendChild(item);
+  });
+}
+
+function formatDate(dateString) {
+  const d = new Date(dateString);
+  return d.toLocaleDateString('en-GB');
+}
+
+function statusIcon(reason) {
+  if (reason.includes('child')) return '🔺';
+  if (reason.includes('lights')) return '✅';
+  return '🟡';
 }

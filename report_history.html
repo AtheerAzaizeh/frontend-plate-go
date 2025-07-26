@@ -8,8 +8,7 @@
     <script src="js/config.js"></script>
     <script defer src="js/report_history.js"></script>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-<script src="js/config.js"></script>
-<script src="js/socket-listener.js"></script>
+    <script src="js/socket-listener.js"></script>
     <title>Report History</title>
 </head>
 <body>
@@ -31,20 +30,27 @@
         <a href="chat.html"><img src="images/message.png" alt="message icon"></a>
         <a href="my-cars.html"><img src="images/car.png" alt="car icon"></a> 
     </div>
-    
- <main class="main-content">
+
+  <div class="report-wrapper">
     <div class="report-header">
-      <h3>Report History</h3>
-      <div class="controls">
-        <input type="text" placeholder="Search Report">
-        <i class="fas fa-filter"></i>
-        <i class="fas fa-sort"></i>
+              <div class="report-filters">
+          <input type="text" id="searchPlate" placeholder="Search by Plate..." />
+          <select id="filterCity">
+            <option value="">All Cities</option>
+          </select>
+          <input type="date" id="filterDate" />
+        </div>
+      <span class="lightbulb">💡</span>
+      <h2>Report History</h2>
+      <input type="text" id="searchReport" placeholder="Search Report" />
+      <div class="filters">
+        <span>Filter</span>
+        <span>Sort by</span>
       </div>
     </div>
 
     <ul id="report-list" class="report-list"></ul>
-  </main>
-
+  </div>
     
   <!-- Side Menu -->
   <div class="side-menu" id="side-menu">

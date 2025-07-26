@@ -1,163 +1,77 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const token = localStorage.getItem('token');
-    const user = JSON.parse(localStorage.getItem('user'));
+document.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  const reportId = params.get('reportId');
+  const token = localStorage.getItem('token');
+  const user = JSON.parse(localStorage.getItem('user'));
 
-    if (user) {
-        const welcomeMessage = document.getElementById('welcome-message');
-        const profilePicture = document.getElementById('profile-picture');
+  if (!token || !user) return location.href = 'index.html';
 
-        welcomeMessage.textContent += user.firstName;
-        profilePicture.src = user.img;
-    }
+  document.getElementById('welcome-message').textContent += user.firstName;
+  document.getElementById('profile-picture').src = user.img;
 
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-    const plateNumber = urlParams.get('plate');
+  if (!reportId) return alert('Report not found');
 
-fetch(`${BACKEND_URL}/api/reports/car/${plateNumber}`, {
-    headers: {
-        'Authorization': `Bearer ${token}`
-    }
-})
-.then(response => {
-    if (!response.ok) {
-        throw new Error('Network response was not ok ' + response.statusText);
-    }
-    return response.json();
-})
-.then(responseData => {
-    const car = responseData.car;
-    currentCar = {
-        plate: car.plate,
-        carCompany: car.carCompany,
-        model: car.model,
-        color: car.color,
-        year: car.year,
-        image: car.image,
-        carID: car._id,
-        userID: car.owner._id,
-        ownerImg: car.owner.img,
-        ownerName: car.owner.firstName
-    };
-    displayCarDetails(currentCar);
-})
-.catch(error => {
-    console.error('Error fetching car:', error);
-    document.getElementById('car-not-found-popup').style.display = 'block';
-});
-
-
-    document.getElementById('make-reports-button').addEventListener('click', openReportForm);
-    document.getElementById('close-report-form').addEventListener('click', closeReportForm);
-    document.getElementById('submit-report-reason').addEventListener('click', submitReportReason);
-    document.getElementById('close-location-form').addEventListener('click', closeLocationForm);
-    document.getElementById('submit-location').addEventListener('click', submitLocation);
-    document.getElementById('close-not-found-popup').addEventListener('click', closeModal);
-    //document.getElementById('locate-me-button').addEventListener('click', locateMe);
-});
-
-let reportReason = '';
-let reportDetails = {};
-let currentCar = null; 
-
-function displayCarDetails(car) {
-    document.getElementById('car-plate-number').innerText = car.plate;
-    document.getElementById('car-image-wrapper').innerHTML = `<img src="${car.image}" alt="Car Image">`;
-    document.getElementById('car-company').innerText = `Company: ${car.carCompany}`;
-    document.getElementById('car-model').innerText = `Model: ${car.model}`;
-    document.getElementById('car-color').innerText = `Color: ${car.color}`;
-    document.getElementById('car-year').innerText = `Year: ${car.year}`;
-}
-
-
-function openReportForm() {
-    document.getElementById('report-form-modal').style.display = 'block';
-    document.querySelector('.car-info-wrapper').style.opacity = '0.5';
-}
-
-function closeReportForm() {
-    document.getElementById('report-form-modal').style.display = 'none';
-    document.querySelector('.car-info-wrapper').style.opacity = '1';
-}
-
-function submitReportReason() {
-    reportReason = document.getElementById('report-reason').value;
-    closeReportForm();
-    openLocationForm();
-}
-
-function openLocationForm() {
-    document.getElementById('location-form-modal').style.display = 'block';
-}
-
-function closeLocationForm() {
-    document.getElementById('location-form-modal').style.display = 'none';
-    document.querySelector('.car-info-wrapper').style.opacity = '1';
-}
-
-function closeModal() {
-    document.getElementById('car-not-found-popup').style.display = 'none';
-}
-
-function submitLocation() {
-    const token = localStorage.getItem('token');
-
-    const city = document.getElementById('location-city').value;
-    const street = document.getElementById('location-street').value;
-    const number = document.getElementById('location-number').value;
-
-    const report = {
-        plate: currentCar.plate,
-        reportType: "blocking",
-        reason: reportReason,
-        location: {
-            city: city,
-            street: street,
-            number: number
-        },
-        image: currentCar.image
-    };
-
-    fetch(`${BACKEND_URL}/api/reports/make`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(report)
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok ' + response.statusText);
-        }
-        return response.json();
-    })
+  fetch(`${BACKEND_URL}/api/reports/${reportId}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+    .then(res => res.json())
     .then(data => {
-        console.log('Report created successfully:', data);
-        showSuccessModal();
+      if (!data || !data.report) throw new Error('No report found');
+      renderReport(data.report);
     })
-    .catch(error => {
-        console.error('Error creating report:', error);
-    });
+    .catch(err => console.error(err));
+
+  document.getElementById('contactBtn').addEventListener('click', createOrGoToChat);
+});
+
+let currentPlate = '';
+
+function renderReport(report) {
+  currentPlate = report.plate;
+
+  document.getElementById('carNumber').textContent = `Car number: ${report.plate}`;
+  document.getElementById('reportReason').textContent = `Report reason: ${report.reason}`;
+  document.getElementById('reportStatus').textContent = `Status: ${report.status}`;
+  document.getElementById('estimatedTime').textContent = `Estimated time: 5 min`; // optional
+  document.getElementById('reportDate').textContent = `Date: ${formatDate(report.date)}`;
+  document.getElementById('reportTime').textContent = `Time: ${formatTime(report.date)}`;
+  document.getElementById('carImage').src = report.image || 'images/default-car.jpg';
+
+  // Map
+  const mapUrl = `https://maps.google.com/maps?q=${encodeURIComponent(
+    report.location?.street + ' ' + report.location?.city
+  )}&z=15&output=embed`;
+  document.getElementById('mapFrame').src = mapUrl;
 }
-function showSuccessModal() {
-    const successModal = document.getElementById('successModal');
-    successModal.style.display = 'block';
 
-    
-    const sendMessageButton = document.createElement('button');
-    sendMessageButton.innerText = 'Cancel';
-    sendMessageButton.onclick = () => {
-        const carDetails = encodeURIComponent(JSON.stringify(currentCar));
-        window.location.href = `report_history.html?car=${carDetails}`;
-    };
-
-    const modalContent = successModal.querySelector('.modal-content');
-    modalContent.appendChild(sendMessageButton);
+function createOrGoToChat() {
+  fetch(`${BACKEND_URL}/api/chat/create-or-get`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ plate: currentPlate }) 
+  })
+    .then(res => res.json())
+    .then(data => {
+      console.log('Chat response:', data); 
+      if (data.chatId) {
+        window.location.href = `chat.html?chatId=${data.chatId}`;
+      } else {
+        alert('Unable to start chat');
+      }
+    })
+    .catch(err => console.error(err));
 }
 
-function closeSuccessModal() {
-    const successModal = document.getElementById('successModal');
-    successModal.style.display = 'none';
-    window.location.href = 'report_history.html';
+
+function formatDate(dateStr) {
+  const d = new Date(dateStr);
+  return d.toLocaleDateString('en-GB');
+}
+
+function formatTime(dateStr) {
+  const d = new Date(dateStr);
+  return d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
 }
