@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/styles.css">
-    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-    <script src="js/config.js"></script>
-    <title>Chat</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script src="js/config.js"></script>
+  <title>Chat</title>
 </head>
 <body>
   <div class="chat-container">
@@ -27,7 +27,6 @@
 
     <!-- Chat Body -->
     <div id="chat-messages" class="chat-body">
-      <!-- Date separator will be added here -->
       <div class="date-separator">
         <span class="date-text">Today</span>
       </div>
@@ -37,8 +36,11 @@
     <!-- Chat Input -->
     <div class="chat-input">
       <input type="text" id="message-input" placeholder="Message.." />
+      
+      <!-- Hidden file input + image preview -->
       <input type="file" id="image-input" accept="image/*" capture="environment" style="display:none" />
-<button id="image-btn">📷</button>
+      <button id="image-btn">📷</button>
+      <img id="image-preview" class="chat-image-preview" style="display:none; max-width:100px; max-height:100px; margin-left: 10px;" />
 
       <button id="send-btn">
         <img src="images/send.svg" alt="Send" width="24" height="24" />
@@ -46,31 +48,29 @@
     </div>
   </div>
 
-  <!-- Load scripts in correct order -->
+  <!-- Load scripts -->
   <script src="js/socket-listener.js"></script>
   <script src="js/webrtc-call.js"></script>
   <script src="js/chat.js"></script>
-  
+
   <script>
-// Debug script to check call manager status
-document.addEventListener("DOMContentLoaded", () => {
-  console.log("Chat page loaded")
-  
-  // Check if call manager is available after delays
-  setTimeout(() => {
-    console.log("=== Call Manager Debug Info ===")
-    console.log("window.callManager exists:", !!window.callManager)
-    console.log("window.globalSocket exists:", !!window.globalSocket)
-    console.log("window.globalSocket connected:", window.globalSocket?.connected)
-    
-    if (window.callManager) {
-      console.log("Call manager ready:", window.callManager.isReady())
-      console.log("Call manager socket:", !!window.callManager.socket)
-      console.log("Call manager userId:", window.callManager.localUserId)
-    }
-    console.log("===============================")
-  }, 3000)
-})
-</script>
+    document.addEventListener("DOMContentLoaded", () => {
+      console.log("Chat page loaded");
+
+      setTimeout(() => {
+        console.log("=== Call Manager Debug Info ===");
+        console.log("window.callManager exists:", !!window.callManager);
+        console.log("window.globalSocket exists:", !!window.globalSocket);
+        console.log("window.globalSocket connected:", window.globalSocket?.connected);
+
+        if (window.callManager) {
+          console.log("Call manager ready:", window.callManager.isReady());
+          console.log("Call manager socket:", !!window.callManager.socket);
+          console.log("Call manager userId:", window.callManager.localUserId);
+        }
+        console.log("===============================");
+      }, 3000);
+    });
+  </script>
 </body>
 </html>
