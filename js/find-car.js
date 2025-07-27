@@ -19,7 +19,6 @@ document.addEventListener('DOMContentLoaded', function() {
 function findCar() {
     const plateInput = document.getElementById('plate-input').value.trim();
     const token = localStorage.getItem('token');
-
     fetch(`${BACKEND_URL}/api/reports/car/${plateInput}`, {
         headers: {
             'Authorization': `Bearer ${token}`
@@ -33,6 +32,7 @@ function findCar() {
     })
     .then(car => {
         window.location.href = `car-details.html?plate=${plateInput}`;
+        localStorage.setItem('plate', plateInput);
     })
     .catch(error => {
         console.error('Error fetching car:', error);

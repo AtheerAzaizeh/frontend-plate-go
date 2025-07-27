@@ -158,27 +158,39 @@ document.addEventListener('DOMContentLoaded', function() {
 
   let reportMarkers = [];
 
-function fetchAndDisplayReportsOnMap() {
-  fetch(`${BACKEND_URL}/api/reports/my`, {
-    method: 'GET',
-    headers: { 'Authorization': `Bearer ${token}` }
-  })
-  .then(response => response.json())
-  .then(reports => {
-    reportMarkers.forEach(marker => map.removeLayer(marker));
-    reportMarkers = [];
 
-    reports.forEach(report => {
-      const { lat, lng } = report.location;
-      const marker = L.marker([lat, lng]).addTo(map)
-        .bindPopup(`<strong>Reason:</strong> ${report.reason}`);
-      reportMarkers.push(marker);
-    });
-  })
-  .catch(error => {
-    console.error('Error loading reports:', error);
-  });
-}
+  function fetchAndDisplayReportsOnMap() {
+    fetch(`${BACKEND_URL}/api/reports/all`, {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+      .then(response => response.json())
+      .then(data => {
+        reportMarkers.forEach(marker => map.removeLayer(marker));
+        reportMarkers = [];
+        console.log(data.reports);
+
+        data.reports.forEach(report => {
+          if (report.coordinates && report.coordinates.lat && report.coordinates.lng) {
+            const { lat, lng } = report.coordinates;
+
+            const popupContent = `
+              <strong>Reason:</strong> ${report.reason}<br>
+              <strong>Plate:</strong> ${report.plate}<br>
+              <strong>Reported By:</strong> ${report.sender?.firstName || 'Unknown'}
+            `;
+
+            const marker = L.marker([lat, lng]).addTo(map)
+              .bindPopup(popupContent);
+
+            reportMarkers.push(marker);
+          }
+        });
+      })
+      .catch(error => {
+        console.error('Error loading reports:', error);
+      });
+  }
 
 
 const toggleMapButton = document.getElementById('toggle-map');

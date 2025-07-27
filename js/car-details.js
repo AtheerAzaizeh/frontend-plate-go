@@ -1,77 +1,172 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const params = new URLSearchParams(window.location.search);
-  const reportId = params.get('reportId');
   const token = localStorage.getItem('token');
   const user = JSON.parse(localStorage.getItem('user'));
+  const plate = new URLSearchParams(window.location.search).get('plate');
 
-  if (!token || !user) return location.href = 'index.html';
+  if (user) {
+    document.getElementById('welcome-message').textContent += ' ' + user.firstName;
+    document.getElementById('profile-picture').src = user.img;
+  }
 
-  document.getElementById('welcome-message').textContent += user.firstName;
-  document.getElementById('profile-picture').src = user.img;
+  if (!plate || !token) return alert("Invalid request.");
 
-  if (!reportId) return alert('Report not found');
-
-  fetch(`${BACKEND_URL}/api/reports/${reportId}`, {
+  // Fetch car details
+  fetch(`${BACKEND_URL}/api/reports/car/${plate}`, {
     headers: { Authorization: `Bearer ${token}` }
   })
-    .then(res => res.json())
-    .then(data => {
-      if (!data || !data.report) throw new Error('No report found');
-      renderReport(data.report);
+    .then(res => {
+      if (!res.ok) throw new Error(res.statusText);
+      return res.json();
     })
-    .catch(err => console.error(err));
+    .then(data => {
+      const car = data.car;
+      document.getElementById('plate-number').textContent = car.plate;
+      document.getElementById('manufacturer').textContent = car.carCompany.toUpperCase();
+      document.getElementById('model').textContent = car.model;
+      document.getElementById('year').textContent = car.year;
+      document.getElementById('color').textContent = car.color;
 
-  document.getElementById('contactBtn').addEventListener('click', createOrGoToChat);
+      document.getElementById('car-image').src = car.image;
+      const brand = car.carCompany.toLowerCase();
+      document.getElementById('company-logo').src = `https://logo.clearbit.com/${brand}.com`;
+    })
+    .catch(err => {
+      console.error("Failed to fetch car:", err);
+      alert("Car not found");
+    });
+
+  // Modal actions
+document.getElementById('report-btn').onclick = () => {
+  document.getElementById('report-modal').classList.remove('hidden-r');
+  document.getElementById('step-reason').style.display = 'block';
+  document.getElementById('step-location').style.display = 'none';
+  document.getElementById('report-reason').value = '';
+};
+
+document.getElementById('close-modal').onclick = () => {
+  document.getElementById('report-modal').classList.add('hidden-r');
+};
+
+document.getElementById('report-reason').addEventListener('change', () => {
+  if (document.getElementById('report-reason').value) {
+    document.getElementById('step-reason').style.display = 'none';
+    document.getElementById('step-location').style.display = 'block';
+  }
 });
 
-let currentPlate = '';
+document.querySelector('.back-btn2').onclick = () => {
+  document.getElementById('step-location').style.display = 'none';
+  document.getElementById('step-reason').style.display = 'block';
+};
 
-function renderReport(report) {
-  currentPlate = report.plate;
+  // Show location form only if reason selected
+  const reasonSelect = document.getElementById('report-reason');
+  const citySelect = document.getElementById('city');
+  const streetSelect = document.getElementById('street');
+  const locationForm = document.getElementById('step-location');
+  const reportBtn = document.querySelector('.report-btn2');
+  reasonSelect.addEventListener('change', () => {
+    locationForm.style.display = reasonSelect.value ? 'block' : 'none';
+  });
 
-  document.getElementById('carNumber').textContent = `Car number: ${report.plate}`;
-  document.getElementById('reportReason').textContent = `Report reason: ${report.reason}`;
-  document.getElementById('reportStatus').textContent = `Status: ${report.status}`;
-  document.getElementById('estimatedTime').textContent = `Estimated time: 5 min`; // optional
-  document.getElementById('reportDate').textContent = `Date: ${formatDate(report.date)}`;
-  document.getElementById('reportTime').textContent = `Time: ${formatTime(report.date)}`;
-  document.getElementById('carImage').src = report.image || 'images/default-car.jpg';
+  reportBtn.addEventListener('click', async () => {
+  const plate = new URLSearchParams(window.location.search).get('plate');
+  const reason = document.getElementById('report-reason').value;
+  const city = document.getElementById('city').value;
+  const street = document.getElementById('street').value;
+  const number = document.getElementById('street-number').value;
 
-  // Map
-  const mapUrl = `https://maps.google.com/maps?q=${encodeURIComponent(
-    report.location?.street + ' ' + report.location?.city
-  )}&z=15&output=embed`;
-  document.getElementById('mapFrame').src = mapUrl;
-}
+  if (!plate || !reason || !city || !street || !number) {
+    alert("Please fill in all fields");
+    return;
+  }
 
-function createOrGoToChat() {
-  fetch(`${BACKEND_URL}/api/chat/create-or-get`, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token')}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ plate: currentPlate }) 
-  })
-    .then(res => res.json())
-    .then(data => {
-      console.log('Chat response:', data); 
-      if (data.chatId) {
-        window.location.href = `chat.html?chatId=${data.chatId}`;
-      } else {
-        alert('Unable to start chat');
-      }
+  const token = localStorage.getItem('token');
+  const payload = {
+    plate,
+    reason,
+    reportType: "blocking",
+    image: "https://i.imgur.com/report.jpg",
+    location: {
+      city,
+      street,
+      number
+    }
+  };
+
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/reports/create-with-coordinates`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) throw new Error(await res.text());
+
+    // Success UI
+    document.getElementById('report-modal').classList.add('hidden-r');
+    document.getElementById('report-success').classList.remove('hidden-r');
+
+
+  } catch (err) {
+    console.error("Failed to send report:", err);
+    alert("Failed to send report");
+  }
+});
+
+document.getElementById('ok-success').onclick = () => {
+
+  document.getElementById('report-success').classList.add('hidden-r');
+
+  document.getElementById('contact-owner').classList.remove('hidden-r');
+};
+
+document.getElementById('close-contact-owner').onclick = () => {
+  document.getElementById('contact-owner').classList.add('hidden-r');
+};
+
+  // Fetch and populate city/street data (Hebrew)
+fetch("https://raw.githubusercontent.com/GabMic/israeli-cities-and-streets-list/master/israeli_street_and_cities_names.json")
+  .then(res => res.json())
+  .then(data => {
+    const citiesMap = {}; // { cityName: Set(streetNames) }
+
+    data.streets.forEach(entry => {
+      const city = entry.city_name;
+      const street = entry.street_name;
+
+      if (!citiesMap[city]) citiesMap[city] = new Set();
+      citiesMap[city].add(street);
+    });
+
+    const sortedCities = Object.keys(citiesMap).sort();
+    sortedCities.forEach(city => {
+      const opt = document.createElement('option');
+      opt.value = city;
+      opt.textContent = city;
+      citySelect.appendChild(opt);
+    });
+
+    citySelect.addEventListener('change', () => {
+      const selectedCity = citySelect.value;
+      const streets = citiesMap[selectedCity] || [];
+
+
+        // Clear old options
+        streetSelect.innerHTML = '<option value="">Select Street</option>';
+
+        Array.from(streets).sort().forEach(street => {
+          const opt = document.createElement('option');
+          opt.value = street;
+          opt.textContent = street;
+          streetSelect.appendChild(opt);
+        });
+      });
     })
-    .catch(err => console.error(err));
-}
-
-
-function formatDate(dateStr) {
-  const d = new Date(dateStr);
-  return d.toLocaleDateString('en-GB');
-}
-
-function formatTime(dateStr) {
-  const d = new Date(dateStr);
-  return d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-}
+    .catch(err => {
+      console.error("Failed to load cities/streets:", err);
+    });
+});
