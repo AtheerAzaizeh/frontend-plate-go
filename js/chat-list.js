@@ -28,26 +28,29 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const data = await res.json();
 
-    data.chats.forEach(chat => {
-      const div = document.createElement('div');
-      div.className = 'chat-item';
-      div.onclick = () => {
-        window.location.href = `chat.html?chatId=${chat.chatId}&plate=${chat.plate}`;
-      };
+data.forEach(chat => {
+  const div = document.createElement('div');
+  div.className = 'chat-item';
+  div.onclick = () => {
+    window.location.href = `chat.html?chatId=${chat._id}&plate=${chat.car?.plate}`;
+  };
 
-      div.innerHTML = `
-        <img class="car-img" src="${chat.carImage || 'images/default-car.jpg'}" alt="Car">
-        <div class="chat-info">
-          <div class="chat-plate">${chat.plate}</div>
-          <div class="chat-user">
-            <img class="user-img" src="${chat.user.img || 'images/default-user.jpg'}" alt="User">
-            <span class="user-name">${chat.user.name}</span>
-          </div>
-        </div>
-      `;
+  const otherUser = chat.participants.find(p => p._id !== user._id);
 
-      chatList.appendChild(div);
-    });
+  div.innerHTML = `
+    <img class="car-img" src="${chat.car?.image || 'images/default-car.jpg'}" alt="Car">
+    <div class="chat-info">
+      <div class="chat-plate">${chat.car?.plate || 'Unknown Plate'}</div>
+      <div class="chat-user">
+        <img class="user-img" src="${otherUser?.img || 'images/default-user.jpg'}" alt="User">
+        <span class="user-name">${otherUser?.firstName || 'Unknown'} ${otherUser?.lastName || ''}</span>
+      </div>
+    </div>
+  `;
+
+  chatList.appendChild(div);
+});
+
   } catch (err) {
     console.error('Failed to load chats:', err);
     chatList.innerHTML = '<p style="text-align:center; color:red;">Failed to load chats.</p>';
