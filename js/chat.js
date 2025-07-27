@@ -59,6 +59,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   };
 
+  document.addEventListener('keydown', function (e) {
+  const container = document.getElementById('chat-messages');
+  if (e.code === 'PageUp') {
+    container.scrollBy(0, -100);
+  } else if (e.code === 'PageDown') {
+    container.scrollBy(0, 100);
+  }
+});
+
   // 5. Receive new message
   socket.on('newMessage', (msg) => {
     appendMessage(msg.text, msg.sender._id === user._id, formatTime(msg.timestamp));

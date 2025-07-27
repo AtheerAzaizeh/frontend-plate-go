@@ -621,7 +621,7 @@ img {
     background-color: rgba(0, 0, 0, 0.4);
 }
 
-.modal-content {
+.modal-content2 {
     background-color: #fefefe;
     margin: 15% auto;
     padding: 20px;
@@ -646,7 +646,7 @@ img {
     cursor: pointer;
 }
 
-.modal-content p {
+.modal-content2 p {
     font-size: 18px;
     text-decoration: row;
     margin: 0 120px;
@@ -717,7 +717,7 @@ button {
     align-items: center;
 }
 
-.car-img {
+.car-img2 {
     width: 96px;
     height: 98.46px;
     object-fit: cover;
@@ -2295,6 +2295,12 @@ input:checked + .slider:before {
   width: 100%;
 }
 
+#chat-messages {
+  height: 70vh;
+  overflow-y: auto;
+  padding: 10px;
+}
+
 .chat-left {
   display: flex;
   align-items: center;
@@ -2384,6 +2390,11 @@ input:checked + .slider:before {
   background: none;
   border: none;
   cursor: pointer;
+}
+
+#send-btn img{
+  width: 24px;
+  height: 24px;
 }
 
 

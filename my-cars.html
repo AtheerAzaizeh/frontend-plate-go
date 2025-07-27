@@ -8,7 +8,6 @@
     <script src="js/config.js"></script>
     <script defer src="js/my-cars.js"></script> 
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-<script src="js/config.js"></script>
 <script src="js/socket-listener.js"></script>
     <title>My Cars</title>
 </head>
@@ -44,7 +43,7 @@
   </div>
 
 <div id="addCarFormContainer" class="modal hidden">
-  <div class="modal-content">
+  <div class="modal-content2">
     <span class="close-modal">&times;</span>
     <form id="addCarForm" class="add-car-form">
       <select name="carCompany" id="carCompanySelect" class="signup-input" required>
@@ -75,7 +74,7 @@
   <!-- Side Menu -->
   <div class="side-menu" id="side-menu">
     <div class="profile-info">
-      <img id="profile-picture-menu" src="" alt="Profile Picture" />
+      <img id="profile-picture" src="" alt="Profile Picture" />
       <a href="edit-profile.html"><i class="fa-solid fa-pencil"></i></a>
       <p>Name: <span id="profile-name"></span></p>
       <p>Email: <span id="profile-email"></span></p>

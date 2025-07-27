@@ -215,7 +215,7 @@ function addCarToDOM(car) {
       <img src="images/vertical-dots.svg" class="options-button" alt="Options">
     </div>
     <div class="car-content">
-      <img src="${car.image}" alt="Car Image" class="car-img">
+      <img src="${car.image}" alt="Car Image" class="car-img2">
       <div class="car-info">
         <p><strong>${car.carCompany} ${car.model} ${car.year}</strong></p>
         <p>Plate number: ${car.plate}</p>
