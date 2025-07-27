@@ -119,30 +119,42 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  async function sendMessage() {
-    const input = document.getElementById("message-input");
-    const text = input.value.trim();
-    if (!text || !currentChatId) return;
-    input.value = "";
+ async function sendMessage() {
+  const input = document.getElementById("message-input");
+  const text = input.value.trim();
+  if (!text || !currentChatId) return;
+  input.value = "";
 
-    try {
-      const res = await fetch(`${BACKEND_URL}/api/message`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ chatId: currentChatId, text })
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/message`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ chatId: currentChatId, text })
+    });
+
+    if (!res.ok) throw new Error("Failed to send message");
+
+    const timestamp = new Date().toISOString();
+
+    // ✅ Emit update to other user’s chat list
+    if (socket && otherUser) {
+      socket.emit("messageSent", {
+        chatId: currentChatId,
+        toUserId: otherUser.id,
+        lastMessageText: text,
+        timestamp
       });
-
-      if (!res.ok) throw new Error("Failed to send message");
-
-      showNotification("Message sent!", "success");
-    } catch (err) {
-      input.value = text;
-      showNotification("Failed to send message", "error");
     }
+
+    showNotification("Message sent!", "success");
+  } catch (err) {
+    input.value = text;
+    showNotification("Failed to send message", "error");
   }
+}
 
   document.getElementById("send-btn").onclick = sendMessage;
 
