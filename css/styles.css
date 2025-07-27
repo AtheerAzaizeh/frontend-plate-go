@@ -2989,4 +2989,9 @@ input:checked + .slider:before {
 }
 
 
-/*--------------------end chat-list.html------------------*/
+.last-message {
+  font-size: 0.9em;
+  color: #666;
+  margin-top: 4px;
+}
+
