@@ -31,6 +31,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     data.forEach(chat => {
       const div = document.createElement('div');
       div.className = 'chat-item';
+      div.setAttribute('data-id', chat._id); // 🔁 used for real-time updates
 
       div.onclick = () => {
         window.location.href = `chat.html?chatId=${chat._id}&plate=${chat.otherCar?.plate || ''}`;
@@ -44,7 +45,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             <img class="user-img" src="${chat.otherUser?.img || 'images/default-user.jpg'}" alt="User">
             <span class="user-name">${chat.otherUser?.firstName || 'Unknown'} ${chat.otherUser?.lastName || ''}</span>
           </div>
-          <div class="last-message">${chat.lastMessageText || 'No messages yet'}</div>
+          <div class="last-message-row">
+            <span class="last-message">${chat.lastMessageText || 'No messages yet'}</span>
+            <span class="last-time">${chat.lastMessageTime ? new Date(chat.lastMessageTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}</span>
+          </div>
         </div>
       `;
 
@@ -55,4 +59,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.error('Failed to load chats:', err);
     chatList.innerHTML = '<p style="text-align:center; color:red;">Failed to load chats.</p>';
   }
+
+  // ✅ Socket.IO real-time updates
+  const socket = io(BACKEND_URL);
+  socket.emit("joinUser", user._id);
+
+  socket.on("chatListUpdate", ({ chatId, lastMessageText, timestamp }) => {
+    const item = document.querySelector(`.chat-item[data-id="${chatId}"]`);
+    if (!item) return;
+
+    const preview = item.querySelector(".last-message");
+    const time = item.querySelector(".last-time");
+
+    if (preview) preview.textContent = lastMessageText;
+    if (time) {
+      const t = new Date(timestamp);
+      time.textContent = t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    chatList.prepend(item);
+  });
 });
