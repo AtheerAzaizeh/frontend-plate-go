@@ -1,78 +1,82 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const token = localStorage.getItem('token');
-    const user = localStorage.getItem('user');
+  const params = new URLSearchParams(window.location.search);
+  const chatId = params.get('chatId');
+  const token = localStorage.getItem('token');
+  const user = JSON.parse(localStorage.getItem('user'));
 
-    if (user) {
-        try {
-            currentUser = JSON.parse(user);
-            const welcomeMessage = document.getElementById('welcome-message');
-            const profilePicture = document.getElementById('profile-picture');
-            welcomeMessage.textContent += currentUser.firstName;
-            profilePicture.src = currentUser.img;
-        } catch (error) {
-            console.error('Error parsing user details:', error);
-        }
-    } else {
-        console.error('User is not logged in or user details are missing.');
-    }
+  console.log('chatId:', chatId);
+console.log('token:', token);
+console.log('user:', user);
 
-    fetchChats();
+  if (!chatId) {
+  alert('Missing chatId in URL');
+  return window.location.href = 'index.html';
+}
+
+if (!token) {
+  alert('You are not logged in');
+  return window.location.href = 'index.html';
+}
+
+if (!user || !user._id) {
+  alert('User data is corrupted. Please login again.');
+  return window.location.href = 'index.html';
+}
+
+
+  loadMessages(chatId, token, user._id);
+
+  document.getElementById('chat-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    sendMessage(chatId, token, user._id);
+  });
 });
 
-let currentUser = null;
-
-function fetchChats() {
-    const token = localStorage.getItem('token');
-    fetch(`${BACKEND_URL}/api/chats/my`, {
-
-        headers: { 'Authorization': `Bearer ${token}` }
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return response.json();
-    })
+function loadMessages(chatId, token, currentUserId) {
+  fetch(`${BACKEND_URL}/api/chat/${chatId}/messages`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  })
+    .then(res => res.json())
     .then(data => {
-    const chats = data.chats;
-    const chatsList = document.getElementById('chats-list');
-    chatsList.innerHTML = '';
-
-    chats.forEach(chat => {
-
-            const chatItem = document.createElement('div');
-            chatItem.classList.add('chat-item');
-            chatItem.dataset.chatId = chat.chatID;
-
-            const profilePic = document.createElement('img');
-            profilePic.src = chat.img;
-            profilePic.alt = chat.firstName;
-
-            const chatDetails = document.createElement('div');
-            chatDetails.classList.add('chat-details');
-
-            const chatName = document.createElement('span');
-            chatName.textContent = chat.firstName;
-
-            const lastMessage = document.createElement('p');
-            lastMessage.textContent = chat.lastMessage;
-
-            const messageTime = document.createElement('span');
-            messageTime.classList.add('chat-time');
-            messageTime.textContent = new Date(chat.lastMessageTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-            chatDetails.appendChild(chatName);
-            chatDetails.appendChild(lastMessage);
-            chatDetails.appendChild(messageTime);
-
-            chatItem.appendChild(profilePic);
-            chatItem.appendChild(chatDetails);
-            chatsList.appendChild(chatItem);
-
-            chatItem.addEventListener('click', () => {
-                window.location.href = `messages.html?chatID=${chat.chatID}&carID=${chat.carID}`;
-            });
-        });
+      const list = document.getElementById('chat-messages');
+      list.innerHTML = '';
+      data.messages.forEach(msg => {
+        const li = document.createElement('li');
+        li.className = msg.sender._id === currentUserId ? 'message-sent' : 'message-received';
+        li.textContent = msg.message;
+        list.appendChild(li);
+      });
+      scrollToBottom();
     })
-    .catch(error => console.error('Error fetching chats:', error));
+    .catch(err => console.error('Error loading messages:', err));
+}
+
+function sendMessage(chatId, token, currentUserId) {
+  const input = document.getElementById('messageInput');
+  const message = input.value.trim();
+  if (!message) return;
+
+  fetch(`${BACKEND_URL}/api/chat/${chatId}/send`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ message })
+  })
+    .then(res => res.json())
+    .then(msg => {
+      const li = document.createElement('li');
+      li.className = 'message-sent';
+      li.textContent = msg.message;
+      document.getElementById('chat-messages').appendChild(li);
+      input.value = '';
+      scrollToBottom();
+    })
+    .catch(err => console.error('Error sending message:', err));
+}
+
+function scrollToBottom() {
+  const list = document.getElementById('chat-messages');
+  list.scrollTop = list.scrollHeight;
 }

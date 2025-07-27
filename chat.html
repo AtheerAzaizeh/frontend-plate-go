@@ -10,29 +10,19 @@
     <title>Chats</title>
 </head>
 <body>
-    <div class="header">
-        <div class="profile">
-            <img id="profile-picture" src="" alt="Profile Picture">
-            <span id="welcome-message">Welcome </span>
-        </div>
-        <div class="logo">
-            <a href="home-page.html"><img src="images/platego.png" alt="Plate&Go"></a>
-        </div>
-        <div class="menu">
-            <a href="notifications.html" class="ring"><img src="images/notification-bell.svg" alt="Bell Icon" width="30" height="30"></a>
-            <span class="san" id="menu-toggle"><img src="images/menu-icon.svg" alt="Menu Icon" width="30" height="30"></span>
-        </div>      
+  <div class="chat-header">
+    <img id="user-img" class="profile-img" src="" alt="User" />
+    <div class="chat-user-info">
+      <h4 id="user-name">Chat</h4>
     </div>
-    <div class="main">
-        <a href="car-finder.html"><img src="images/search.png" alt="search icon"></a>
-        <a href="chat.html"><img src="images/message.png" alt="message icon"></a>
-        <a href="my-cars.html"><img src="images/car.png" alt="car icon"></a> 
-    </div>
+  </div>
 
-    <div class="chats-container">
-        <h1>Chats</h1>
-        <div id="chats-list"></div>
-    </div>
+  <ul id="chat-messages" class="chat-messages"></ul>
+
+  <form id="chat-form" class="chat-form">
+    <input type="text" id="messageInput" placeholder="Type your message..." required />
+    <button type="submit">Send</button>
+  </form>
 
     
   <!-- Side Menu -->
