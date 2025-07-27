@@ -1,82 +1,79 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const params = new URLSearchParams(window.location.search);
-  const chatId = params.get('chatId');
+document.addEventListener('DOMContentLoaded', async () => {
   const token = localStorage.getItem('token');
   const user = JSON.parse(localStorage.getItem('user'));
+  const chatId = new URLSearchParams(window.location.search).get('chatId');
+  const socket = io(BACKEND_URL);
 
-  console.log('chatId:', chatId);
-console.log('token:', token);
-console.log('user:', user);
+  const plateEl = document.getElementById('plate-number');
+  const carImgEl = document.getElementById('car-image');
+  const chatMessages = document.getElementById('chat-messages');
 
-  if (!chatId) {
-  alert('Missing chatId in URL');
-  return window.location.href = 'index.html';
-}
+  if (!chatId || !token || !user) {
+    alert("Missing chat info.");
+    return;
+  }
 
-if (!token) {
-  alert('You are not logged in');
-  return window.location.href = 'index.html';
-}
+  try {
+    // 1. Get chat info and car
+    const chatRes = await fetch(`${BACKEND_URL}/api/chat/${chatId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
 
-if (!user || !user._id) {
-  alert('User data is corrupted. Please login again.');
-  return window.location.href = 'index.html';
-}
+    if (!chatRes.ok) throw new Error("Chat not found");
+    const chatData = await chatRes.json();
+    const car = chatData.car;
 
+    plateEl.textContent = car.plate;
+    carImgEl.src = car.image || 'images/default-car.jpg';
 
-  loadMessages(chatId, token, user._id);
+    // 2. Join chat via socket
+    socket.emit('joinChat', chatId);
 
-  document.getElementById('chat-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    sendMessage(chatId, token, user._id);
+    // 3. Load previous messages
+    const msgRes = await fetch(`${BACKEND_URL}/api/message/${chatId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const messages = await msgRes.json();
+    messages.forEach(msg => {
+      appendMessage(msg.text, msg.sender._id === user._id, formatTime(msg.timestamp));
+    });
+  } catch (err) {
+    console.error("Chat load error:", err);
+  }
+
+  // 4. Send message
+  document.getElementById('send-btn').onclick = async () => {
+    const input = document.getElementById('message-input');
+    const text = input.value.trim();
+    if (!text) return;
+
+    input.value = '';
+
+    await fetch(`${BACKEND_URL}/api/message`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ chatId, text })
+    });
+  };
+
+  // 5. Receive new message
+  socket.on('newMessage', (msg) => {
+    appendMessage(msg.text, msg.sender._id === user._id, formatTime(msg.timestamp));
+    chatMessages.scrollTop = chatMessages.scrollHeight;
   });
+
+  function appendMessage(text, fromMe, time) {
+    const div = document.createElement('div');
+    div.className = `message ${fromMe ? 'message-right' : 'message-left'}`;
+    div.innerHTML = `${text}<div class="message-time">${time}</div>`;
+    chatMessages.appendChild(div);
+  }
+
+  function formatTime(timestamp) {
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
 });
-
-function loadMessages(chatId, token, currentUserId) {
-  fetch(`${BACKEND_URL}/api/chat/${chatId}/messages`, {
-    headers: { 'Authorization': `Bearer ${token}` }
-  })
-    .then(res => res.json())
-    .then(data => {
-      const list = document.getElementById('chat-messages');
-      list.innerHTML = '';
-      data.messages.forEach(msg => {
-        const li = document.createElement('li');
-        li.className = msg.sender._id === currentUserId ? 'message-sent' : 'message-received';
-        li.textContent = msg.message;
-        list.appendChild(li);
-      });
-      scrollToBottom();
-    })
-    .catch(err => console.error('Error loading messages:', err));
-}
-
-function sendMessage(chatId, token, currentUserId) {
-  const input = document.getElementById('messageInput');
-  const message = input.value.trim();
-  if (!message) return;
-
-  fetch(`${BACKEND_URL}/api/chat/${chatId}/send`, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ message })
-  })
-    .then(res => res.json())
-    .then(msg => {
-      const li = document.createElement('li');
-      li.className = 'message-sent';
-      li.textContent = msg.message;
-      document.getElementById('chat-messages').appendChild(li);
-      input.value = '';
-      scrollToBottom();
-    })
-    .catch(err => console.error('Error sending message:', err));
-}
-
-function scrollToBottom() {
-  const list = document.getElementById('chat-messages');
-  list.scrollTop = list.scrollHeight;
-}

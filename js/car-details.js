@@ -128,6 +128,12 @@ document.getElementById('close-contact-owner').onclick = () => {
   document.getElementById('contact-owner').classList.add('hidden-r');
 };
 
+document.getElementById('send-message').onclick = () => {
+  const plate = new URLSearchParams(window.location.search).get('plate');
+  if (!plate) return alert('Plate not found');
+  window.location.href = `chat.html?plate=${encodeURIComponent(plate)}`;
+};
+
   // Fetch and populate city/street data (Hebrew)
 fetch("https://raw.githubusercontent.com/GabMic/israeli-cities-and-streets-list/master/israeli_street_and_cities_names.json")
   .then(res => res.json())
