@@ -4,12 +4,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   const urlParams = new URLSearchParams(window.location.search)
   const chatId = urlParams.get("chatId")
   const plate = urlParams.get("plate")
-  const io = window.io // Declare the io variable
-  const socket = io(BACKEND_URL)
+
+  // Declare io and BACKEND_URL variables
+  const io = window.io // Assuming io is available globally, e.g., from socket.io script
 
   const plateEl = document.getElementById("plate-number")
   const carImgEl = document.getElementById("car-image")
   const chatMessages = document.getElementById("chat-messages")
+
+  let socket // Declare socket variable
 
   if (!token || !user) {
     alert("Please login first.")
@@ -65,6 +68,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     carImgEl.src = car.image || "images/default-car.jpg"
 
     // Join chat via socket
+    socket = io(BACKEND_URL) // Assign socket variable
     socket.emit("joinChat", currentChatId)
 
     // Load previous messages
@@ -74,6 +78,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (msgRes.ok) {
       const messages = await msgRes.json()
+
+      // Clear existing messages except date separator
+      const dateSeperator = chatMessages.querySelector(".date-separator")
+      chatMessages.innerHTML = ""
+      if (dateSeperator) {
+        chatMessages.appendChild(dateSeperator)
+      }
+
       messages.forEach((msg) => {
         appendMessage(msg.text, msg.sender._id === user._id, formatTime(msg.timestamp))
       })
@@ -106,11 +118,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (!res.ok) {
         throw new Error("Failed to send message")
       }
+
+      // Show notification for sent message
+      showNotification("Message sent!", "success")
     } catch (err) {
       console.error("Send message error:", err)
       // Re-add the message to input if sending failed
       input.value = text
-      alert("Failed to send message")
+      showNotification("Failed to send message", "error")
     }
   }
 
@@ -135,19 +150,125 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Receive new message via socket
   socket.on("newMessage", (msg) => {
+    console.log("New message received:", msg)
+
     appendMessage(msg.text, msg.sender._id === user._id, formatTime(msg.timestamp))
     chatMessages.scrollTop = chatMessages.scrollHeight
+
+    // Show notification for received message (only if not from current user)
+    if (msg.sender._id !== user._id) {
+      showNotification(`New message: ${msg.text.slice(0, 30)}...`, "info")
+      playNotificationSound()
+    }
+  })
+
+  // Socket connection events
+  socket.on("connect", () => {
+    console.log("Connected to server")
+  })
+
+  socket.on("disconnect", () => {
+    console.log("Disconnected from server")
   })
 
   function appendMessage(text, fromMe, time) {
-    const div = document.createElement("div")
-    div.className = `message ${fromMe ? "message-right" : "message-left"}`
-    div.innerHTML = `${text}<div class="message-time">${time}</div>`
-    chatMessages.appendChild(div)
+    const container = document.createElement("div")
+    container.className = `message-container ${fromMe ? "message-right-container" : "message-left-container"}`
+
+    const message = document.createElement("div")
+    message.className = `message ${fromMe ? "message-right" : "message-left"}`
+    message.textContent = text
+
+    const timeEl = document.createElement("div")
+    timeEl.className = "message-time"
+    timeEl.textContent = time
+
+    container.appendChild(message)
+    container.appendChild(timeEl)
+    chatMessages.appendChild(container)
   }
 
   function formatTime(timestamp) {
     const date = new Date(timestamp)
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+  }
+
+  function showNotification(message, type = "info") {
+    // Remove existing notifications
+    const existingNotifications = document.querySelectorAll(".chat-notification")
+    existingNotifications.forEach((notif) => notif.remove())
+
+    const notification = document.createElement("div")
+    notification.className = `chat-notification ${type}`
+    notification.textContent = message
+    document.body.appendChild(notification)
+
+    // Auto remove after 3 seconds
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.remove()
+      }
+    }, 3000)
+
+    console.log("Notification shown:", message)
+  }
+
+  function playNotificationSound() {
+    try {
+      // Try multiple sound file paths
+      const soundPaths = ["sounds/alert.mp3", "./sounds/alert.mp3", "/sounds/alert.mp3"]
+
+      let soundPlayed = false
+
+      soundPaths.forEach((path) => {
+        if (!soundPlayed) {
+          const audio = new Audio(path)
+          audio.volume = 0.5
+
+          audio
+            .play()
+            .then(() => {
+              console.log("Notification sound played successfully from:", path)
+              soundPlayed = true
+            })
+            .catch((e) => {
+              console.log("Could not play sound from", path, ":", e.message)
+            })
+        }
+      })
+
+      // Fallback: create a beep sound programmatically
+      if (!soundPlayed) {
+        createBeepSound()
+      }
+    } catch (error) {
+      console.error("Error playing notification sound:", error)
+      createBeepSound()
+    }
+  }
+
+  function createBeepSound() {
+    try {
+      // Create a simple beep using Web Audio API
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)()
+      const oscillator = audioContext.createOscillator()
+      const gainNode = audioContext.createGain()
+
+      oscillator.connect(gainNode)
+      gainNode.connect(audioContext.destination)
+
+      oscillator.frequency.value = 800
+      oscillator.type = "sine"
+
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime)
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5)
+
+      oscillator.start(audioContext.currentTime)
+      oscillator.stop(audioContext.currentTime + 0.5)
+
+      console.log("Programmatic beep sound created")
+    } catch (error) {
+      console.error("Could not create beep sound:", error)
+    }
   }
 })

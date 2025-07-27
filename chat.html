@@ -5,70 +5,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/styles.css">
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-<script src="js/config.js"></script>
-<script src="js/socket-listener.js"></script>
-    <title>Chats</title>
+    <script src="js/config.js"></script>
+    <script src="js/socket-listener.js"></script>
+    <title>Chat</title>
 </head>
 <body>
-  <!-- Chat Header -->
-<div class="chat-header">
-  <div class="chat-left">
-    <button class="back-btn" onclick="history.back()">
-      <img src="images/back-arrow.svg" alt="Back" width="24" height="24" />
-    </button>
-    <img id="car-image" class="car-img" src="images/default-car.jpg" alt="Car" />
-    <span id="plate-number" class="plate-number2">38-439-69</span>
-  </div>
+  <div class="chat-container">
+    <!-- Chat Header -->
+    <div class="chat-header">
+      <div class="chat-left">
+        <button class="back-btn" onclick="history.back()">
+          <img src="images/back-arrow.svg" alt="Back" width="24" height="24" />
+        </button>
+        <img id="car-image" class="car-img" src="images/default-car.jpg" alt="Car" />
+        <span id="plate-number" class="plate-number2">Loading...</span>
+      </div>
 
-  <button class="call-btn">
-    <img src="images/phone.svg" alt="Call" width="24" height="24" />
-  </button>
-</div>
-  <!-- Chat Body -->
-  <div id="chat-messages" class="chat-body">
-    <!-- Messages will be inserted here -->
-  </div>
-
-  <!-- Chat Input -->
-  <div class="chat-input">
-    <input type="text" id="message-input" placeholder="Message.." />
-    <button id="send-btn"><img src="images/send.svg" alt="Send" /></button>
-  </div>
-  <!-- Side Menu -->
-  <div class="side-menu" id="side-menu">
-    <div class="profile-info">
-      <img id="profile-picture-menu" src="" alt="Profile Picture" />
-      <a href="edit-profile.html"><i class="fa-solid fa-pencil"></i></a>
-      <p>Name: <span id="profile-name"></span></p>
-      <p>Email: <span id="profile-email"></span></p>
+      <button class="call-btn">
+        <img src="images/phone.svg" alt="Call" width="24" height="24" />
+      </button>
     </div>
-    <nav>
-      <ul>
-        <li><a href="rescue-me.html"><i class="fa-solid fa-triangle-exclamation"></i> Rescue me</a></li>
-        <li><a href="#" id="volunteer-link"><i class="fa-solid fa-heart"></i> <span id="volunteer-text">Become a Volunteer</span></a></li>
-        <li><a href="my-cars.html"><i class="fa-solid fa-car"></i> Car management</a></li>
-        <li><a href="report_history.html"><i class="fa-solid fa-clipboard-list"></i> Report list</a></li>
-      </ul>
-    </nav>
-    <div class="toggle-switches">
-      <label>Start volunteering
-        <label class="switch">
-          <input type="checkbox" id="volunteer-updates-switch" />
-          <span class="slider"></span>
-        </label>
-      </label>
+
+    <!-- Chat Body -->
+    <div id="chat-messages" class="chat-body">
+      <!-- Date separator will be added here -->
+      <div class="date-separator">
+        <span class="date-text">Today</span>
+      </div>
+      <!-- Messages will be inserted here -->
     </div>
-    <nav>
-      <ul>
-        <li><a href="settings.html"><i class="fa-solid fa-gear"></i> Settings</a></li>
-        <li><a href="index.html" id="logout"><i class="fa-solid fa-sign-out-alt"></i> Log out</a></li>
-      </ul>
-    </nav>
+
+    <!-- Chat Input -->
+    <div class="chat-input">
+      <input type="text" id="message-input" placeholder="Message.." />
+      <button id="send-btn">
+        <img src="images/send.svg" alt="Send" width="24" height="24" />
+      </button>
+    </div>
   </div>
 
-  <div id="overlay"></div>
-
-  <script src="js/menu-toggle.js"></script>
-    <script src="js/chat.js"></script>
+  <script src="js/chat.js"></script>
 </body>
 </html>
