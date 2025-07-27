@@ -77,7 +77,7 @@ carInput.addEventListener("change", async function () {
 });
 
 let carData = {};
-fetch("../backend/data-json/car_data_by_make_model_year.json")
+fetch("data/car_data_by_make_model_year.json")
   .then(res => res.json())
   .then(data => {
     carData = data;
