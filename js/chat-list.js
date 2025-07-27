@@ -31,25 +31,25 @@ document.addEventListener('DOMContentLoaded', async () => {
 data.forEach(chat => {
   const div = document.createElement('div');
   div.className = 'chat-item';
+
   div.onclick = () => {
-    window.location.href = `chat.html?chatId=${chat._id}&plate=${chat.car?.plate}`;
+    window.location.href = `chat.html?chatId=${chat._id}&plate=${chat.otherCar?.plate || ''}`;
   };
 
-  const otherUser = chat.participants.find(p => p._id !== user._id);
-
   div.innerHTML = `
-    <img class="car-img" src="${chat.car?.image || 'images/default-car.jpg'}" alt="Car">
+    <img class="car-img" src="${chat.otherCar?.image || 'images/default-car.jpg'}" alt="Car">
     <div class="chat-info">
-      <div class="chat-plate">${chat.car?.plate || 'Unknown Plate'}</div>
+      <div class="chat-plate">${chat.otherCar?.plate || 'Unknown Plate'}</div>
       <div class="chat-user">
-        <img class="user-img" src="${otherUser?.img || 'images/default-user.jpg'}" alt="User">
-        <span class="user-name">${otherUser?.firstName || 'Unknown'} ${otherUser?.lastName || ''}</span>
+        <img class="user-img" src="${chat.otherUser?.img || 'images/default-user.jpg'}" alt="User">
+        <span class="user-name">${chat.otherUser?.firstName || 'Unknown'} ${chat.otherUser?.lastName || ''}</span>
       </div>
     </div>
   `;
 
   chatList.appendChild(div);
 });
+
 
   } catch (err) {
     console.error('Failed to load chats:', err);
