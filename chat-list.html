@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>My Chats</title>
   <link rel="stylesheet" href="css/styles.css" />
+
+  <!-- ✅ Added for real-time chat list updates -->
+  <script src="https://platego-smi4.onrender.com/socket.io/socket.io.js"></script>
+
   <script src="js/config.js"></script>
   <script defer src="js/chat-list.js"></script>
 </head>
@@ -18,23 +22,27 @@
       <a href="home-page.html"><img src="images/platego.png" alt="Plate&Go" /></a>
     </div>
     <div class="menu">
-      <a href="notifications.html" class="ring"><img src="images/notification-bell.svg" alt="Bell Icon" width="30" height="30" /></a>
-      <span class="san" id="menu-toggle"><img src="images/menu-icon.svg" alt="Menu Icon" width="30" height="30" /></span>
+      <a href="notifications.html" class="ring">
+        <img src="images/notification-bell.svg" alt="Bell Icon" width="30" height="30" />
+      </a>
+      <span class="san" id="menu-toggle">
+        <img src="images/menu-icon.svg" alt="Menu Icon" width="30" height="30" />
+      </span>
     </div>
   </div>
 
-    <div class="main">
-        <a href="car-finder.html"><img src="images/search.png" alt="search icon"></a>
-        <a href="chat-list.html"><img src="images/message.png" alt="message icon"></a>
-        <a href="my-cars.html"><img src="images/car.png" alt="car icon"></a> 
-    </div>
+  <div class="main">
+    <a href="car-finder.html"><img src="images/search.png" alt="search icon"></a>
+    <a href="chat-list.html"><img src="images/message.png" alt="message icon"></a>
+    <a href="my-cars.html"><img src="images/car.png" alt="car icon"></a> 
+  </div>
+
   <div class="chat-list-container">
     <h2 class="chat-list-title">My Chats</h2>
-    <div id="chat-list" class="chat-list">
-        
-    </div>
+    <div id="chat-list" class="chat-list"></div>
   </div>
-    <!-- Side Menu -->
+
+  <!-- Side Menu -->
   <div class="side-menu" id="side-menu">
     <div class="profile-info">
       <img id="profile-picture-menu" src="" alt="Profile Picture" />
