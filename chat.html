@@ -30,7 +30,6 @@
       <div class="date-separator">
         <span class="date-text">Today</span>
       </div>
-      <!-- Messages will be inserted here -->
     </div>
 
     <!-- Chat Input -->
@@ -40,7 +39,12 @@
       <!-- Hidden file input + image preview -->
       <input type="file" id="image-input" accept="image/*" capture="environment" style="display:none" />
       <button id="image-btn">📷</button>
-      <img id="image-preview" class="chat-image-preview" style="display:none; max-width:100px; max-height:100px; margin-left: 10px;" />
+
+      <!-- Image preview with remove button -->
+      <div id="image-preview-wrapper" style="display:none; position:relative;">
+        <img id="image-preview" class="chat-image-preview" style="max-width:100px; max-height:100px; margin-left:10px;" />
+        <button id="remove-image-btn" title="Remove" style="position:absolute; top:0; right:0; background:red; color:white; border:none; border-radius:50%; width:20px; height:20px; cursor:pointer;">&times;</button>
+      </div>
 
       <button id="send-btn">
         <img src="images/send.svg" alt="Send" width="24" height="24" />

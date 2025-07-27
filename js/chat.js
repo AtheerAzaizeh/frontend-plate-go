@@ -1,3 +1,5 @@
+
+
 document.addEventListener("DOMContentLoaded", async () => {
   const token = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("user"));
@@ -7,16 +9,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   const BACKEND_URL = window.BACKEND_URL || "https://platego-smi4.onrender.com";
 
   const io = window.io;
+
   const plateEl = document.getElementById("plate-number");
   const carImgEl = document.getElementById("car-image");
   const chatMessages = document.getElementById("chat-messages");
-
   const imagePreview = document.getElementById("image-preview");
-  const imageInput = document.getElementById("image-input");
+  const previewWrapper = document.getElementById("image-preview-wrapper");
+  const removeImageBtn = document.getElementById("remove-image-btn");
 
   let socket;
   let otherUser = null;
-  let pendingImageBase64 = null;
 
   if (!token || !user) {
     alert("Please login first.");
@@ -37,24 +39,36 @@ document.addEventListener("DOMContentLoaded", async () => {
         body: JSON.stringify({ plate })
       });
 
+      if (!chatRes.ok) {
+        const error = await chatRes.json();
+        throw new Error(error.error || "Failed to create chat");
+      }
+
       const chatData = await chatRes.json();
       currentChatId = chatData.chatId;
 
       const newURL = new URL(window.location.href);
       newURL.searchParams.set("chatId", currentChatId);
-      if (!newURL.searchParams.has("plate")) newURL.searchParams.set("plate", plate);
+      if (!newURL.searchParams.has("plate")) {
+        newURL.searchParams.set("plate", plate);
+      }
       window.history.replaceState({}, "", newURL.toString());
     }
+
+    if (!currentChatId) throw new Error("No chat ID available");
 
     const chatRes = await fetch(`${BACKEND_URL}/api/chat/${currentChatId}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
+
+    if (!chatRes.ok) throw new Error("Chat not found");
     const chatData = await chatRes.json();
 
     const viewerCar = chatData.car.viewerCar;
     const otherCar = chatData.car.otherCar;
 
     otherUser = chatData.participants.find((p) => p.id !== user._id);
+
     if (otherUser && !otherUser.name && otherUser.firstName) {
       otherUser.name = `${otherUser.firstName} ${otherUser.lastName || ""}`.trim();
     }
@@ -69,70 +83,66 @@ document.addEventListener("DOMContentLoaded", async () => {
     const msgRes = await fetch(`${BACKEND_URL}/api/message/${currentChatId}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
-    const messages = await msgRes.json();
 
-    chatMessages.innerHTML = "";
-    messages.forEach((msg) => {
-      appendMessage(msg.text, msg.sender._id === user._id, formatTime(msg.timestamp), msg.image);
-    });
-    chatMessages.scrollTop = chatMessages.scrollHeight;
+    if (msgRes.ok) {
+      const messages = await msgRes.json();
+      const dateSeperator = chatMessages.querySelector(".date-separator");
+      chatMessages.innerHTML = "";
+      if (dateSeperator) chatMessages.appendChild(dateSeperator);
 
+      messages.forEach((msg) => {
+        appendMessage(msg.text, msg.sender._id === user._id, formatTime(msg.timestamp), msg.image);
+      });
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
   } catch (err) {
     console.error("Chat load error:", err);
     alert("Failed to load chat: " + err.message);
     return;
   }
 
-  // Event bindings
-  document.querySelector(".call-btn").addEventListener("click", handleCall);
-  document.getElementById("send-btn").onclick = () => sendMessage();
-  document.getElementById("message-input").addEventListener("keypress", (e) => {
-    if (e.key === "Enter") sendMessage();
-  });
-  document.getElementById("image-btn").onclick = () => imageInput.click();
-  imageInput.addEventListener("change", previewImage);
-
-  socket.on("newMessage", (msg) => {
-    appendMessage(msg.text, msg.sender._id === user._id, formatTime(msg.timestamp), msg.image);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-    if (msg.sender._id !== user._id) {
-      showNotification(`New message: ${msg.text?.slice(0, 30) || "[Image]"}...`, "info");
-      playNotificationSound();
-    }
-  });
-
-  // ========== FUNCTIONS ==========
-
-  function handleCall() {
+  document.querySelector(".call-btn").addEventListener("click", () => {
     if (!otherUser) return alert("Cannot find the other user in this chat");
-    if (!window.callManager?.isReady()) return alert("Call system not ready.");
+    if (!window.callManager?.isReady()) return alert("Call system is not ready. Please refresh and try again.");
     const carPlate = plateEl.textContent || "Unknown";
     try {
       window.callManager.initiateCall(otherUser.id, otherUser.name, carPlate);
     } catch (error) {
       alert("Failed to start call: " + error.message);
     }
-  }
+  });
 
-  function previewImage(e) {
+  document.getElementById("send-btn").onclick = () => sendMessage();
+  document.getElementById("message-input").addEventListener("keypress", (e) => {
+    if (e.key === "Enter") sendMessage();
+  });
+
+  document.getElementById("image-btn").onclick = () => {
+    document.getElementById("image-input").click();
+  };
+
+  document.getElementById("image-input").addEventListener("change", (e) => {
     const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
     reader.onload = () => {
-      pendingImageBase64 = reader.result;
-      imagePreview.src = pendingImageBase64;
-      imagePreview.style.display = "inline-block";
+      imagePreview.src = reader.result;
+      previewWrapper.style.display = "block";
     };
     reader.readAsDataURL(file);
-  }
+  });
+
+  removeImageBtn.onclick = () => {
+    imagePreview.src = "";
+    previewWrapper.style.display = "none";
+    document.getElementById("image-input").value = "";
+  };
 
   async function sendMessage() {
     const input = document.getElementById("message-input");
     const text = input.value.trim();
-    const image = pendingImageBase64;
-
-    if (!text && !image) return;
-
+    const imageBase64 = imagePreview.src?.startsWith("data:image") ? imagePreview.src : null;
+    if (!text && !imageBase64) return;
     input.value = "";
 
     try {
@@ -145,29 +155,29 @@ document.addEventListener("DOMContentLoaded", async () => {
         body: JSON.stringify({
           chatId: currentChatId,
           text,
-          image: image || null
+          image: imageBase64 || null
         })
       });
 
       if (!res.ok) throw new Error("Failed to send message");
 
       const timestamp = new Date().toISOString();
-      socket.emit("messageSent", {
-        chatId: currentChatId,
-        toUserId: otherUser.id,
-        lastMessageText: text || "[Image]",
-        timestamp
-      });
 
-      appendMessage(text, true, formatTime(timestamp), image);
-      showNotification("Message sent!", "success");
+      if (socket && otherUser) {
+        socket.emit("messageSent", {
+          chatId: currentChatId,
+          toUserId: otherUser.id,
+          lastMessageText: text || "[Image]",
+          timestamp
+        });
+      }
 
-      // Reset image preview
-      pendingImageBase64 = null;
-      imageInput.value = null;
+      appendMessage(text, true, formatTime(timestamp), imageBase64);
+      previewWrapper.style.display = "none";
       imagePreview.src = "";
-      imagePreview.style.display = "none";
+      document.getElementById("image-input").value = "";
 
+      showNotification("Message sent!", "success");
     } catch (err) {
       input.value = text;
       showNotification("Failed to send message", "error");
@@ -216,37 +226,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     notification.className = `chat-notification ${type}`;
     notification.textContent = message;
     document.body.appendChild(notification);
-    setTimeout(() => notification.remove(), 3000);
-  }
-
-  function playNotificationSound() {
-    const paths = ["sounds/alert.mp3", "./sounds/alert.mp3", "/sounds/alert.mp3"];
-    let played = false;
-    paths.forEach((path) => {
-      if (!played) {
-        const audio = new Audio(path);
-        audio.volume = 0.5;
-        audio.play().then(() => (played = true)).catch(() => {});
-      }
-    });
-    if (!played) createBeepSound();
-  }
-
-  function createBeepSound() {
-    try {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.frequency.value = 800;
-      osc.type = "sine";
-      gain.gain.setValueAtTime(0.3, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 0.5);
-    } catch (err) {
-      console.error("Failed to create beep:", err);
-    }
+    setTimeout(() => {
+      if (notification.parentNode) notification.remove();
+    }, 3000);
   }
 });
