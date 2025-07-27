@@ -2738,4 +2738,255 @@ input:checked + .slider:before {
   color: #555;
 }
 
+
+/* Call UI Styles */
+.call-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  backdrop-filter: blur(5px);
+}
+
+.call-modal {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20px;
+  padding: 40px 30px;
+  text-align: center;
+  color: white;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  min-width: 320px;
+  animation: callModalSlideIn 0.3s ease-out;
+}
+
+.call-modal.active-call {
+  background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+}
+
+@keyframes callModalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.call-header {
+  margin-bottom: 30px;
+}
+
+.call-header h3 {
+  font-size: 24px;
+  font-weight: 300;
+  margin: 0 0 10px 0;
+}
+
+.call-timer {
+  font-size: 18px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.call-info {
+  margin-bottom: 40px;
+}
+
+.call-avatar {
+  font-size: 80px;
+  margin-bottom: 20px;
+  animation: pulse 2s infinite;
+}
+
+.call-name {
+  font-size: 28px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.call-plate {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 10px;
+}
+
+.call-status {
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.call-actions {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.call-btn {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.call-btn img {
+  width: 30px;
+  height: 30px;
+  filter: brightness(0) invert(1);
+}
+
+.accept-call {
+  background-color: #4caf50;
+}
+
+.accept-call:hover {
+  background-color: #45a049;
+  transform: scale(1.1);
+}
+
+.reject-call,
+.end-call {
+  background-color: #f44336;
+}
+
+.reject-call:hover,
+.end-call:hover {
+  background-color: #d32f2f;
+  transform: scale(1.1);
+}
+
+.mute-btn {
+  background-color: #2196f3;
+}
+
+.mute-btn:hover {
+  background-color: #1976d2;
+  transform: scale(1.1);
+}
+
+.mute-btn.muted {
+  background-color: #ff9800;
+}
+
+/* Global Notification Styles */
+.global-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 16px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 10000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  animation: slideInRight 0.3s ease-out;
+  max-width: 350px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.global-notification.message {
+  background-color: #2196f3;
+  color: white;
+  border-left: 4px solid #1976d2;
+}
+
+.global-notification.rescue {
+  background-color: #ff5722;
+  color: white;
+  border-left: 4px solid #d84315;
+}
+
+.global-notification.info {
+  background-color: #4caf50;
+  color: white;
+  border-left: 4px solid #388e3c;
+}
+
+.global-notification.error {
+  background-color: #f44336;
+  color: white;
+  border-left: 4px solid #d32f2f;
+}
+
+.notification-content {
+  flex: 1;
+  line-height: 1.4;
+}
+
+.notification-close {
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.notification-close:hover {
+  opacity: 1;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Rest of existing styles... */
+
+.rescue-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: #ff5252;
+  color: white;
+  padding: 15px 20px;
+  border-radius: 10px;
+  font-size: 16px;
+  z-index: 9999;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
 /*--------------------end chat-list.html------------------*/

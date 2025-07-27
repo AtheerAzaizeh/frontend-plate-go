@@ -4,8 +4,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const urlParams = new URLSearchParams(window.location.search)
   const chatId = urlParams.get("chatId")
   const plate = urlParams.get("plate")
+  const BACKEND_URL = window.BACKEND_URL || "https://platego-smi4.onrender.com" // Declare BACKEND_URL variable
 
-  // Declare io and BACKEND_URL variables
   const io = window.io // Assuming io is available globally, e.g., from socket.io script
 
   const plateEl = document.getElementById("plate-number")
@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const chatMessages = document.getElementById("chat-messages")
 
   let socket // Declare socket variable
+  let otherUser = null // Store other user info for calling
 
   if (!token || !user) {
     alert("Please login first.")
@@ -64,12 +65,28 @@ document.addEventListener("DOMContentLoaded", async () => {
     const chatData = await chatRes.json()
     const car = chatData.car
 
+    // Find the other user in the chat - Enhanced
+    otherUser = chatData.participants.find((p) => p.id !== user._id)
+
+    if (otherUser) {
+      console.log("Other user found:", otherUser)
+      // Ensure otherUser has the required properties
+      if (!otherUser.name && otherUser.firstName) {
+        otherUser.name = `${otherUser.firstName} ${otherUser.lastName || ""}`.trim()
+      }
+    } else {
+      console.error("Could not find other user in chat participants")
+      console.log("Chat participants:", chatData.participants)
+      console.log("Current user ID:", user._id)
+    }
+
     plateEl.textContent = car.plate
     carImgEl.src = car.image || "images/default-car.jpg"
 
     // Join chat via socket
     socket = io(BACKEND_URL) // Assign socket variable
     socket.emit("joinChat", currentChatId)
+    socket.emit("joinUser", user._id) // Join user room for calls
 
     // Load previous messages
     const msgRes = await fetch(`${BACKEND_URL}/api/message/${currentChatId}`, {
@@ -96,6 +113,42 @@ document.addEventListener("DOMContentLoaded", async () => {
     alert("Failed to load chat: " + err.message)
     return
   }
+
+  // Call button functionality - Enhanced with better error handling
+  document.querySelector(".call-btn").addEventListener("click", () => {
+    console.log("Call button clicked")
+    console.log("otherUser:", otherUser)
+    console.log("window.callManager:", window.callManager)
+    console.log("callManager ready:", window.callManager?.isReady())
+
+    if (!otherUser) {
+      console.error("Other user not found in chat")
+      alert("Cannot find the other user in this chat")
+      return
+    }
+
+    if (!window.callManager) {
+      console.error("Call manager not initialized")
+      alert("Call system is not ready. Please refresh the page.")
+      return
+    }
+
+    if (!window.callManager.isReady()) {
+      console.error("Call manager not ready")
+      alert("Call system is still connecting. Please wait a moment and try again.")
+      return
+    }
+
+    const carPlate = plateEl.textContent || "Unknown"
+    console.log("Initiating call to:", otherUser.id, otherUser.name, carPlate)
+
+    try {
+      window.callManager.initiateCall(otherUser.id, otherUser.name, carPlate)
+    } catch (error) {
+      console.error("Error initiating call:", error)
+      alert("Failed to start call: " + error.message)
+    }
+  })
 
   // Send message function
   async function sendMessage() {

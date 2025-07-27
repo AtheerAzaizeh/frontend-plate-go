@@ -6,7 +6,6 @@
     <link rel="stylesheet" href="css/styles.css">
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <script src="js/config.js"></script>
-    <script src="js/socket-listener.js"></script>
     <title>Chat</title>
 </head>
 <body>
@@ -44,6 +43,31 @@
     </div>
   </div>
 
+  <!-- Load scripts in correct order -->
+  <script src="js/socket-listener.js"></script>
+  <script src="js/webrtc-call.js"></script>
   <script src="js/chat.js"></script>
+  
+  <script>
+// Debug script to check call manager status
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("Chat page loaded")
+  
+  // Check if call manager is available after delays
+  setTimeout(() => {
+    console.log("=== Call Manager Debug Info ===")
+    console.log("window.callManager exists:", !!window.callManager)
+    console.log("window.globalSocket exists:", !!window.globalSocket)
+    console.log("window.globalSocket connected:", window.globalSocket?.connected)
+    
+    if (window.callManager) {
+      console.log("Call manager ready:", window.callManager.isReady())
+      console.log("Call manager socket:", !!window.callManager.socket)
+      console.log("Call manager userId:", window.callManager.localUserId)
+    }
+    console.log("===============================")
+  }, 3000)
+})
+</script>
 </body>
 </html>
