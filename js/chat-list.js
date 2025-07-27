@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-    if (user) {
+  if (user) {
     document.getElementById('welcome-message').textContent += user.firstName;
     document.getElementById('profile-picture').src = user.img;
     document.getElementById('profile-picture-menu').src = user.img;
@@ -28,28 +28,28 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const data = await res.json();
 
-data.forEach(chat => {
-  const div = document.createElement('div');
-  div.className = 'chat-item';
+    data.forEach(chat => {
+      const div = document.createElement('div');
+      div.className = 'chat-item';
 
-  div.onclick = () => {
-    window.location.href = `chat.html?chatId=${chat._id}&plate=${chat.otherCar?.plate || ''}`;
-  };
+      div.onclick = () => {
+        window.location.href = `chat.html?chatId=${chat._id}&plate=${chat.otherCar?.plate || ''}`;
+      };
 
-  div.innerHTML = `
-    <img class="car-img" src="${chat.otherCar?.image || 'images/default-car.jpg'}" alt="Car">
-    <div class="chat-info">
-      <div class="chat-plate">${chat.otherCar?.plate || 'Unknown Plate'}</div>
-      <div class="chat-user">
-        <img class="user-img" src="${chat.otherUser?.img || 'images/default-user.jpg'}" alt="User">
-        <span class="user-name">${chat.otherUser?.firstName || 'Unknown'} ${chat.otherUser?.lastName || ''}</span>
-      </div>
-    </div>
-  `;
+      div.innerHTML = `
+        <img class="car-img" src="${chat.otherCar?.image || 'images/default-car.jpg'}" alt="Car">
+        <div class="chat-info">
+          <div class="chat-plate">${chat.otherCar?.plate || 'Unknown Plate'}</div>
+          <div class="chat-user">
+            <img class="user-img" src="${chat.otherUser?.img || 'images/default-user.jpg'}" alt="User">
+            <span class="user-name">${chat.otherUser?.firstName || 'Unknown'} ${chat.otherUser?.lastName || ''}</span>
+          </div>
+          <div class="last-message">${chat.lastMessageText || 'No messages yet'}</div>
+        </div>
+      `;
 
-  chatList.appendChild(div);
-});
-
+      chatList.appendChild(div);
+    });
 
   } catch (err) {
     console.error('Failed to load chats:', err);
