@@ -90,7 +90,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (dateSeperator) chatMessages.appendChild(dateSeperator);
 
       messages.forEach((msg) => {
-        appendMessage(msg.text, msg.sender._id === user._id, formatTime(msg.timestamp));
+        appendMessage(msg.text, msg.sender._id === user._id, formatTime(msg.timestamp), msg.image);
       });
       chatMessages.scrollTop = chatMessages.scrollHeight;
     }
@@ -119,75 +119,91 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
- async function sendMessage() {
-  const input = document.getElementById("message-input");
-  const text = input.value.trim();
-  if (!text || !currentChatId) return;
-  input.value = "";
-
-  try {
-    const res = await fetch(`${BACKEND_URL}/api/message`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify({ chatId: currentChatId, text })
-    });
-
-    if (!res.ok) throw new Error("Failed to send message");
-
-    const timestamp = new Date().toISOString();
-
-    // ✅ Emit update to other user’s chat list
-    if (socket && otherUser) {
-      socket.emit("messageSent", {
-        chatId: currentChatId,
-        toUserId: otherUser.id,
-        lastMessageText: text,
-        timestamp
-      });
-    }
-
-    showNotification("Message sent!", "success");
-  } catch (err) {
-    input.value = text;
-    showNotification("Failed to send message", "error");
-  }
-}
-
-  document.getElementById("send-btn").onclick = sendMessage;
+  document.getElementById("send-btn").onclick = () => sendMessage();
 
   document.getElementById("message-input").addEventListener("keypress", (e) => {
     if (e.key === "Enter") sendMessage();
   });
 
-  document.addEventListener("keydown", (e) => {
-    const container = document.getElementById("chat-messages");
-    if (e.code === "PageUp") container.scrollBy(0, -100);
-    else if (e.code === "PageDown") container.scrollBy(0, 100);
+  document.getElementById("image-btn").onclick = () => {
+    document.getElementById("image-input").click();
+  };
+
+  document.getElementById("image-input").addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const base64Image = reader.result;
+      await sendMessage("", base64Image);
+    };
+    reader.readAsDataURL(file);
   });
 
-  socket.on("newMessage", (msg) => {
-    appendMessage(msg.text, msg.sender._id === user._id, formatTime(msg.timestamp));
-    chatMessages.scrollTop = chatMessages.scrollHeight;
+  async function sendMessage(textOnly = null, imageBase64 = null) {
+    const input = document.getElementById("message-input");
+    const text = textOnly !== null ? textOnly : input.value.trim();
+    if (!text && !imageBase64) return;
+    input.value = "";
 
-    if (msg.sender._id !== user._id) {
-      showNotification(`New message: ${msg.text.slice(0, 30)}...`, "info");
-      playNotificationSound();
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/message`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          chatId: currentChatId,
+          text,
+          image: imageBase64 || null
+        })
+      });
+
+      if (!res.ok) throw new Error("Failed to send message");
+
+      const timestamp = new Date().toISOString();
+
+      if (socket && otherUser) {
+        socket.emit("messageSent", {
+          chatId: currentChatId,
+          toUserId: otherUser.id,
+          lastMessageText: text || "[Image]",
+          timestamp
+        });
+      }
+
+      appendMessage(text, true, formatTime(new Date()), imageBase64);
+
+
+      showNotification("Message sent!", "success");
+    } catch (err) {
+      input.value = text;
+      showNotification("Failed to send message", "error");
     }
-  });
+  }
 
-  socket.on("connect", () => console.log("Connected to server"));
-  socket.on("disconnect", () => console.log("Disconnected from server"));
-
-  function appendMessage(text, fromMe, time) {
+  function appendMessage(text, fromMe, time, image = null) {
     const container = document.createElement("div");
     container.className = `message-container ${fromMe ? "message-right-container" : "message-left-container"}`;
 
     const message = document.createElement("div");
     message.className = `message ${fromMe ? "message-right" : "message-left"}`;
-    message.textContent = text;
+
+    if (image) {
+      const img = document.createElement("img");
+      img.src = image;
+      img.alt = "Photo";
+      img.className = "chat-image";
+      message.appendChild(img);
+    }
+
+    if (text) {
+      const textEl = document.createElement("div");
+      textEl.textContent = text;
+      message.appendChild(textEl);
+    }
 
     const timeEl = document.createElement("div");
     timeEl.className = "message-time";
@@ -196,6 +212,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     container.appendChild(message);
     container.appendChild(timeEl);
     chatMessages.appendChild(container);
+
+     chatMessages.scrollTop = chatMessages.scrollHeight;
   }
 
   function formatTime(timestamp) {

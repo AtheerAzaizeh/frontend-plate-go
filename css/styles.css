@@ -3015,4 +3015,9 @@ input:checked + .slider:before {
   margin-left: 10px;
   white-space: nowrap;
 }
+.chat-image {
+  max-width: 200px;
+  border-radius: 8px;
+  margin-bottom: 5px;
+}
 
