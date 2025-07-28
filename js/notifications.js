@@ -10,9 +10,23 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   notifications.forEach(n => {
     const div = document.createElement('div');
-    div.className = 'notification-item';
-    div.textContent = `${n.message} • ${new Date(n.createdAt).toLocaleString()}`;
-    container.appendChild(div);
+div.className = 'notification-item';
+
+const messageText = document.createElement('span');
+messageText.textContent = `${n.message} • ${new Date(n.createdAt).toLocaleString()}`;
+
+const viewButton = document.createElement('button');
+viewButton.textContent = '🔍 View Details';
+viewButton.className = 'view-details-btn';
+viewButton.onclick = () => {
+  alert(`🚨 Rescue Details\n\nLocation: ${n.location || 'Unknown'}\nReason: ${n.reason || 'Not provided'}`);
+  
+};
+
+div.appendChild(messageText);
+div.appendChild(viewButton);
+container.appendChild(div);
+
   });
 
   // Mark all notifications as read when the user views them

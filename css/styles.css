@@ -3028,3 +3028,13 @@ input:checked + .slider:before {
   margin-bottom: 5px;
 }
 
+.view-details-btn {
+  margin-left: 10px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
