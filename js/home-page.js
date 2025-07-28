@@ -127,27 +127,14 @@ document.addEventListener('DOMContentLoaded', function() {
   volunteerLink.addEventListener('click', function(event) {
     event.preventDefault();
 
-    fetch(`${BACKEND_URL}/api/volunteer/register`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      }
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Failed to register as volunteer, status: ' + response.status);
-      }
-      return response.json();
-    })
-    .then(data => {
-      volunteerText.textContent = 'I am a Volunteer';
-      alert('You are now registered as a volunteer.');
-    })
-    .catch(error => {
-      console.error('Error registering as volunteer:', error);
-      alert('Failed to register as volunteer. Please try again later.');
-    });
+    fetch(`${BACKEND_URL}/api/user/become-volunteer`, {
+  method: 'PUT',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`
+  }
+})
+
   });
 
   const availabilityBtn = document.getElementById('availability-toggle-btn');
