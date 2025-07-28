@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             <span class="user-name">${chat.otherUser?.firstName || 'Unknown'} ${chat.otherUser?.lastName || ''}</span>
           </div>
           <div class="last-message-row">
-            <span class="last-message">${chat.lastMessageText || 'No messages yet'}</span>
+            <span class="last-message">${chat.lastMessageText || '[Image]'}</span>
             <span class="last-time">${chat.lastMessageTime ? new Date(chat.lastMessageTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}</span>
           </div>
         </div>
