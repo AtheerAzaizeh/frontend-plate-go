@@ -719,7 +719,7 @@ button {
   font-size: 24px;
   margin: 0;
 }
-
+/*-----------------------------my-cars.html-----------------------------*/
 .car-container {
   padding: 20px;
   display: flex;
@@ -742,7 +742,7 @@ button {
   margin: 54px 0;
 }
 
-.car-content {
+.car-content2 {
   display: flex;
   align-items: center;
 }
@@ -836,17 +836,6 @@ button {
   display: none;
 }
 
-.modal-content {
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 25px 30px;
-  width: 90%;
-  max-width: 500px;
-  position: relative;
-  animation: fadeIn 0.3s ease-out;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-}
-
 .close-modal {
   position: absolute;
   top: 12px;
@@ -856,7 +845,6 @@ button {
   color: #555;
   cursor: pointer;
 }
-
 .add-car-form {
   display: flex;
   flex-direction: column;
@@ -898,6 +886,25 @@ button {
   border-radius: 6px;
   cursor: pointer;
 }
+/*----------------------------- end my-cars.html-----------------------------*/
+
+
+
+
+
+
+.modal-content {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 25px 30px;
+  width: 90%;
+  max-width: 500px;
+  position: relative;
+  animation: fadeIn 0.3s ease-out;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+}
+
+
 
 @keyframes fadeIn {
   from {
@@ -980,39 +987,6 @@ button {
 .go-button {
   color: black;
 }
-
-.car {
-  width: 320px;
-  height: 160px;
-  background-color: white;
-  padding: 10px;
-  border-radius: 5px;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.car-details {
-  flex: 1;
-  position: relative;
-}
-
-.car-details p {
-  margin: -20px 0;
-}
-
-.car-image img {
-  width: 150px;
-  height: 120px;
-  border-radius: 50% 50% 50% 50% / 60% 60% 60% 60%;
-}
-
-.add-car {
-  text-align: center;
-  margin-top: 220px;
-}
-
 .options-button {
   background: transparent;
   border: none;
@@ -1064,6 +1038,39 @@ button {
 .dropdown-item i {
   font-size: 16px;
 }
+
+.car {
+  width: 320px;
+  height: 160px;
+  background-color: white;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.car-details {
+  flex: 1;
+  position: relative;
+}
+
+.car-details p {
+  margin: -20px 0;
+}
+
+.car-image img {
+  width: 150px;
+  height: 120px;
+  border-radius: 50% 50% 50% 50% / 60% 60% 60% 60%;
+}
+
+.add-car {
+  text-align: center;
+  margin-top: 220px;
+}
+
 
 .main-content {
   padding: 20px;

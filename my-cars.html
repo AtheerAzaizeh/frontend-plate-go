@@ -8,10 +8,11 @@
     <script src="js/config.js"></script>
     <script defer src="js/my-cars.js"></script> 
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-<script src="js/socket-listener.js"></script>
+    <script src="js/socket-listener.js"></script>
     <title>My Cars</title>
 </head>
 <body>
+    <!-- Header -->
     <div class="header">
         <div class="profile">
             <img id="profile-picture" src="" alt="Profile Picture">
@@ -25,86 +26,90 @@
             <span class="san" id="menu-toggle"><img src="images/menu-icon.svg" alt="Menu Icon" width="30" height="30"></span>
         </div>      
     </div>
+
+    <!-- Main Navigation -->
     <div class="main">
         <a href="car-finder.html"><img src="images/search.png" alt="search icon"></a>
         <a href="chat-list.html"><img src="images/message.png" alt="message icon"></a>
         <a href="my-cars.html"><img src="images/car.png" alt="car icon"></a> 
     </div>
 
-    
-
-  <div class="section-header">
-    <a href="report_history.html" class="back-button"><i class="fa-solid fa-arrow-left"></i></a>
-    <h3>My Cars</h3>
-  </div>
-
-  <div id="car-container" class="car-container">
-    
-  </div>
-
-<div id="addCarFormContainer" class="modal hidden">
-  <div class="modal-content2">
-    <span class="close-modal">&times;</span>
-    <form id="addCarForm" class="add-car-form">
-      <select name="carCompany" id="carCompanySelect" class="signup-input" required>
-        <option value="">Select Brand</option>
-      </select>
-      <select name="model" id="modelSelect" class="signup-input" required>
-        <option value="">Select Model</option>
-      </select>
-      <select name="color" id="colorSelect" class="signup-input" required>
-        <option value="">Select Color</option>
-      </select>
-      <select name="year" id="yearSelect" class="signup-input" required>
-        <option value="">Select Year</option>
-      </select>
-      <input type="text" name="plate" placeholder="Car Plate" required class="signup-input">
-      
-      <div class="car-image-upload">
-        <input type="file" id="carImageInput" accept="image/*" capture="environment">
-        <img id="carPreview" src="images/car-preview.png" class="image-preview" alt="Car preview">
-        <label for="carImageInput" class="custom-file-label">Upload Car Image</label>
-      </div>
-      
-      <button type="submit" class="submit-car-btn">Add Car</button>
-    </form>
-  </div>
-</div>
-
-  <!-- Side Menu -->
-  <div class="side-menu" id="side-menu">
-    <div class="profile-info">
-      <img id="profile-picture" src="" alt="Profile Picture" />
-      <a href="edit-profile.html"><i class="fa-solid fa-pencil"></i></a>
-      <p>Name: <span id="profile-name"></span></p>
-      <p>Email: <span id="profile-email"></span></p>
+    <!-- Section Header -->
+    <div class="section-header">
+        <a href="report_history.html" class="back-button"><i class="fa-solid fa-arrow-left"></i></a>
+        <h3>My Cars</h3>
     </div>
-    <nav>
-      <ul>
-        <li><a href="rescue-me.html"><i class="fa-solid fa-triangle-exclamation"></i> Rescue me</a></li>
-        <li><a href="#" id="volunteer-link"><i class="fa-solid fa-heart"></i> <span id="volunteer-text">Become a Volunteer</span></a></li>
-        <li><a href="my-cars.html"><i class="fa-solid fa-car"></i> Car management</a></li>
-        <li><a href="report_history.html"><i class="fa-solid fa-clipboard-list"></i> Report list</a></li>
-      </ul>
-    </nav>
-    <div class="toggle-switches">
-      <label>Start volunteering
-        <label class="switch">
-          <input type="checkbox" id="volunteer-updates-switch" />
-          <span class="slider"></span>
-        </label>
-      </label>
+
+    <!-- Car Container -->
+    <div id="car-container" class="car-container">
+        
     </div>
-    <nav>
-      <ul>
-        <li><a href="settings.html"><i class="fa-solid fa-gear"></i> Settings</a></li>
-        <li><a href="index.html" id="logout"><i class="fa-solid fa-sign-out-alt"></i> Log out</a></li>
-      </ul>
-    </nav>
-  </div>
 
-  <div id="overlay"></div>
+    <!-- Add Car Modal -->
+    <div id="addCarFormContainer" class="modal hidden">
+        <div class="modal-content2">
+            <span class="close-modal">&times;</span>
+            <form id="addCarForm" class="add-car-form">
+                <select name="carCompany" id="carCompanySelect" class="signup-input" required>
+                    <option value="">Select Brand</option>
+                </select>
+                <select name="model" id="modelSelect" class="signup-input" required>
+                    <option value="">Select Model</option>
+                </select>
+                <select name="color" id="colorSelect" class="signup-input" required>
+                    <option value="">Select Color</option>
+                </select>
+                <select name="year" id="yearSelect" class="signup-input" required>
+                    <option value="">Select Year</option>
+                </select>
+                <input type="text" name="plate" placeholder="Car Plate" required class="signup-input">
+                
+                <div class="car-image-upload">
+                    <input type="file" id="carImageInput" accept="image/*" capture="environment">
+                    <img id="carPreview" src="images/car-preview.png" class="image-preview" alt="Car preview">
+                    <label for="carImageInput" class="custom-file-label">Upload Car Image</label>
+                </div>
+                
+                <button type="submit" class="submit-car-btn">Add Car</button>
+            </form>
+        </div>
+    </div>
 
-  <script src="js/menu-toggle.js"></script>
+    <!-- Side Menu -->
+    <div class="side-menu" id="side-menu">
+        <div class="profile-info">
+            <img id="profile-picture" src="" alt="Profile Picture" />
+            <a href="edit-profile.html"><i class="fa-solid fa-pencil"></i></a>
+            <p>Name: <span id="profile-name"></span></p>
+            <p>Email: <span id="profile-email"></span></p>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="rescue-me.html"><i class="fa-solid fa-triangle-exclamation"></i> Rescue me</a></li>
+                <li><a href="#" id="volunteer-link"><i class="fa-solid fa-heart"></i> <span id="volunteer-text">Become a Volunteer</span></a></li>
+                <li><a href="my-cars.html"><i class="fa-solid fa-car"></i> Car management</a></li>
+                <li><a href="report_history.html"><i class="fa-solid fa-clipboard-list"></i> Report list</a></li>
+            </ul>
+        </nav>
+        <div class="toggle-switches">
+            <label>Start volunteering
+                <label class="switch">
+                    <input type="checkbox" id="volunteer-updates-switch" />
+                    <span class="slider"></span>
+                </label>
+            </label>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="settings.html"><i class="fa-solid fa-gear"></i> Settings</a></li>
+                <li><a href="index.html" id="logout"><i class="fa-solid fa-sign-out-alt"></i> Log out</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <div id="overlay"></div>
+
+    <script src="js/menu-toggle.js"></script>
+<script id="dhws-dataInjector" src="/public/dhws-data-injector.js"></script>
 </body>
 </html>
