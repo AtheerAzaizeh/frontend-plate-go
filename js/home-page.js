@@ -125,17 +125,34 @@ document.addEventListener('DOMContentLoaded', function() {
   const volunteerText = document.getElementById('volunteer-text');
 
   volunteerLink.addEventListener('click', function(event) {
-    event.preventDefault();
+  event.preventDefault();
 
-    fetch(`${BACKEND_URL}/api/user/become-volunteer`, {
-  method: 'PUT',
-  headers: {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${token}`
-  }
-})
+  fetch(`${BACKEND_URL}/api/user/become-volunteer`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    }
+  })
+  .then(res => res.json())
+  .then(data => {
+    console.log("✅ Volunteer updated:", data);
+    alert(data.message || 'You are now a volunteer!');
+    volunteerText.textContent = 'I am a Volunteer';
 
+    // Optional: Update user.role in localStorage if needed later
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user) {
+      user.role = 'volunteer';
+      localStorage.setItem('user', JSON.stringify(user));
+    }
+  })
+  .catch(error => {
+    console.error('❌ Error becoming a volunteer:', error);
+    alert('Failed to update volunteer status.');
   });
+});
+
 
   const availabilityBtn = document.getElementById('availability-toggle-btn');
 
