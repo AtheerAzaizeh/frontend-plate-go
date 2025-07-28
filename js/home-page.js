@@ -150,6 +150,34 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
+  const availabilityBtn = document.getElementById('availability-toggle-btn');
+
+if (availabilityBtn) {
+  availabilityBtn.addEventListener('click', async () => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/user/toggle-availability`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      const result = await res.json();
+      if (res.ok) {
+        availabilityBtn.textContent = result.available
+          ? '🟢 I’m Available'
+          : '🔴 I’m Unavailable';
+      } else {
+        alert(result.message || 'Error updating availability.');
+      }
+    } catch (err) {
+      console.error('Error toggling availability:', err);
+      alert('Something went wrong.');
+    }
+  });
+}
+
+
   const logoutButton = document.getElementById('logout');
   logoutButton.addEventListener('click', () => {
     localStorage.removeItem('token');
