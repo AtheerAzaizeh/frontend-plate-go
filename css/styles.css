@@ -3038,3 +3038,13 @@ input:checked + .slider:before {
   cursor: pointer;
 }
 
+.accept-rescue-btn {
+  margin-left: 10px;
+  background: green;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
