@@ -3,6 +3,17 @@
 document.addEventListener('DOMContentLoaded', function() {
   const token = localStorage.getItem('token');
   const user = JSON.parse(localStorage.getItem('user'));
+  const statusBadge = document.getElementById('availability-status');
+if (statusBadge && user && typeof user.available === 'boolean') {
+  statusBadge.textContent = user.available ? '🟢' : '🔴';
+}
+
+  const availabilitySwitch = document.getElementById('volunteer-updates-switch');
+
+if (availabilitySwitch && user && typeof user.available === 'boolean') {
+  availabilitySwitch.checked = user.available; // set switch ON/OFF
+}
+
 
   if (!token) {
     window.location.href = 'index.html';
@@ -15,6 +26,21 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('profile-picture-menu').src = user.img;
     document.getElementById('profile-name').innerText = `${user.firstName} ${user.lastName}`;
     document.getElementById('profile-email').innerText = user.email;
+
+
+     if (user.role === 'volunteer') {
+    const volunteerLink = document.getElementById('volunteer-link');
+    if (volunteerLink) {
+      volunteerLink.style.pointerEvents = 'none';
+volunteerLink.style.opacity = '0.6';         
+volunteerLink.style.cursor = 'default';  
+    }
+
+    const volunteerText = document.getElementById('volunteer-text');
+    if (volunteerText) {
+      volunteerText.textContent = 'I am a Volunteer';
+    }
+  }
   }
 
   fetch(`${BACKEND_URL}/api/volunteer/status`, {
@@ -156,8 +182,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
   const availabilityBtn = document.getElementById('availability-toggle-btn');
 
-if (availabilityBtn) {
-  availabilityBtn.addEventListener('click', async () => {
+if (availabilitySwitch) {
+  availabilitySwitch.addEventListener('change', async () => {
     try {
       const res = await fetch(`${BACKEND_URL}/api/user/toggle-availability`, {
         method: 'PUT',
@@ -168,9 +194,21 @@ if (availabilityBtn) {
 
       const result = await res.json();
       if (res.ok) {
-        availabilityBtn.textContent = result.available
-          ? '🟢 I’m Available'
-          : '🔴 I’m Unavailable';
+        // Sync localStorage
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (user) {
+          user.available = result.available;
+          localStorage.setItem('user', JSON.stringify(user));
+        }
+
+          if (statusBadge) {
+    statusBadge.textContent = result.available ? '🟢' : '🔴';
+  }
+
+
+        alert(result.available
+          ? "✅ You are now available to receive rescue requests."
+          : "🔕 You are now unavailable.");
       } else {
         alert(result.message || 'Error updating availability.');
       }
@@ -180,6 +218,7 @@ if (availabilityBtn) {
     }
   });
 }
+
 
 
   const logoutButton = document.getElementById('logout');
