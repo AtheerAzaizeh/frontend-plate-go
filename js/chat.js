@@ -16,6 +16,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   const imagePreview = document.getElementById("image-preview");
   const previewWrapper = document.getElementById("image-preview-wrapper");
   const removeImageBtn = document.getElementById("remove-image-btn");
+  const videoEl = document.getElementById("camera-stream");
+  const canvas = document.getElementById("capture-canvas");
+  const captureBtn = document.getElementById("capture-btn");
 
   let socket;
   let otherUser = null;
@@ -117,20 +120,26 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (e.key === "Enter") sendMessage();
   });
 
-  document.getElementById("image-btn").onclick = () => {
-    document.getElementById("image-input").click();
+  document.getElementById("image-btn").onclick = async () => {
+    previewWrapper.style.display = "none";
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    videoEl.srcObject = stream;
+    videoEl.style.display = "block";
+    captureBtn.style.display = "inline-block";
   };
 
-  document.getElementById("image-input").addEventListener("change", (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      imagePreview.src = reader.result;
-      previewWrapper.style.display = "block";
-    };
-    reader.readAsDataURL(file);
-  });
+  captureBtn.onclick = () => {
+    const ctx = canvas.getContext("2d");
+    canvas.width = videoEl.videoWidth;
+    canvas.height = videoEl.videoHeight;
+    ctx.drawImage(videoEl, 0, 0);
+    const base64Image = canvas.toDataURL("image/png");
+    imagePreview.src = base64Image;
+    previewWrapper.style.display = "block";
+    videoEl.style.display = "none";
+    captureBtn.style.display = "none";
+    videoEl.srcObject.getTracks().forEach((track) => track.stop());
+  };
 
   removeImageBtn.onclick = () => {
     imagePreview.src = "";
