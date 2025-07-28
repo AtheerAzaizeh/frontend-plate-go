@@ -33,7 +33,7 @@ console.log("🔍 rescueId:", n.rescueId, "message:", n.message);
     div.appendChild(viewButton);
 
     // ✅ Accept Rescue Button (volunteer only + must have rescueId)
-    if (user?.role === 'volunteer' || n.rescueId) {
+    if (user?.role === 'volunteer' && n.rescueId) {
   const acceptButton = document.createElement('button');
   acceptButton.textContent = '✅ Accept Rescue';
   acceptButton.className = 'accept-rescue-btn';
