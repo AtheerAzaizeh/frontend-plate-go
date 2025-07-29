@@ -42,8 +42,39 @@ function displayReports(reports) {
         </div>
         <div>${formatDate(report.date)}<br>${report.time || ""}</div>
         <div class="status-icon">${statusIcon(report.reason)}</div>
+         <button class="delete-btn" title="Delete Report" data-id="${report._id}">
+      🗑️
+    </button>
       </div>
     `;
+
+    // Add delete button logic
+item.querySelector(".delete-btn").addEventListener("click", async (e) => {
+  e.stopPropagation(); // prevent triggering the click on the report item
+  const confirmed = confirm("Are you sure you want to delete this report?");
+  if (!confirmed) return;
+
+  const reportId = e.target.getAttribute("data-id");
+  try {
+    const token = localStorage.getItem("token");
+    const res = await fetch(`${BACKEND_URL}/api/reports/${reportId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!res.ok) throw new Error("Failed to delete report");
+
+    // Remove from UI
+    allReports = allReports.filter((r) => r._id !== reportId);
+    displayReports(allReports);
+  } catch (err) {
+    console.error("Delete error:", err);
+    alert("Failed to delete report.");
+  }
+});
+
 
     item.addEventListener("click", () => {
       window.location.href = `car-details.html?reportId=${report._id}`;

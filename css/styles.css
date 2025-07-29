@@ -3440,3 +3440,14 @@ input:checked + .slider:before {
   padding: 4px 8px;
   cursor: pointer;
 }
+
+
+.delete-btn {
+  background: none;
+  border: none;
+  color: red;
+  font-size: 15px;
+  cursor: pointer;
+  margin-top : 5px;
+  margin-left: 35px ;
+}
