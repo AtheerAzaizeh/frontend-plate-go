@@ -216,8 +216,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 body: JSON.stringify(carPayload)
             });
 
-            if (!res.ok) throw new Error("Failed to save car");
-            const car = await res.json();
+            if (!res.ok) {
+              const errBody = await res.json().catch(() => ({}));
+              const text = errBody.message || errBody.error || res.statusText;
+              throw new Error(`(${res.status}) ${text}`);
+            }
 
             if (editId) {
                 window.location.reload();
@@ -232,8 +235,7 @@ document.addEventListener('DOMContentLoaded', function () {
             carImageUrl = "";
 
         } catch (err) {
-            console.error("Error saving car:", err);
-            alert("Error saving car. Please try again.");
+            showCarFinderModal({ message: "Car with this plate already exists.", type: "error" });
         }
     });
 

@@ -5,15 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="css/styles.css">
-    <script src="js/config.js"></script>
-    <script defer src="js/my-cars.js"></script> 
-    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-    <script src="js/socket-listener.js"></script>
+    <script defer src="js/config.js"></script>
+    <script defer src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script defer src="js/socket-listener.js"></script>
+    <script defer src="js/my-cars.js"></script>
     <title>My Cars</title>
 </head>
 <body>
     <!-- Header -->
-    <div class="header">
+     <header class="header">
         <div class="profile">
             <img id="profile-picture" src="" alt="Profile Picture">
             <span id="welcome-message">Welcome </span>
@@ -25,28 +25,29 @@
             <a href="notifications.html" class="ring"><img src="images/notification-bell.svg" alt="Bell Icon" width="30" height="30"></a>
             <span class="san" id="menu-toggle"><img src="images/menu-icon.svg" alt="Menu Icon" width="30" height="30"></span>
         </div>      
-    </div>
+    </header>
 
     <!-- Main Navigation -->
-    <div class="main">
+    <nav class="main" aria-label="Quick links">
         <a href="car-finder.html"><img src="images/search.png" alt="search icon"></a>
         <a href="chat-list.html"><img src="images/message.png" alt="message icon"></a>
         <a href="my-cars.html"><img src="images/car.png" alt="car icon"></a> 
-    </div>
+    </nav>
 
+    <main>
     <!-- Section Header -->
-    <div class="section-header">
-        <a href="report_history.html" class="back-button"><i class="fa-solid fa-arrow-left"></i></a>
-        <h3>My Cars</h3>
-    </div>
+        <div class="section-header">
+            <a href="report_history.html" class="back-button"><i class="fa-solid fa-arrow-left"></i></a>
+            <h3>My Cars</h3>
+        </div>
+      
+        <!-- Car Container -->
+        <div id="car-container" class="car-container">
 
-    <!-- Car Container -->
-    <div id="car-container" class="car-container">
-        
-    </div>
-
+        </div>
+    </main>
     <!-- Add Car Modal -->
-    <div id="addCarFormContainer" class="modal hidden">
+    <div id="addCarFormContainer" class="modal hidden" role="dialog" aria-labelledby="add-car-title">
         <div class="modal-content2">
             <span class="close-modal">&times;</span>
             <form id="addCarForm" class="add-car-form">
@@ -80,7 +81,7 @@
   <div id="overlay"></div>
 
   <!-- Side Menu -->
-  <div class="side-menu" id="side-menu">
+  <aside class="side-menu" id="side-menu" aria-label="User menu">
     <div class="profile-info">
       <img id="profile-picture-menu" src="" alt="Profile Picture" />
       <a href="edit-profile.html"><i class="fa-solid fa-pencil"></i></a>
@@ -112,9 +113,9 @@
         <li><a href="index.html" id="logout"><i class="fa-solid fa-sign-out-alt"></i> Log out</a></li>
       </ul>
     </nav>
-  </div>
+  </aside>
 
-    <div class="modal-car-finder" id="modalCarFinder">
+<div class="modal-car-finder" id="modalCarFinder" role="alertdialog">
   <div class="modal-car-finder-content" id="modalCarFinderContent">
     <span class="modal-car-finder-icon" id="modalCarFinderIcon"></span>
     <span class="modal-car-finder-message" id="modalCarFinderMessage"></span>
@@ -122,6 +123,6 @@
   </div>
 </div>
 
-    <script src="js/menu-toggle.js"></script>
+  <script src="js/menu-toggle.js" defer></script>
 </body>
 </html>

@@ -116,13 +116,11 @@ select {
   display: flex;
   justify-content: space-around;
   align-items: center;
+  margin-top: 72px;
   width: 100%;
-  height: 60px;
-  position: fixed;
-  top: 80px;
-  left: 0;
-  z-index: 1010;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 8px 0;
+  box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+  z-index: 90;
 }
 
 .main a img {
@@ -1114,104 +1112,233 @@ input[type="file"] {
 
 .section-header {
   display: flex;
-  padding-top: 20px;
-  margin-right: 80%;
+  align-items: center;
+  padding: 15px;
+  margin: 60px 35px;
 }
-
-.section-header i {
-  font-size: 20px;
-  margin-right: 15px;
-  cursor: pointer;
+.section-header .back-button {
+  color: #333;
+  font-size: 18px;
+  margin-right: 12px;
+  text-decoration: none;
 }
-
 .section-header h3 {
-  font-size: 24px;
-  margin: 0;
+  font-size: 18px;
 }
+
 /*-----------------------------my-cars.html-----------------------------*/
 .car-container {
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 54px;
-  margin-top: 64px;
-  width: 100%;
-   overflow-y: auto;
-   overflow-x: hidden;
+  padding: 0 15px 100px;
+  overflow-y: auto;
 }
 
-.car-card , .add-car-box{
-  width: 382px;
-  height: 183px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  padding: 10px;
-  position: relative;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  background-color: #d9d9d9;
-  font-family: sans-serif;
-  margin: 54px 0;
+.main-car-section,
+.other-car-section {
+  margin-bottom: 20px;
 }
-
-.car-content2 {
-  display: flex;
-  align-items: center;
-}
-
-.add-car-box:hover {
-  background-color: #cfcfcf;
-}
-
-.add-car-button {
-    border: none;
-    background: none;
-    line-height: 1;
-    cursor: pointer;
-}
-
-.add-car-button::after {
-  content: "";
-  position: absolute;
-  bottom: -5px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 60px;
-  border-bottom: 1px dotted #333;
-}
-
-.add-car-box p {
+.main-car-title,
+.other-car-title {
   font-size: 16px;
-  color: #333;
-  align-self: center;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+.car-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: #D9D9D9;
+  padding: 12px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  margin-bottom: 12px;
+}
+.car-card .car-content2 {
+  display: flex;
+  align-items: center;
+}
+.car-card .car-img2 {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-right: 15px;
+}
+.car-card .car-info p {
+  margin: 0 0 5px 0;
+  font-size: 14px;
 }
 
+/* Options dropdown */
+.car-options {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+.options-button {
+  background: transparent;
+  padding: 5px;
+  cursor: pointer;
+}
+.options-button img {
+  width: 5px;
+  height: 20px;
+}
+.dropdown-menu {
+  position: absolute;
+  top: 30px;
+  right: 0;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+.dropdown-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  white-space: nowrap;
+}
+.dropdown-item:hover {
+  background: #f5f5f5;
+}
+.hidden {
+  display: none !important;
+}
+
+.car-item-wrapper{
+  padding-left: 15px;
+}
+
+/* “Add Car” box */
+.add-car-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  background: #D9D9D9;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+}
+.add-car-box:hover {
+  background-color: #f0f0f0;
+}
+.add-car-box .add-car-button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+.add-car-box .add-car-button img {
+  width: 32px;
+  height: 32px;
+  color: #888;
+  margin-top: 10px;
+}
+.add-car-box p {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #555;
+}
+
+/* Modal */
 .modal {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.6);
+  background: rgba(0,0,0,0.5);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9999;
+  z-index: 200;
 }
-
 .modal.hidden {
   display: none;
 }
-
+.modal-content2 {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 380px;
+  position: relative;
+}
 .close-modal {
   position: absolute;
-  top: 12px;
-  right: 15px;
-  font-size: 24px;
-  font-weight: bold;
-  color: #555;
+  top: 10px;
+  right: 10px;
+  font-size: 20px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+/* Car image preview in form */
+.car-image-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 12px 0;
+}
+.car-image-upload input[type="file"] {
+  display: none;
+}
+.image-preview {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+.custom-file-label {
+  font-size: 14px;
+  color: #007bff;
+  cursor: pointer;
+}
+
+/* Car-Finder modal */
+.modal-car-finder {
+  position: fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background: rgba(0,0,0,0.3);
+  display: none;
+  align-items:center;
+  justify-content:center;
+  z-index:300;
+}
+.modal-car-finder.active {
+  display: flex;
+}
+.modal-car-finder-content {
+  background:#fff;
+  padding:20px;
+  border-radius:8px;
+  text-align:center;
+  position:relative;
+  width: 80%;
+  max-width: 320px;
+}
+.modal-car-finder-icon {
+  display:block;
+  font-size: 30px;
+  margin-bottom: 10px;
+}
+.modal-car-finder-message {
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+.modal-car-finder-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: transparent;
+  border: none;
+  font-size: 20px;
   cursor: pointer;
 }
 .add-car-form {
