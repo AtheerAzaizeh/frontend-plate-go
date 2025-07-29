@@ -12,54 +12,63 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const validNotifications = notifications.filter(n => n.rescueId && user?.role === 'volunteer');
 
-  notifications.forEach(n => {
+  for (const n of notifications) {
     const div = document.createElement('div');
     div.className = 'notification-item';
     console.log("🔍 rescueId:", n.rescueId, "message:", n.message);
 
     const messageText = document.createElement('span');
     messageText.textContent = `${n.message} • ${new Date(n.createdAt).toLocaleString()}`;
-
-    const viewButton = document.createElement('button');
-    viewButton.textContent = '🔍 View Details';
-    viewButton.className = 'view-details-btn';
-    viewButton.onclick = () => {
-      alert(`🚨 Rescue Details\n\nLocation: ${n.location || 'Unknown'}\nReason: ${n.reason || 'Not provided'}`);
-    };
-
-    const navigateButton = document.createElement('button');
-    navigateButton.textContent = '🧭 Navigate';
-    navigateButton.className = 'navigate-btn';
-    navigateButton.onclick = () => {
-      if (!n.location) {
-        alert("❌ No location provided for this rescue.");
-        return;
-      }
-      const query = encodeURIComponent(n.location);
-      const url = `https://www.google.com/maps/search/?api=1&query=${query}`;
-      window.open(url, '_blank');
-    };
-
     div.appendChild(messageText);
-    div.appendChild(viewButton);
-    div.appendChild(navigateButton);
 
-    // ✅ Accept Rescue Button (volunteer only + must have rescueId)
-    if (user?.role === 'volunteer' && n.rescueId) {
+    // 🚨 RESCUE notification
+    if (n.rescueId && user?.role === 'volunteer') {
+      let isAlreadyTaken = false;
+
+      try {
+        const rescueRes = await fetch(`${BACKEND_URL}/api/rescue/${n.rescueId}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (rescueRes.ok) {
+          const rescueData = await rescueRes.json();
+          isAlreadyTaken = rescueData.status !== 'pending';
+        } else {
+          isAlreadyTaken = true;
+        }
+      } catch (err) {
+        console.warn("Error fetching live rescue status:", err);
+        isAlreadyTaken = true;
+      }
+
+      const viewButton = document.createElement('button');
+      viewButton.textContent = '🔍 View Details';
+      viewButton.className = 'view-details-btn';
+      viewButton.onclick = () => {
+        alert(`🚨 Rescue Details\n\nLocation: ${n.location || 'Unknown'}\nReason: ${n.reason || 'Not provided'}`);
+      };
+
+      const navigateButton = document.createElement('button');
+      navigateButton.textContent = '📍 Navigate';
+      navigateButton.className = 'navigate-btn';
+      navigateButton.onclick = () => {
+        if (!n.location) return alert("❌ No location provided.");
+        const query = encodeURIComponent(n.location);
+        window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
+      };
+
       const acceptButton = document.createElement('button');
-      acceptButton.textContent = '✅ Accept Rescue';
+      acceptButton.textContent = isAlreadyTaken ? '⛔ Already Taken' : '✅ Accept Rescue';
       acceptButton.className = 'accept-rescue-btn';
-
-      if (!n.rescueId || n.status !== 'pending') {
-        acceptButton.disabled = true;
-        acceptButton.textContent = '⛔ Already Taken';
+      acceptButton.disabled = isAlreadyTaken;
+      if (isAlreadyTaken) {
         acceptButton.style.backgroundColor = 'gray';
       }
 
       acceptButton.onclick = async () => {
-        if (!n.rescueId || n.rescueId === "undefined") {
-          alert("❌ Cannot accept this rescue — missing rescueId.");
-          console.warn("Bad notification object:", n);
+        if (acceptButton.disabled) return;
+
+        if (!n.rescueId) {
+          alert("❌ Missing rescueId.");
           return;
         }
 
@@ -76,24 +85,49 @@ document.addEventListener('DOMContentLoaded', async () => {
           });
 
           const result = await response.json();
+
           if (response.ok) {
             alert('✅ You accepted the rescue!');
-            location.reload();
+            acceptButton.disabled = true;
+            acceptButton.textContent = '⛔ Already Taken';
+            acceptButton.style.backgroundColor = 'gray';
           } else {
-            alert(result.message || 'Failed to accept rescue');
+            alert(result.message || '❌ Rescue already taken');
+            acceptButton.disabled = true;
+            acceptButton.textContent = '⛔ Already Taken';
+            acceptButton.style.backgroundColor = 'gray';
           }
         } catch (err) {
           console.error('Accept rescue error:', err);
-          alert('Error accepting rescue');
+          alert('❌ Error accepting rescue');
+          acceptButton.disabled = true;
+          acceptButton.textContent = '⛔ Failed';
+          acceptButton.style.backgroundColor = 'gray';
         }
       };
 
-      div.appendChild(acceptButton);
+      div.append(viewButton, navigateButton, acceptButton);
+    }
+
+    // 💬 MESSAGE notification
+    else if (n.type === 'message' || n.chatId) {
+      const chatButton = document.createElement('button');
+      chatButton.textContent = '💬 Open Chat';
+      chatButton.className = 'open-chat-btn';
+      chatButton.onclick = () => {
+        const chatUrl = `chat.html?chatId=${n.chatId}`;
+        window.location.href = chatUrl;
+      };
+      div.appendChild(chatButton);
+    }
+
+    // 🛑 REPORT notification
+    else if (n.type === 'report' || n.reportId || n.message?.includes("New report submitted")) {
+      console.log("Report notification — buttons skipped.");
     }
 
     container.appendChild(div);
-    console.log("Notification:", n);
-  });
+  }
 
   // Mark all notifications as read
   await fetch(`${BACKEND_URL}/api/notification/mark-read`, {
