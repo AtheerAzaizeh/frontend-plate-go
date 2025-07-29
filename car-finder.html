@@ -9,6 +9,7 @@
     <script defer src="js/find-car.js"></script>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <script src="js/socket-listener.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <title>Car Finder</title>
 </head>
 <body>
@@ -34,9 +35,10 @@
     <div class="page-content">
         <div class="car-finder-container">
             <div class="plate-input-wrapper">
-                <div class="plate-blue-part"></div>
-                <input type="text" id="plate-input" placeholder="Inter plate number">
-                <i class="fa-solid fa-camera plate-camera-icon"></i>
+              <div class="plate-blue-part"></div>
+              <input type="text" id="plate-input" placeholder="Enter plate number">
+              <i class="fa-solid fa-camera plate-camera-icon" id="cameraIcon"></i>
+              <input type="file" accept="image/*" id="plateImageInput" capture="environment" style="display: none;">
             </div>
             <div class="finder-actions">
                 <button class="find-car-button">Find car</button>
@@ -83,6 +85,14 @@
       </ul>
     </nav>
   </div>
+
+  <div class="modal-car-finder" id="modalCarFinder">
+  <div class="modal-car-finder-content" id="modalCarFinderContent">
+    <span class="modal-car-finder-icon" id="modalCarFinderIcon"></span>
+    <span class="modal-car-finder-message" id="modalCarFinderMessage"></span>
+    <button class="modal-car-finder-close" id="modalCarFinderClose">&times;</button>
+  </div>
+</div>
 
     <script src="js/menu-toggle.js"></script>
 

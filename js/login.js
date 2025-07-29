@@ -1,5 +1,25 @@
+function showLoginMessage({ text = "", type = "login-success", loading = false }) {
+    const msg = document.getElementById("message");
+    msg.className = `login-message ${type} active`;
+    msg.style.display = "flex";
+    if (loading) {
+        msg.innerHTML = `<span class="spinner"></span> <span>${text}</span>`;
+    } else {
+        msg.innerHTML = `<span>${text}</span>`;
+    }
+}
+
+function hideLoginMessage() {
+    const msg = document.getElementById("message");
+    msg.className = "login-message";
+    msg.style.display = "none";
+    msg.innerHTML = "";
+}
+
 document.getElementById('loginForm').addEventListener('submit', async function (event) {
     event.preventDefault();
+
+    showLoginMessage({ text: "Logging in... Please wait", type: "login-loading", loading: true });
 
     const formData = {
         emailOrPhone: event.target.email.value,
@@ -13,29 +33,25 @@ document.getElementById('loginForm').addEventListener('submit', async function (
             body: JSON.stringify(formData)
         });
 
-        const messageDiv = document.getElementById('message');
-
         if (!res.ok) {
             const err = await res.json();
+            showLoginMessage({ text: err.message || 'Login failed', type: "login-error" });
+            setTimeout(hideLoginMessage, 2500);
             throw new Error(err.message || 'Login failed');
         }
 
         const data = await res.json();
-        messageDiv.className = 'login-message login-success';
-        messageDiv.innerText = 'Login successful!';
-        messageDiv.style.display = 'block';
+        showLoginMessage({ text: 'Login successful!', type: "login-success" });
 
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
 
         setTimeout(() => {
             window.location.href = 'home-page.html';
-        }, 1000);
+        }, 1300);
+
     } catch (error) {
-        console.error('Login error:', error);
-        const messageDiv = document.getElementById('message');
-        messageDiv.className = 'login-message login-error';
-        messageDiv.innerText = 'Login failed: ' + error.message;
-        messageDiv.style.display = 'block';
+        showLoginMessage({ text: 'Login failed: ' + error.message, type: "login-error" });
+        setTimeout(hideLoginMessage, 2500);
     }
 });

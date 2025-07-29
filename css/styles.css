@@ -188,33 +188,6 @@ select {
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
 }
 
-.map-toggle-button {
-  background-color: #e0e0e0;
-  color: #000;
-  border-radius: 25px;
-  padding: 10px 20px;
-  font-weight: 500;
-  gap: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  position: absolute;
-  top: 30px;
-  left: 50%;
-  transform: translateX(-50%);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  z-index: 999;
-}
-
-.map-toggle-button i {
-  font-size: 20px;
-}
-
-.map-toggle-button:hover {
-  transform: translateX(-50%) scale(1.05);
-}
-
 /* Fullscreen Map State */
 .map-fullscreen {
   position: fixed !important;
@@ -520,9 +493,9 @@ input:checked + .slider:before {
 .signup-wrapper,
 .login-wrapper {
   width: 100%;
-  max-width: 900px;
-  margin: 20px auto;
+  margin-top: 120px;
   padding: 1rem;
+  overflow-y: auto;
 }
 
 .signup-card {
@@ -534,7 +507,6 @@ input:checked + .slider:before {
 
 .profile-pic-container {
   width: 120px;
-  height: 120px;
   margin: 0 auto 1.5rem auto;
   position: relative;
 }
@@ -549,7 +521,7 @@ input:checked + .slider:before {
 
 .custom-file-label {
   background-color: #eee;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem;
   border-radius: 8px;
   cursor: pointer;
   text-align: center;
@@ -603,26 +575,56 @@ input[type="file"] {
 .signup-button:hover {
   background-color: #45a049;
 }
-
-.form-message {
-  margin-top: 1rem;
-  padding: 0.75rem;
-  border-radius: 8px;
-  text-align: center;
-  font-weight: bold;
-  display: none; /* Hidden by default */
+@keyframes spinner {
+  to { transform: rotate(360deg); }
 }
 
-.form-message.success {
-  background-color: #d4edda;
-  color: #155724;
+/* Animation for login-message/signup-message */
+.login-message,
+.signup-message {
+  opacity: 0;
+  transition: opacity 0.4s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  min-height: 44px;
 }
 
-.form-message.error {
-  background-color: #f8d7da;
-  color: #721c24;
+.login-message.active,
+.signup-message.active {
+  opacity: 1;
+  pointer-events: auto;
 }
 
+/* Spinner style */
+.login-message .spinner,
+.signup-message .spinner {
+  width: 22px;
+  height: 22px;
+  border: 3px solid #e0e0e0;
+  border-top-color: #4caf50;
+  border-radius: 50%;
+  animation: spinner 0.9s linear infinite;
+}
+
+.login-success,
+.signup-success {
+  background-color: #d4edda !important;
+  color: #155724 !important;
+}
+
+.login-error,
+.signup-error {
+  background-color: #f8d7da !important;
+  color: #721c24 !important;
+}
+
+.login-loading,
+.signup-loading {
+  background-color: #f7fafc !important;
+  color: #888 !important;
+}
 /* ==========================================================================
    7. My Cars & Car Details Pages
    ========================================================================== */
@@ -1113,7 +1115,6 @@ input[type="file"] {
   }
 }
 
-.signup-wrapper,
 .login-form,
 .report-wrapper,
 .car-container,
@@ -1998,6 +1999,32 @@ button[type="button"].submit:hover {
   z-index: 1003;
 }
 
+.map-toggle-button.map-active {
+    left: -10px;
+    top: 14%;
+    transform: none;
+    border-radius: 10px;
+    padding: 10px 18px 10px 14px;
+    background: #d9d9d9;
+    color: #333;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 16px;
+    z-index: 1005;
+    border: 1.5px solid #d5d5d5;
+    transition: left 0.3s, top 0.3s, background 0.2s, box-shadow 0.2s;
+}
+
+.map-toggle-button .back-arrow {
+    display: inline-block;
+    font-size: 21px;
+    margin-right: 5px;
+    color: #101110;
+    vertical-align: middle;
+}
+
 .map-toggle-button i {
   font-size: 18px;
 }
@@ -2116,6 +2143,68 @@ button[type="button"].submit:hover {
 .report-history-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.modal-car-finder {
+  display: none;
+  position: fixed;
+  z-index: 1200;
+  left: 0; top: 0; width: 100vw; height: 100vh;
+  background: rgba(24,32,41,0.24);
+  justify-content: center;
+  align-items: center;
+  transition: background 0.2s;
+}
+
+.modal-car-finder.active {
+  display: flex;
+  animation: modalAppear 0.25s;
+}
+
+@keyframes modalAppear {
+  from { opacity: 0; transform: scale(0.97);}
+  to   { opacity: 1; transform: scale(1);}
+}
+
+.modal-car-finder-content {
+  background: #fff;
+  min-width: 310px;
+  max-width: 94vw;
+  border-radius: 18px;
+  box-shadow: 0 12px 36px rgba(60,60,60,0.17);
+  padding: 34px 32px 24px 32px;
+  text-align: center;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.modal-car-finder-icon {
+  font-size: 42px;
+  margin-bottom: 8px;
+}
+
+.modal-car-finder-message {
+  font-size: 18px;
+  font-weight: 500;
+  color: #252c36;
+  margin-bottom: 5px;
+}
+
+.modal-car-finder-close {
+  position: absolute;
+  top: 16px; right: 18px;
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  color: #b5b5b5;
+  cursor: pointer;
+  transition: color 0.16s;
+}
+.modal-car-finder-close:hover {
+  color: #333;
 }
 
 /*---------------------car-details.html---------------------*/

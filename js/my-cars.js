@@ -347,3 +347,66 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
+
+function showCarFinderModal({ message, type = "info", timeout = 2000 }) {
+  const modal = document.getElementById("modalCarFinder");
+  const msg = document.getElementById("modalCarFinderMessage");
+  const icon = document.getElementById("modalCarFinderIcon");
+
+  msg.textContent = message || "";
+
+  if (type === "success") {
+    icon.innerHTML = '<i class="fa-solid fa-circle-check" style="color:#4caf50"></i>';
+  } else if (type === "error") {
+    icon.innerHTML = '<i class="fa-solid fa-circle-xmark" style="color:#d32f2f"></i>';
+  } else if (type === "warning") {
+    icon.innerHTML = '<i class="fa-solid fa-triangle-exclamation" style="color:#ffb300"></i>';
+  } else {
+    icon.innerHTML = '<i class="fa-solid fa-circle-info" style="color:#2564cf"></i>';
+  }
+
+  modal.classList.add("active");
+
+  if (timeout !== false) {
+    setTimeout(() => { modal.classList.remove("active"); }, timeout);
+  }
+}
+
+document.getElementById("modalCarFinderClose").onclick = function() {
+  document.getElementById("modalCarFinder").classList.remove("active");
+};
+
+
+document.getElementById("carImageInput").addEventListener("change", function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    showCarFinderModal({ message: "Analyzing car image for plate...", type: "info", timeout: false });
+
+    const formData = new FormData();
+    formData.append("upload", file);
+
+    fetch("https://api.platerecognizer.com/v1/plate-reader/", {
+        method: "POST",
+        headers: {
+            "Authorization": "Token 60719932b2e8d8591f96ece1388544c5f2510d75" 
+        },
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.results && data.results.length) {
+            const plate = data.results[0].plate;
+            const plateInput = document.querySelector('input[name="plate"]');
+            if (plateInput) plateInput.value = plate;
+            showCarFinderModal({ message: "Detected Plate: " + plate, type: "success", timeout: 1400 });
+        } else {
+            showCarFinderModal({ message: "No plate detected.", type: "warning" });
+        }
+    })
+    .catch(err => {
+        showCarFinderModal({ message: "Plate recognition failed.", type: "error" });
+    });
+
+    setTimeout(() => { e.target.value = ""; }, 1200);
+});
