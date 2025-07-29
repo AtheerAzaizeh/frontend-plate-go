@@ -102,3 +102,62 @@ function statusIcon(reason) {
   if (reason.includes("lights")) return "✅"
   return "🟡"
 }
+
+  function applyFilters() {
+    const searchPlate = elements.searchInput.value.toLowerCase()
+    const filterCity = elements.cityFilter.value
+    const filterDate = elements.dateFilter.value
+
+    const filteredReports = allReports.filter((report) => {
+      const matchPlate = report.plate.toLowerCase().includes(searchPlate)
+      const matchCity = !filterCity || report.location?.city === filterCity
+      const matchDate = !filterDate || formatDate(report.date) === formatDate(filterDate)
+
+      return matchPlate && matchCity && matchDate
+    })
+
+    displayReports(filteredReports)
+  }
+
+
+  async function fetchAllReports() {
+    const token = localStorage.getItem("token")
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/reports/all`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      const data = await response.json()
+      allReports = data.reports || [] 
+      displayReports(allReports) 
+      populateCitiesFilter(allReports)
+    } catch (error) {
+      console.error("Error fetching reports:", error)
+    }
+  }
+
+  function init() {
+    const user = JSON.parse(localStorage.getItem("user"))
+    const token = localStorage.getItem("token")
+
+    if (!user || !token) {
+      window.location.href = "index.html"
+      return 
+    }
+
+    elements.welcomeMessage.textContent += ` ${user.firstName}`
+    elements.profilePicture.src = user.img
+
+    fetchAllReports()
+
+    elements.searchInput.addEventListener("input", applyFilters)
+    elements.cityFilter.addEventListener("change", applyFilters)
+    elements.dateFilter.addEventListener("change", applyFilters)
+  }
+
+  document.addEventListener("DOMContentLoaded", init)
+})()
