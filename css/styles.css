@@ -474,9 +474,9 @@ input[type="file"] {
 
 .car-options {
   position: absolute;
-  top: 5px;
+  top: 10px;
   right: 10px;
-  padding: 3px;
+  padding-right: 15px;
 }
 
 .options-button {
@@ -815,7 +815,11 @@ input[type="file"] {
 .notifications-container,
 .rescue-form,
 .car-details-container {
-  margin: 0 auto;
+  padding: 0 auto;
+}
+
+.main-car-section , .other-car-section{
+  padding-left: 15px;
 }
 
 .notification-badge {
@@ -1134,6 +1138,7 @@ input[type="file"] {
   margin-top: 64px;
   width: 100%;
    overflow-y: auto;
+   overflow-x: hidden;
 }
 
 .car-card , .add-car-box{
