@@ -802,16 +802,6 @@ input[type="file"] {
     padding: 15px;
   }
 
-  .car-content {
-    flex-direction: column;
-    gap: 15px;
-  }
-
-  .car-actions {
-    flex-direction: column;
-    gap: 10px;
-  }
-
   .btn.back-btn,
   .btn.report-btn {
     width: 100%;
@@ -1606,7 +1596,7 @@ button[type="button"].submit:hover {
   text-align: center;
   font-family: "Inter", sans-serif;
   position: absolute;
-  top: 20%;
+  top: 25%;
   left: 50%;
   transform: translate(-50%, -50%);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -1614,8 +1604,7 @@ button[type="button"].submit:hover {
 }
 
 .map-toggle-button.map-active {
-    left: -10px;
-    top: 14%;
+    left: 15px;
     transform: none;
     border-radius: 10px;
     padding: 10px 18px 10px 14px;
