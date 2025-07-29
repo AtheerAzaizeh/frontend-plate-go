@@ -1,258 +1,322 @@
-const CLOUDINARY_UPLOAD_URL = "https://api.cloudinary.com/v1_1/dxmqufeag/image/upload";
-const CLOUDINARY_UPLOAD_PRESET = "platego";
+/**
+ * signup-page.js
+ *
+ * This script handles the user signup form, including image uploads,
+ * dynamic population of form selects, form validation, and submission.
+ * It also includes functionality for license plate recognition.
+ */
 
-let profileImageUrl = null;
-let carImageUrl = null;
+(function () {
 
-const profileInput = document.getElementById("profileImageInput");
-const profilePreview = document.getElementById("profilePreview");
-const carInput = document.getElementById("carImageInput");
-const carPreview = document.getElementById("carPreview");
+  // --- 1. CONFIGURATION & CONSTANTS ---
+  const CLOUDINARY_UPLOAD_URL = "https://api.cloudinary.com/v1_1/dxmqufeag/image/upload";
+  const CLOUDINARY_UPLOAD_PRESET = "platego";
+  const PLATE_RECOGNIZER_API_URL = "https://api.platerecognizer.com/v1/plate-reader/";
+  const PLATE_RECOGNIZER_TOKEN = "Token 60719932b2e8d8591f96ece1388544c5f2510d75";
 
-const addressSelect = document.getElementById("addressSelect");
-const carCompanySelect = document.getElementById("carCompanySelect");
-const modelSelect = document.getElementById("modelSelect");
-const yearSelect = document.getElementById("yearSelect");
-const colorSelect = document.getElementById("colorSelect");
-
-// Profile image upload
-profileInput.addEventListener("change", async function () {
-  const file = this.files[0];
-  if (!file) return;
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
-  try {
-    const res = await fetch(CLOUDINARY_UPLOAD_URL, { method: "POST", body: formData });
-    const data = await res.json();
-    profileImageUrl = data.secure_url;
-    profilePreview.src = profileImageUrl;
-  } catch (err) {
-    console.error("Profile upload error:", err);
-  }
-});
-
-// Car image upload
-carInput.addEventListener("change", async function () {
-  const file = this.files[0];
-  if (!file) return;
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
-  try {
-    const res = await fetch(CLOUDINARY_UPLOAD_URL, { method: "POST", body: formData });
-    const data = await res.json();
-    carImageUrl = data.secure_url;
-    carPreview.src = carImageUrl;
-  } catch (err) {
-    console.error("Car upload error:", err);
-  }
-});
-
-// Load cities
-fetch("../backend/data-json/israel_cities.json")
-  .then(res => res.json())
-  .then(data => {
-    const cityNames = [...new Set(data.map(city => city.city))];
-    cityNames.sort().forEach(city => {
-      const opt = document.createElement("option");
-      opt.value = city;
-      opt.textContent = city;
-      addressSelect.appendChild(opt);
-    });
-  })
-  .catch(console.error);
-
-// Load car brands/models/years
-let carData = {};
-fetch("../backend/data-json/car_data_by_make_model_year.json")
-  .then(res => res.json())
-  .then(data => {
-    carData = data;
-    const brands = Object.keys(data).sort();
-    brands.forEach(brand => {
-      const opt = document.createElement("option");
-      opt.value = brand;
-      opt.textContent = brand;
-      carCompanySelect.appendChild(opt);
-    });
-  })
-  .catch(console.error);
-
-carCompanySelect.addEventListener("change", () => {
-  const brand = carCompanySelect.value;
-  modelSelect.innerHTML = '<option value="">Select Model</option>';
-  yearSelect.innerHTML = '<option value="">Select Year</option>';
-  if (!brand || !carData[brand]) return;
-
-  const models = Object.keys(carData[brand]).sort();
-  models.forEach(model => {
-    const opt = document.createElement("option");
-    opt.value = model;
-    opt.textContent = model;
-    modelSelect.appendChild(opt);
-  });
-});
-
-modelSelect.addEventListener("change", () => {
-  const brand = carCompanySelect.value;
-  const model = modelSelect.value;
-  yearSelect.innerHTML = '<option value="">Select Year</option>';
-  if (!brand || !model || !carData[brand][model]) return;
-
-  carData[brand][model].forEach(year => {
-    const opt = document.createElement("option");
-    opt.value = year;
-    opt.textContent = year;
-    yearSelect.appendChild(opt);
-  });
-});
-
-// Load car colors
-const colors = ["White", "Black", "Silver", "Gray", "Blue", "Red", "Brown", "Green", "Yellow", "Orange", "Gold", "Beige", "Purple"];
-colors.forEach(c => {
-  const opt = document.createElement("option");
-  opt.value = c;
-  opt.textContent = c;
-  colorSelect.appendChild(opt);
-});
-
-// Validate Israeli phone
-function isValidIsraeliPhone(number) {
-  return /^05\d{8}$/.test(number);
-}
-
-// Animated signup message functions
-function showSignupMessage({ text = "", type = "signup-success", loading = false }) {
-  const msg = document.getElementById("message");
-  msg.className = `signup-message ${type} active`;
-  msg.style.display = "flex";
-  if (loading) {
-    msg.innerHTML = `<span class="spinner"></span> <span>${text}</span>`;
-  } else {
-    msg.innerHTML = `<span>${text}</span>`;
-  }
-}
-
-function hideSignupMessage() {
-  const msg = document.getElementById("message");
-  msg.className = "signup-message";
-  msg.style.display = "none";
-  msg.innerHTML = "";
-}
-
-// Form submission with animated feedback
-const form = document.getElementById("signupForm");
-form.addEventListener("submit", async function (e) {
-  e.preventDefault();
-
-  const phoneNumber = form.phoneNumber.value;
-  if (!isValidIsraeliPhone(phoneNumber)) {
-    showSignupMessage({ text: "Phone number must be Israeli and start with 05", type: "signup-error" });
-    setTimeout(hideSignupMessage, 2300);
-    return;
-  }
-
-  showSignupMessage({ text: "Signing up... Please wait", type: "signup-loading", loading: true });
-
-  const formData = {
-    firstName: form.firstName.value,
-    lastName: form.lastName.value,
-    phoneNumber,
-    email: form.email.value,
-    password: form.password.value,
-    volunteerStatus: form.volunteerStatus.value,
-    address: form.address.value,
-    img: profileImageUrl,
-    carCompany: form.carCompany.value,
-    model: form.model.value,
-    color: form.color.value,
-    year: parseInt(form.year.value),
-    plate: form.plate.value,
-    image: carImageUrl
+  // --- 2. APPLICATION STATE ---
+  const state = {
+    profileImageUrl: null,
+    carImageUrl: null,
+    carData: {},
   };
 
-  try {
-    const res = await fetch(`${BACKEND_URL}/api/auth/signup`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData)
-    });
+  // --- 3. DOM ELEMENT REFERENCES ---
+  const elements = {
+    signupForm: document.getElementById("signupForm"),
+    // Image Inputs & Previews
+    profileImageInput: document.getElementById("profileImageInput"),
+    profilePreview: document.getElementById("profilePreview"),
+    carImageInput: document.getElementById("carImageInput"),
+    carPreview: document.getElementById("carPreview"),
+    // Form Selects
+    addressSelect: document.getElementById("addressSelect"),
+    carCompanySelect: document.getElementById("carCompanySelect"),
+    modelSelect: document.getElementById("modelSelect"),
+    yearSelect: document.getElementById("yearSelect"),
+    colorSelect: document.getElementById("colorSelect"),
+    // UI Feedback
+    messageBox: document.getElementById("message"),
+    modalCarFinder: document.getElementById("modalCarFinder"),
+    modalCarFinderMessage: document.getElementById("modalCarFinderMessage"),
+    modalCarFinderIcon: document.getElementById("modalCarFinderIcon"),
+    modalCarFinderClose: document.getElementById("modalCarFinderClose"),
+  };
 
-    const result = await res.json();
-    if (res.ok) {
-      showSignupMessage({ text: result.message || "Signup completed.", type: "signup-success" });
-      setTimeout(() => (window.location.href = "index.html"), 1500);
-    } else {
-      showSignupMessage({ text: result.message || "Signup failed. Please try again.", type: "signup-error" });
-      setTimeout(hideSignupMessage, 2300);
+  // --- 4. API & DATA HANDLING ---
+
+  /**
+   * Uploads a file to Cloudinary and returns the secure URL.
+   * @param {File} file - The file to upload.
+   * @returns {Promise<string|null>} The secure URL of the uploaded image, or null on failure.
+   */
+  async function uploadImage(file) {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+
+    try {
+      const res = await fetch(CLOUDINARY_UPLOAD_URL, { method: "POST", body: formData });
+      const data = await res.json();
+      return data.secure_url || null;
+    } catch (err) {
+      console.error("Image upload error:", err);
+      return null;
     }
-  } catch (err) {
-    showSignupMessage({ text: "Signup failed. Please try again." + err.message, type: "signup-error" });
-    setTimeout(hideSignupMessage, 2300);
-  }
-});
-
-
-function showCarFinderModal({ message, type = "info", timeout = 2000 }) {
-  const modal = document.getElementById("modalCarFinder");
-  const msg = document.getElementById("modalCarFinderMessage");
-  const icon = document.getElementById("modalCarFinderIcon");
-
-  msg.textContent = message || "";
-
-  if (type === "success") {
-    icon.innerHTML = '<i class="fa-solid fa-circle-check" style="color:#4caf50"></i>';
-  } else if (type === "error") {
-    icon.innerHTML = '<i class="fa-solid fa-circle-xmark" style="color:#d32f2f"></i>';
-  } else if (type === "warning") {
-    icon.innerHTML = '<i class="fa-solid fa-triangle-exclamation" style="color:#ffb300"></i>';
-  } else {
-    icon.innerHTML = '<i class="fa-solid fa-circle-info" style="color:#2564cf"></i>';
   }
 
-  modal.classList.add("active");
-
-  if (timeout !== false) {
-    setTimeout(() => { modal.classList.remove("active"); }, timeout);
+  /**
+   * Fetches and populates the city selection dropdown.
+   */
+  function loadCities() {
+    fetch("../backend/data-json/israel_cities.json")
+      .then(res => res.json())
+      .then(data => {
+        const cityNames = [...new Set(data.map(city => city.city))].sort();
+        populateSelect(elements.addressSelect, cityNames, "Select City");
+      })
+      .catch(err => console.error("Error loading cities:", err));
   }
-}
 
-document.getElementById("modalCarFinderClose").onclick = function() {
-  document.getElementById("modalCarFinder").classList.remove("active");
-};
+  /**
+   * Fetches car data and populates the car company dropdown.
+   */
+  function loadCarData() {
+    fetch("../backend/data-json/car_data_by_make_model_year.json")
+      .then(res => res.json())
+      .then(data => {
+        state.carData = data;
+        const brands = Object.keys(data).sort();
+        populateSelect(elements.carCompanySelect, brands, "Select Company");
+      })
+      .catch(err => console.error("Error loading car data:", err));
+  }
 
+  // --- 5. UI & HELPER FUNCTIONS ---
 
-document.getElementById("carImageInput").addEventListener("change", function(e) {
-    const file = e.target.files[0];
+  /**
+   * Populates a select dropdown with options.
+   * @param {HTMLSelectElement} selectElement - The dropdown element to populate.
+   * @param {Array<string>} options - An array of string options.
+   * @param {string} [placeholder] - Optional placeholder text for the first option.
+   */
+  function populateSelect(selectElement, options, placeholder) {
+    selectElement.innerHTML = ""; // Clear existing options
+    if (placeholder) {
+      selectElement.add(new Option(placeholder, ""));
+    }
+    options.forEach(optionValue => {
+      selectElement.add(new Option(optionValue, optionValue));
+    });
+  }
+
+  /**
+   * Populates the car color selection dropdown.
+   */
+  function populateCarColors() {
+    const colors = ["White", "Black", "Silver", "Gray", "Blue", "Red", "Brown", "Green", "Yellow", "Orange", "Gold", "Beige", "Purple"];
+    populateSelect(elements.colorSelect, colors, "Select Color");
+  }
+
+  /**
+   * Validates an Israeli phone number format (starts with 05, 10 digits total).
+   * @param {string} number - The phone number to validate.
+   * @returns {boolean} True if the number is valid.
+   */
+  function isValidIsraeliPhone(number) {
+    return /^05\d{8}$/.test(number);
+  }
+
+  /**
+   * Shows an animated message to the user (e.g., for signup status).
+   * @param {object} options - Configuration for the message.
+   * @param {string} options.text - The message text.
+   * @param {string} [options.type='signup-success'] - The message type (for styling).
+   * @param {boolean} [options.loading=false] - Whether to show a loading spinner.
+   */
+  function showSignupMessage({ text = "", type = "signup-success", loading = false }) {
+    const msg = elements.messageBox;
+    msg.className = `signup-message ${type} active`;
+    msg.style.display = "flex";
+    msg.innerHTML = loading ? `<span class="spinner"></span> <span>${text}</span>` : `<span>${text}</span>`;
+  }
+
+  /**
+   * Hides the animated signup message.
+   */
+  function hideSignupMessage() {
+    const msg = elements.messageBox;
+    msg.className = "signup-message";
+    msg.style.display = "none";
+    msg.innerHTML = "";
+  }
+
+  /**
+   * Shows a modal with a message and icon.
+   * @param {object} options - Configuration for the modal.
+   * @param {string} options.message - The message to display.
+   * @param {string} [options.type='info'] - The type (success, error, warning, info).
+   * @param {number|boolean} [options.timeout=2000] - Auto-hide delay in ms, or false to disable.
+   */
+  function showCarFinderModal({ message, type = "info", timeout = 2000 }) {
+    const iconMap = {
+      success: '<i class="fa-solid fa-circle-check" style="color:#4caf50"></i>',
+      error: '<i class="fa-solid fa-circle-xmark" style="color:#d32f2f"></i>',
+      warning: '<i class="fa-solid fa-triangle-exclamation" style="color:#ffb300"></i>',
+      info: '<i class="fa-solid fa-circle-info" style="color:#2564cf"></i>',
+    };
+    elements.modalCarFinderMessage.textContent = message || "";
+    elements.modalCarFinderIcon.innerHTML = iconMap[type] || iconMap.info;
+    elements.modalCarFinder.classList.add("active");
+
+    if (timeout !== false) {
+      setTimeout(() => elements.modalCarFinder.classList.remove("active"), timeout);
+    }
+  }
+
+  // --- 6. EVENT HANDLERS ---
+
+  /**
+   * Handles the change event for the profile image input.
+   */
+  async function handleProfileImageChange(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const imageUrl = await uploadImage(file);
+    if (imageUrl) {
+      state.profileImageUrl = imageUrl;
+      elements.profilePreview.src = imageUrl;
+    }
+  }
+
+  /**
+   * Handles the change event for the car image input and triggers plate recognition.
+   */
+  async function handleCarImageChange(event) {
+    const file = event.target.files[0];
     if (!file) return;
 
-    showCarFinderModal({ message: "Analyzing car image for plate...", type: "info", timeout: false });
+    // First, upload to Cloudinary for the form
+    const imageUrl = await uploadImage(file);
+    if (imageUrl) {
+      state.carImageUrl = imageUrl;
+      elements.carPreview.src = imageUrl;
+    }
 
+    // Second, send to Plate Recognizer API
+    showCarFinderModal({ message: "Analyzing car image for plate...", type: "info", timeout: false });
     const formData = new FormData();
     formData.append("upload", file);
 
-    fetch("https://api.platerecognizer.com/v1/plate-reader/", {
+    try {
+      const res = await fetch(PLATE_RECOGNIZER_API_URL, {
         method: "POST",
-        headers: {
-            "Authorization": "Token 60719932b2e8d8591f96ece1388544c5f2510d75" 
-        },
-        body: formData
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.results && data.results.length) {
-            const plate = data.results[0].plate;
-            const plateInput = document.querySelector('input[name="plate"]');
-            if (plateInput) plateInput.value = plate;
-            showCarFinderModal({ message: "Detected Plate: " + plate, type: "success", timeout: 1400 });
-        } else {
-            showCarFinderModal({ message: "No plate detected.", type: "warning" });
-        }
-    })
-    .catch(err => {
-        showCarFinderModal({ message: "Plate recognition failed.", type: "error" });
+        headers: { "Authorization": PLATE_RECOGNIZER_TOKEN },
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.results && data.results.length > 0) {
+        const plate = data.results[0].plate;
+        const plateInput = elements.signupForm.plate;
+        if (plateInput) plateInput.value = plate;
+        showCarFinderModal({ message: `Detected Plate: ${plate}`, type: "success", timeout: 2000 });
+      } else {
+        showCarFinderModal({ message: "No plate detected.", type: "warning" });
+      }
+    } catch (err) {
+      showCarFinderModal({ message: "Plate recognition failed.", type: "error" });
+    }
+  }
+
+  /**
+   * Handles the signup form submission.
+   */
+  async function handleFormSubmit(event) {
+    event.preventDefault();
+    const form = event.target;
+
+    if (!isValidIsraeliPhone(form.phoneNumber.value)) {
+      showSignupMessage({ text: "Phone number must be Israeli and start with 05", type: "signup-error" });
+      setTimeout(hideSignupMessage, 2300);
+      return;
+    }
+
+    showSignupMessage({ text: "Signing up... Please wait", type: "signup-loading", loading: true });
+
+    const formData = {
+      firstName: form.firstName.value,
+      lastName: form.lastName.value,
+      phoneNumber: form.phoneNumber.value,
+      email: form.email.value,
+      password: form.password.value,
+      volunteerStatus: form.volunteerStatus.value,
+      address: form.address.value,
+      img: state.profileImageUrl,
+      carCompany: form.carCompany.value,
+      model: form.model.value,
+      color: form.color.value,
+      year: parseInt(form.year.value, 10),
+      plate: form.plate.value,
+      image: state.carImageUrl,
+    };
+
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/auth/signup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      const result = await res.json();
+      if (res.ok) {
+        showSignupMessage({ text: result.message || "Signup completed.", type: "signup-success" });
+        setTimeout(() => (window.location.href = "index.html"), 1500);
+      } else {
+        throw new Error(result.message || "Signup failed. Please try again.");
+      }
+    } catch (err) {
+      showSignupMessage({ text: err.message, type: "signup-error" });
+      setTimeout(hideSignupMessage, 2300);
+    }
+  }
+
+  // --- 7. INITIALIZATION & EVENT LISTENERS ---
+
+  /**
+   * Sets up all event listeners for the page.
+   */
+  function setupEventListeners() {
+    elements.profileImageInput.addEventListener("change", handleProfileImageChange);
+    elements.carImageInput.addEventListener("change", handleCarImageChange);
+    elements.signupForm.addEventListener("submit", handleFormSubmit);
+    elements.modalCarFinderClose.addEventListener("click", () => elements.modalCarFinder.classList.remove("active"));
+
+    // Event listeners for dependent car data dropdowns
+    elements.carCompanySelect.addEventListener("change", () => {
+      const brand = elements.carCompanySelect.value;
+      const models = brand ? Object.keys(state.carData[brand] || {}).sort() : [];
+      populateSelect(elements.modelSelect, models, "Select Model");
+      populateSelect(elements.yearSelect, [], "Select Year"); // Reset year
     });
 
-    setTimeout(() => { e.target.value = ""; }, 1200);
-});
+    elements.modelSelect.addEventListener("change", () => {
+      const brand = elements.carCompanySelect.value;
+      const model = elements.modelSelect.value;
+      const years = (brand && model && state.carData[brand]?.[model]) ? state.carData[brand][model] : [];
+      populateSelect(elements.yearSelect, years, "Select Year");
+    });
+  }
+
+  /**
+   * Initializes the page by loading data and setting up listeners.
+   */
+  function init() {
+    loadCities();
+    loadCarData();
+    populateCarColors();
+    setupEventListeners();
+  }
+
+  // Run the initialization function when the DOM is fully loaded.
+  document.addEventListener("DOMContentLoaded", init);
+
+})();

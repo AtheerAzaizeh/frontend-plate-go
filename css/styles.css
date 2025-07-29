@@ -895,42 +895,13 @@ input[type="file"] {
   padding: 15px;
   width: 100%;
   margin-top: 120px;
-}
-
-.report-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.report-header input {
-  flex: 1;
-  padding: 6px 10px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
+  overflow-y: auto;
 }
 
 .filters {
   display: flex;
   gap: 15px;
   font-size: 14px;
-}
-
-.report-list {
-  margin-top: 15px;
-  list-style: none;
-  padding: 0;
-}
-
-.report-item {
-  display: flex;
-  align-items: center;
-  background: white;
-  border-radius: 8px;
-  padding: 10px;
-  margin-bottom: 10px;
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
 }
 
 .report-item img.car-img {
@@ -1459,6 +1430,7 @@ input[type="file"] {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+  flex-wrap: wrap;
 }
 
 .report-header h3 {
