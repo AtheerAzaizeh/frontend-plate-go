@@ -156,7 +156,7 @@ function displayReports(reports) {
   async function fetchAllReports() {
     const token = localStorage.getItem("token")
     try {
-      const response = await fetch(`${BACKEND_URL}/api/reports/all`, {
+      const response = await fetch(`${BACKEND_URL}/api/reports/my`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
