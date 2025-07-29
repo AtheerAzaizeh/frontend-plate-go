@@ -266,20 +266,29 @@ document.addEventListener('DOMContentLoaded', function () {
         setupCarCardEvents(carDiv, car);
     }
 
-    // Helper function to add "Add Car" box
-    function addCarBoxToContainer(container) {
-        const addCarBox = document.createElement('div');
-        addCarBox.classList.add('add-car-box');
+// Helper function to add "Add Car" box
+function addCarBoxToContainer(container) {
+    // Create wrapper
+    const wrapper = document.createElement('div');
+    wrapper.classList.add('car-item-wrapper'); // Or your preferred new class name
 
-        addCarBox.innerHTML = `
-            <button class="add-car-button">
-                <img src="images/plus-icon.svg" alt="Add Icon">
-            </button>
-            <p>Add Car</p>
-        `;
+    // Create add car box
+    const addCarBox = document.createElement('div');
+    addCarBox.classList.add('add-car-box');
+    
+    addCarBox.innerHTML = `
+        <button class="add-car-button">
+            <img src="images/plus-icon.svg" alt="Add Icon">
+        </button>
+        <p>Add Car</p>
+    `;
 
-        container.appendChild(addCarBox);
-    }
+    // Put addCarBox inside wrapper
+    wrapper.appendChild(addCarBox);
+
+    // Add wrapper to the container
+    container.appendChild(wrapper);
+}
 
     // Setup event handlers for car cards
     function setupCarCardEvents(carDiv, car) {
