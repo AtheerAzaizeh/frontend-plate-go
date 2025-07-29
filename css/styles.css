@@ -1189,6 +1189,8 @@ input[type="file"] {
 
 .report-wrapper {
   padding: 15px;
+  width: 100%;
+  margin-top: 120px;
 }
 
 .report-header {
@@ -2550,8 +2552,9 @@ input:checked + .slider:before {
 
 .notifications-container {
   padding: 20px;
-  margin-top: 123px;
+  margin-top: 120px;
   background-color: #f4f4f4;
+  overflow-y: auto;
 }
 
 .notifications-container h1 {
@@ -2747,7 +2750,6 @@ input:checked + .slider:before {
     align-items: right;
     justify-content: right;
     gap: 33px;
-    padding-right: 50px;
     padding-left: 16px;
   }
 }
@@ -3363,8 +3365,8 @@ input:checked + .slider:before {
 
 /*-------------------chat-list.html------------------*/
 .chat-list-container {
-  max-width: 100%;
-  margin: 120px;
+  width: 100%;
+  margin-top: 120px;
   padding: 20px;
   font-family: "Inter", sans-serif;
 }
