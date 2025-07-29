@@ -62,6 +62,16 @@ document.addEventListener("DOMContentLoaded", () => {
     playNotificationSound()
   })
 
+    // Handle report notifications
+  socket.on("new-notification", (data) => {
+    if (data.type === "report") {
+      showGlobalNotification(`📋 ${data.message}`, "report")
+      playNotificationSound()
+      updateNotificationBadge()
+    }
+  })
+
+
   // Socket connection events
   socket.on("disconnect", () => {
     console.log("Global socket disconnected")
