@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
 })
 
 function fetchAllReports() {
-  fetch(`${BACKEND_URL}/api/reports/all`, {
+  fetch(`${BACKEND_URL}/api/reports/my`, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
@@ -65,6 +65,7 @@ function displayReports(reports) {
   reports.forEach((report) => {
     const item = document.createElement("li")
     item.className = "report-item"
+    console.log(report.image)
 
     item.innerHTML = `
       <img src="${report.image || "images/default-car.jpg"}" class="car-img" alt="car" />

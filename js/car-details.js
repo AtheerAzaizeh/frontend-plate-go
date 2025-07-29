@@ -118,7 +118,6 @@ document.addEventListener("DOMContentLoaded", () => {
       plate: currentPlate,
       reason,
       reportType: "blocking",
-      image: "https://i.imgur.com/report.jpg",
       location: {
         city,
         street,
