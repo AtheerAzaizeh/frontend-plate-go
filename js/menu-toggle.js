@@ -1,6 +1,121 @@
 const menuToggle = document.getElementById('menu-toggle');
 const sideMenu = document.getElementById('side-menu');
 const overlay = document.getElementById('overlay');
+const user = JSON.parse(localStorage.getItem('user'));
+const statusBadge = document.getElementById('availability-status');
+const token = localStorage.getItem('token');
+
+if (statusBadge && user && typeof user.available === 'boolean') {
+  statusBadge.textContent = user.available ? '🟢' : '🔴';
+}
+
+  const availabilitySwitch = document.getElementById('volunteer-updates-switch');
+
+if (availabilitySwitch && user && typeof user.available === 'boolean') {
+  availabilitySwitch.checked = user.available; // set switch ON/OFF
+}
+
+  if (user) {
+    document.getElementById('welcome-message').textContent += user.firstName;
+    document.getElementById('profile-picture').src = user.img;
+    document.getElementById('profile-picture-menu').src = user.img;
+    document.getElementById('profile-name').innerText = `${user.firstName} ${user.lastName}`;
+    document.getElementById('profile-email').innerText = user.email;
+
+
+     if (user.role === 'volunteer') {
+    const volunteerLink = document.getElementById('volunteer-link');
+    if (volunteerLink) {
+      volunteerLink.style.pointerEvents = 'none';
+volunteerLink.style.opacity = '0.6';         
+volunteerLink.style.cursor = 'default';  
+    }
+
+    const volunteerText = document.getElementById('volunteer-text');
+    if (volunteerText) {
+      volunteerText.textContent = 'I am a Volunteer';
+    }
+  }
+  }
+
+    const volunteerLink = document.getElementById('volunteer-link');
+  const volunteerText = document.getElementById('volunteer-text');
+
+  volunteerLink.addEventListener('click', function(event) {
+  event.preventDefault();
+
+  fetch(`${BACKEND_URL}/api/user/become-volunteer`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    }
+  })
+  .then(res => res.json())
+  .then(data => {
+    console.log("✅ Volunteer updated:", data);
+    alert(data.message || 'You are now a volunteer!');
+    volunteerText.textContent = 'I am a Volunteer';
+
+    // Optional: Update user.role in localStorage if needed later
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user) {
+      user.role = 'volunteer';
+      localStorage.setItem('user', JSON.stringify(user));
+    }
+  })
+  .catch(error => {
+    console.error('❌ Error becoming a volunteer:', error);
+    alert('Failed to update volunteer status.');
+  });
+});
+
+
+  const availabilityBtn = document.getElementById('availability-toggle-btn');
+
+if (availabilitySwitch) {
+  availabilitySwitch.addEventListener('change', async () => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/user/toggle-availability`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      const result = await res.json();
+      if (res.ok) {
+        // Sync localStorage
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (user) {
+          user.available = result.available;
+          localStorage.setItem('user', JSON.stringify(user));
+        }
+
+          if (statusBadge) {
+    statusBadge.textContent = result.available ? '🟢' : '🔴';
+  }
+
+
+        alert(result.available
+          ? "✅ You are now available to receive rescue requests."
+          : "🔕 You are now unavailable.");
+      } else {
+        alert(result.message || 'Error updating availability.');
+      }
+    } catch (err) {
+      console.error('Error toggling availability:', err);
+      alert('Something went wrong.');
+    }
+  });
+}
+
+
+  const logoutButton = document.getElementById('logout');
+  logoutButton.addEventListener('click', () => {
+    localStorage.removeItem('token');
+    window.location.href = 'index.html';
+  });
 
  const fetchAndDisplayUser = async () => {
     const token = localStorage.getItem("token")
