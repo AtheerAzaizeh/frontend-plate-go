@@ -75,41 +75,53 @@
         </div>
     </div>
 
-    <!-- Side Menu -->
-    <div class="side-menu" id="side-menu">
-        <div class="profile-info">
-            <img id="profile-picture" src="" alt="Profile Picture" />
-            <a href="edit-profile.html"><i class="fa-solid fa-pencil"></i></a>
-            <p>Name: <span id="profile-name"></span></p>
-            <p>Email: <span id="profile-email"></span></p>
-        </div>
-        <nav>
-            <ul>
-                <li><a href="rescue-me.html"><i class="fa-solid fa-triangle-exclamation"></i> Rescue me</a></li>
-                <li><a href="#" id="volunteer-link"><i class="fa-solid fa-heart"></i> <span id="volunteer-text">Become a Volunteer</span></a></li>
-                <li><a href="my-cars.html"><i class="fa-solid fa-car"></i> Car management</a></li>
-                <li><a href="report_history.html"><i class="fa-solid fa-clipboard-list"></i> Report list</a></li>
-            </ul>
-        </nav>
-        <div class="toggle-switches">
-            <label>Start volunteering
-                <label class="switch">
-                    <input type="checkbox" id="volunteer-updates-switch" />
-                    <span class="slider"></span>
-                </label>
-            </label>
-        </div>
-        <nav>
-            <ul>
-                <li><a href="settings.html"><i class="fa-solid fa-gear"></i> Settings</a></li>
-                <li><a href="index.html" id="logout"><i class="fa-solid fa-sign-out-alt"></i> Log out</a></li>
-            </ul>
-        </nav>
-    </div>
 
-    <div id="overlay"></div>
+  <!-- Overlay for Menu -->
+  <div id="overlay"></div>
+
+  <!-- Side Menu -->
+  <div class="side-menu" id="side-menu">
+    <div class="profile-info">
+      <img id="profile-picture-menu" src="" alt="Profile Picture" />
+      <a href="edit-profile.html"><i class="fa-solid fa-pencil"></i></a>
+     <p>Name: 
+  <span id="profile-name"></span> 
+  <span id="availability-status" class="status-badge">🔴</span>
+    </p>
+      <p>Email: <span id="profile-email"></span></p>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="rescue-me.html"><i class="fa-solid fa-triangle-exclamation"></i> Rescue me</a></li>
+        <li><a href="#" id="volunteer-link"><i class="fa-solid fa-heart"></i> <span id="volunteer-text">Become a Volunteer</span></a></li>
+        <li><a href="my-cars.html"><i class="fa-solid fa-car"></i> Car management</a></li>
+        <li><a href="report_history.html"><i class="fa-solid fa-clipboard-list"></i> Report list</a></li>
+      </ul>
+    </nav>
+    <div class="toggle-switches">
+      <label>Start volunteering
+        <label class="switch">
+          <input type="checkbox" id="volunteer-updates-switch" />
+          <span class="slider"></span>
+        </label>
+      </label>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="settings.html"><i class="fa-solid fa-gear"></i> Settings</a></li>
+        <li><a href="index.html" id="logout"><i class="fa-solid fa-sign-out-alt"></i> Log out</a></li>
+      </ul>
+    </nav>
+  </div>
+
+    <div class="modal-car-finder" id="modalCarFinder">
+  <div class="modal-car-finder-content" id="modalCarFinderContent">
+    <span class="modal-car-finder-icon" id="modalCarFinderIcon"></span>
+    <span class="modal-car-finder-message" id="modalCarFinderMessage"></span>
+    <button class="modal-car-finder-close" id="modalCarFinderClose">&times;</button>
+  </div>
+</div>
 
     <script src="js/menu-toggle.js"></script>
-<script id="dhws-dataInjector" src="/public/dhws-data-injector.js"></script>
 </body>
 </html>

@@ -266,21 +266,46 @@ if (availabilitySwitch) {
 
 const toggleMapButton = document.getElementById('toggle-map');
 const mapContainer = document.querySelector('.map');
+const makeReportBtn = document.getElementById('make-report-button');
+
+function activateMapButton() {
+    toggleMapButton.classList.add("map-active");
+    if (!toggleMapButton.querySelector('.back-arrow')) {
+        toggleMapButton.innerHTML = `<span class="back-arrow">&#8592;</span> <i class="fa-solid fa-map"></i> Reports Map`;
+    }
+}
+
+function deactivateMapButton() {
+    toggleMapButton.classList.remove("map-active");
+    toggleMapButton.innerHTML = `<i class="fa-solid fa-map"></i> Reports Map`;
+}
 
 toggleMapButton.addEventListener('click', () => {
-  const makeReportBtn = document.getElementById('make-report-button');
-  mapContainer.classList.toggle('map-fullscreen');
-  const isFullscreen = mapContainer.classList.contains('map-fullscreen');
+    mapContainer.classList.toggle('map-fullscreen');
+    const isFullscreen = mapContainer.classList.contains('map-fullscreen');
 
-  makeReportBtn.style.display = isFullscreen ? 'none' : 'block';
-  toggleMapButton.style.left = isFullscreen ? '100px' : '50%';
-
-  setTimeout(() => {
-    map.invalidateSize();
-  }, 300);
+    makeReportBtn.style.display = isFullscreen ? 'none' : 'block';
 
     if (isFullscreen) {
-    fetchAndDisplayReportsOnMap();
-  }
+        activateMapButton();
+        fetchAndDisplayReportsOnMap && fetchAndDisplayReportsOnMap();
+    } else {
+        deactivateMapButton();
+    }
+
+    setTimeout(() => {
+        map.invalidateSize();
+    }, 300);
+});
+
+toggleMapButton.addEventListener('click', function (e) {
+    if (toggleMapButton.classList.contains('map-active') && e.target.classList.contains('back-arrow')) {
+        mapContainer.classList.remove('map-fullscreen');
+        deactivateMapButton();
+        makeReportBtn.style.display = 'block';
+        setTimeout(() => { map.invalidateSize(); }, 300);
+        e.stopPropagation();
+    }
 });
 });
+

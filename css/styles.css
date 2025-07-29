@@ -1,3 +1,9 @@
+/* ==========================================================================
+   1. Global Styles & Resets
+   ========================================================================== */
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
 * {
   box-sizing: border-box;
   padding: 0;
@@ -5,100 +11,368 @@
 }
 
 body {
-  font-family: Arial, sans-serif;
+  font-family: "Inter", sans-serif;
   background-color: #f0f0f0;
   color: #333;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  align-items: center;
 }
 
+button {
+  font-family: "Inter", sans-serif;
+  cursor: pointer;
+  border: none;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+ul {
+  list-style: none;
+}
+
+input,
+select {
+  font-family: "Inter", sans-serif;
+}
+
+/* ==========================================================================
+   2. Layout & Main UI Components
+   ========================================================================== */
+
+/* --- Header --- */
 .header {
-  overflow: hidden;
   background-color: #959595;
-  height: 140px;
-  padding: 20px 10px;
+  padding: 10px 25px;
   display: flex;
-  justify-content: left;
+  justify-content: space-between;
   align-items: center;
-  box-sizing: border-box;
   width: 100%;
+  height: 80px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1010;
 }
 
-.logo {
+.header .profile {
   display: flex;
-  justify-content: center;
-  width: 100%;
+  align-items: center;
+  gap: 10px;
 }
 
-.logo img {
-  height: 60px;
+.header .profile img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
 }
+
+.header .logo {
+  margin-right: 100px;
+}
+
+.header .logo img {
+  width: 50px;
+  height: 50px;
+}
+
+.header #welcome-message {
+  font-size: 18px;
+  font-weight: 500;
+  color: white;
+}
+
+.header .menu {
+  display: flex;
+  align-items: center;
+  gap: 35px;
+}
+
+.header .menu .ring {
+  position: relative;
+}
+
+.header .menu img {
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.header .menu img:hover {
+  transform: scale(1.1);
+}
+
+/* --- Main Navigation Bar --- */
+.main {
+  background-color: #959595;
+  padding: 10px 1rem;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+  height: 60px;
+  position: fixed;
+  top: 80px;
+  left: 0;
+  z-index: 1010;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.main a img {
+  width: 30px;
+  height: 30px;
+  transition: transform 0.2s;
+}
+
+.main a img:hover {
+  transform: scale(1.1);
+}
+
+/* --- Page Content Wrapper --- */
+.page-content {
+  width: 100%;
+  height: 100%;
+  padding-top: 140px; /* Height of header + main nav */
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ==========================================================================
+   5. Side Menu
+   ========================================================================== */
+#overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1099;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+#overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.side-menu {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 85%;
+  max-width: 320px;
+  height: 100%;
+  background-color: white;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+  transition: right 0.3s ease;
+  z-index: 1100;
+  border-top-left-radius: 24px;
+  border-bottom-left-radius: 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+.side-menu.open {
+  right: 0;
+}
+
+.side-menu-content {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.side-menu .profile-info {
+  text-align: center;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.side-menu .profile-info img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin-bottom: 15px;
+  object-fit: cover;
+}
+
+.side-menu .profile-info .profile-name {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.side-menu .profile-info .profile-email {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 15px;
+}
+
+.side-menu .profile-stats {
+  font-size: 14px;
+  color: #333;
+}
+
+.side-menu .profile-stats p {
+  margin: 4px 0;
+}
+
+.side-menu nav {
+  margin-bottom: 20px;
+}
+
+.side-menu nav ul li a {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px 10px;
+  transition: background-color 0.2s;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.side-menu nav ul li a:hover {
+  background-color: #f0f0f0;
+}
+
+.side-menu nav ul li i {
+  font-size: 20px;
+  width: 24px;
+  text-align: center;
+  color: #555;
+}
+
+.side-menu .footer-nav {
+  margin-top: auto;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.side-menu .toggle-switches {
+  padding: 10px 0;
+  margin-bottom: 20px;
+}
+
+.side-menu .toggle-switches label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  font-size: 16px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #2196f3;
+}
+
+input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+.close-menu-btn {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: #888;
+  cursor: pointer;
+  z-index: 1101;
+  line-height: 1;
+  padding: 0;
+  transition: color 0.2s;
+}
+
+.close-menu-btn:hover {
+  color: #000;
+}
+
+/* ==========================================================================
+   6. Signup & Login Pages
+   ========================================================================== */
 
 .signup-wrapper {
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  margin-top: 120px;
   padding: 1rem;
-  box-sizing: border-box;
+  overflow-y: auto;
 }
 
 .signup-card {
   background-color: #fff;
   border-radius: 16px;
-  padding: 0.5rem;
+  padding: 2rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 900px;
-  box-sizing: border-box;
-}
-
-.profile-pic-container {
-  width: 100%;
-  max-width: 200px;
-  max-height: 200px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 4.5rem;
-  align-self: center;
-}
-
-.profile-pic-container img {
-  width: 100px;
-  height: 100px;
-  border-radius: 100px;
-  object-fit: cover;
-  margin-bottom: 0.5rem;
-  border: 3px solid #ccc;
-}
-
-.custom-file-label {
-  background-color: #ccc;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  cursor: pointer;
-  text-align: center;
-  font-size: 14px;
-  margin-bottom: 0.5rem;
-}
-
-input[type="file"] {
-  display: none;
 }
 
 .signup-form,
 .login-form {
   display: flex;
   flex-direction: column;
-  padding: 0 104px;
   gap: 1rem;
 }
 
+.profile-pic-container {
+  width: 120px;
+  margin: 0 auto 1.5rem auto;
+  position: relative;
+}
+
+
+.profile-pic-container img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #ccc;
+}
+
+.custom-file-label {
+  background-color: #eee;
+  padding: 0.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+  font-size: 14px;
+  display: block;
+  margin-top: 0.5rem;
+}
+
+input[type="file"] {
+  display: none;
+}
+
+
 .signup-input,
-select,
-.login-input {
+.login-input,
+.signup-form select {
   padding: 0.75rem 1rem;
   border: 1px solid #ccc;
   border-radius: 8px;
@@ -108,7 +382,6 @@ select,
 
 .radio-group {
   display: flex;
-  justify-content: space-between;
   gap: 1rem;
 }
 
@@ -116,152 +389,367 @@ select,
   display: flex;
   align-items: center;
   font-size: 14px;
-  gap: 0.25rem;
-}
-
-.car-image-upload {
-  width: 100%;
-  max-width: 200px;
-  max-height: 200px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
-  margin-top: 24px;
-  align-self: center;
-}
-
-.image-preview {
-  width: 120px;
-  height: 120px;
-  object-fit: cover;
-  border-radius: 12px;
-  border: 2px solid #ccc;
-  margin-bottom: 0.5rem;
-}
-
-.signup-button:hover {
-  background-color: #777;
-}
-
-.signup-message,
-.login-message {
-  margin-top: 1rem;
-  padding: 0.75rem;
-  border-radius: 8px;
-  text-align: center;
-  font-weight: bold;
-}
-
-.signup-success,
-.login-success {
-  background-color: #d4edda;
-  color: #155724;
-}
-
-.signup-error,
-.login-error {
-  background-color: #f8d7da;
-  color: #721c24;
-}
-
-.volunteer-group {
-  display: flex;
-  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .signup-button {
-  width: 100%;
   padding: 12px;
   background-color: #4caf50;
-  border: none;
   border-radius: 6px;
   color: white;
   font-size: 16px;
+  margin-top: 1rem;
   cursor: pointer;
-  max-width: 850px;
-  align-self: center;
-  margin-bottom: 3.5rem;
 }
 
 .signup-button:hover {
   background-color: #45a049;
 }
-
-.signup-card p {
-  align-self: center;
+@keyframes spinner {
+  to { transform: rotate(360deg); }
 }
 
-.login-form h3 {
-  margin: 4.5rem;
-  align-self: center;
-}
-
-/* -------------------------==========-------------------------------------- */
-
-.profile {
+/* Animation for login-message/signup-message */
+.login-message,
+.signup-message {
+  opacity: 0;
+  transition: opacity 0.4s;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding-left: 24px;
+  justify-content: center;
+  gap: 0.75rem;
+  min-height: 44px;
 }
 
-.profile img {
-  width: 50px;
-  height: 50px;
+.login-message.active,
+.signup-message.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Spinner style */
+.login-message .spinner,
+.signup-message .spinner {
+  width: 22px;
+  height: 22px;
+  border: 3px solid #e0e0e0;
+  border-top-color: #4caf50;
+  border-radius: 50%;
+  animation: spinner 0.9s linear infinite;
+}
+
+.login-success,
+.signup-success {
+  background-color: #d4edda !important;
+  color: #155724 !important;
+}
+
+.login-error,
+.signup-error {
+  background-color: #f8d7da !important;
+  color: #721c24 !important;
+}
+
+.login-loading,
+.signup-loading {
+  background-color: #f7fafc !important;
+  color: #888 !important;
+}
+/* ==========================================================================
+   7. My Cars & Car Details Pages
+   ========================================================================== */
+
+.car-card .car-img2 {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-right: 15px;
+}
+
+.car-card .car-info p {
+  margin: 0 0 5px 0;
+  font-size: 14px;
+}
+
+.car-options {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding-right: 15px;
+}
+
+.options-button {
+  background: transparent;
+  padding: 5px;
+}
+
+.options-button img {
+  width: 5px;
+  height: 20px;
+}
+
+.add-car-box:hover {
+  background-color: #f0f0f0;
+}
+
+.add-car-box .add-car-button {
+  font-size: 32px;
+  color: #888;
+  margin-top: 50px;
+}
+
+/* --- Car Details --- */
+.car-details-container {
+  padding: 20px;
+  max-width: 600px;
+  margin: 20px auto;
+  background: #f3f3f3;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.plate-section {
+  position: relative;
+  width: 100%;
+  max-width: 284px;
+  height: 62px;
+  margin: 0 auto 20px auto;
+  background-image: url("../images/plate.jpg");
+  background-size: cover;
+  background-position: center;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.plate-number {
+  font-family: "Heebo", sans-serif; /* Example font for license plates */
+  font-weight: 700;
+  font-size: 24px;
+  color: #000000;
+}
+
+.car-content {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.car-logo {
+  width: 120px;
+  height: auto;
+  object-fit: contain;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 4px;
+  border-bottom: 1px solid #ccc;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  font-weight: 400;
+  text-align: left;
+}
+
+.info-value {
+  font-weight: 700;
+  text-align: right;
+}
+
+.btn.back-btn,
+.btn.report-btn {
+  width: 150px;
+  height: 42px;
+  border-radius: 21px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.btn.back-btn {
+  background-color: #e0e0e0;
+  color: #000;
+}
+
+.btn.report-btn {
+  background-color: #9e9e9e;
+  color: #fff;
+}
+
+/* ==========================================================================
+   8. Chat & Messaging
+   ========================================================================== */
+
+/* --- Chat List --- */
+.chat-item:hover {
+  background-color: #e0e0e0;
+}
+
+.chat-user{
+    display: flex;
+    align-items: baseline;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-content: flex-start;
+    justify-content: space-between;
+}
+
+.chat-user .user-img{
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
 }
 
-#welcome-message {
-  height: 22px;
-  font-size: 18px;
-  width: max-content;
+.chat-header .car-img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
 }
 
-.header .menu {
+.message-container.sent {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+
+.message-container.received {
+  align-self: flex-start;
+  align-items: flex-start;
+}
+
+.message.sent {
+  background-color: #d1e7dd;
+  color: #333;
+  border-bottom-right-radius: 4px;
+}
+
+.message.received {
+  background-color: #e0e0e0;
+  color: #333;
+  border-bottom-left-radius: 4px;
+}
+
+.chat-input input:focus {
+  border-color: #9e9e9e;
+}
+
+.chat-input button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* ==========================================================================
+   9. Modals & Notifications
+   ========================================================================== */
+
+
+.modal.visible {
   display: flex;
-  align-items: right;
-  justify-content: right;
-  gap: 63px;
-  padding-right: 50px;
 }
 
-.menu .ring {
+.modal-content {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 25px 30px;
+  width: 90%;
+  max-width: 500px;
   position: relative;
+  animation: fadeIn 0.3s ease-out;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
 }
 
-.menu .ring img,
-.menu .san img {
-  width: 30px;
-  height: 30px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.menu a img,
-.menu span img,
-.main a img {
-  transition: transform 0.3s ease, opacity 0.3s ease;
+.modal-close-btn {
+  position: absolute;
+  top: 12px;
+  right: 15px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #555;
   cursor: pointer;
-  will-change: transform;
+  background: none;
 }
 
-.menu a img:hover,
-.menu span img:hover,
-.main a img:hover {
-  transform: translateY(-3px) scale(1.08);
-  opacity: 0.9;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
-.menu a img:active,
-.menu span img:active,
-.main a img:active {
-  transform: scale(0.95);
-  opacity: 0.7;
+/* --- Global Notification Toasts --- */
+.global-notification {
+  position: fixed;
+  top: 90px; /* Below header */
+  right: 20px;
+  padding: 16px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 3000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  animation: slideInRight 0.4s ease-out;
+  max-width: 350px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: white;
 }
 
-/* Notification Badge */
+.global-notification.message {
+  background-color: #2196f3;
+}
+.global-notification.rescue {
+  background-color: #ff5722;
+}
+.global-notification.info {
+  background-color: #4caf50;
+}
+.global-notification.error {
+  background-color: #f44336;
+}
+
+.notification-content {
+  flex: 1;
+  line-height: 1.4;
+}
+
+.notification-close {
+  background: none;
+  color: inherit;
+  font-size: 18px;
+  font-weight: bold;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.notification-close:hover {
+  opacity: 1;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* --- Notification Badge --- */
 .notification-badge {
   position: absolute;
   top: -5px;
@@ -280,112 +768,87 @@ select,
 }
 
 @keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
-.main {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  height: 34px;
-  width: 100%;
-  background-color: #959595;
-  box-sizing: border-box;
-  padding: 0 1rem;
+/* ==========================================================================
+   10. Media Queries & Responsiveness
+   ========================================================================== */
+
+@media (max-width: 400px) {
+  .header #welcome-message {
+    display: none; /* Hide welcome message on small screens */
+  }
+
+  .header {
+    padding: 10px 15px;
+  }
+
+  .header .menu {
+    gap: 15px;
+  }
+
+  .car-details-container,
+  .chat-list-container,
+  .car-container {
+    padding: 15px;
+  }
+
+  .btn.back-btn,
+  .btn.report-btn {
+    width: 100%;
+  }
 }
 
-/* === REPORTS MAP BUTTON === */
-#make-report-button {
-  background-color: #777;
-  color: white;
-  width: 138px;
-  height: 138px;
-  border-radius: 50%;
-  font-size: 16px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  font-family: "Inter", sans-serif;
+.login-form,
+.report-wrapper,
+.car-container,
+.chat-container,
+.notifications-container,
+.rescue-form,
+.car-details-container {
+  padding: 0 auto;
+}
+
+.main-car-section , .other-car-section{
+  padding-left: 15px;
+}
+
+.notification-badge {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-  cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-#make-report-button:hover,
-.map-toggle-button:hover {
-  transform: translate(-50%, -50%) scale(1.05);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
-}
-
-.volunteer-updates {
-  position: fixed;
-  bottom: 0;
-  background-color: #e0e0e0;
-  border-radius: 8px;
-  padding: 24px;
-  width: 100%;
-  max-height: 292px;
-  overflow-y: auto;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  font-family: Arial, sans-serif;
-}
-
-.volunteer-updates h3 {
-  margin: 0 0 10px 0;
-  font-size: 16px;
-  font-weight: bold;
-  color: #333;
-  padding-left: 5px;
-}
-
-.volunteer-update {
-  background-color: #ffffff;
-  border-radius: 10px;
-  padding: 8px 24px;
-  margin-bottom: 10px;
-  font-size: 14px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  line-height: 1.4;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
-  transition: background-color 0.5s fade;
-  cursor: pointer;
-}
-
-.volunteer-update span {
-  flex-grow: 1;
-  margin-right: 10px;
-  color: #333;
-}
-
-.info-button {
-  width: 26px;
-  height: 26px;
-  background-color: black;
+  top: -5px;
+  right: -5px;
+  background-color: #ff4444;
   color: white;
-  font-weight: bold;
-  border: none;
   border-radius: 50%;
-  cursor: pointer;
-  font-size: 14px;
+  width: 18px;
+  height: 18px;
+  font-size: 12px;
+  font-weight: bold;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.3s ease;
-  padding: 0;
-  line-height: 1;
+  animation: pulse 2s infinite;
 }
 
-.info-button:hover {
-  background-color: #444;
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .back {
@@ -424,42 +887,15 @@ select,
 
 .report-wrapper {
   padding: 15px;
-}
-
-.report-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.report-header input {
-  flex: 1;
-  padding: 6px 10px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
+  width: 100%;
+  margin-top: 120px;
+  overflow-y: auto;
 }
 
 .filters {
   display: flex;
   gap: 15px;
   font-size: 14px;
-}
-
-.report-list {
-  margin-top: 15px;
-  list-style: none;
-  padding: 0;
-}
-
-.report-item {
-  display: flex;
-  align-items: center;
-  background: white;
-  border-radius: 8px;
-  padding: 10px;
-  margin-bottom: 10px;
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
 }
 
 .report-item img.car-img {
@@ -587,12 +1023,6 @@ select,
   text-align: left;
 }
 
-img {
-  display: absolute;
-  margin-top: 30px;
-  margin-bottom: 30px;
-}
-
 #report-list li .pipe {
   display: absolute;
   margin-left: -35px;
@@ -639,18 +1069,6 @@ img {
   cursor: pointer;
 }
 
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 1000;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0, 0, 0, 0.4);
-}
-
 .modal-content2 {
   background-color: #fefefe;
   margin: 15% auto;
@@ -681,15 +1099,6 @@ img {
   text-decoration: row;
   margin: 0 120px;
   text-align: center;
-}
-
-button {
-  margin: 10px;
-  padding: 10px 20px;
-  font-size: 16px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
 }
 
 .btn-confirm {
@@ -724,10 +1133,15 @@ button {
   padding: 20px;
   display: flex;
   flex-direction: column;
+  align-items: center;
   margin-bottom: 54px;
+  margin-top: 64px;
+  width: 100%;
+   overflow-y: auto;
+   overflow-x: hidden;
 }
 
-.car-card {
+.car-card , .add-car-box{
   width: 382px;
   height: 183px;
   border: 1px solid #ccc;
@@ -747,60 +1161,15 @@ button {
   align-items: center;
 }
 
-.car-img2 {
-  width: 96px;
-  height: 98.46px;
-  object-fit: cover;
-  border-radius: 6px;
-  margin-right: 15px;
-}
-
-.car-info p {
-  margin: 10px 24px;
-  font-size: 14px;
-  color: #333;
-}
-
-.car-options {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  margin-top: -30px;
-}
-
-.add-car-box {
-  width: 382px;
-  height: 183px;
-  border: 1px solid #ccc;
-  background-color: #d9d9d9;
-  margin-left: 35px;
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  font-family: sans-serif;
-  cursor: pointer;
-  transition: background 0.2s;
-  margin: 54px 0px;
-}
-
 .add-car-box:hover {
   background-color: #cfcfcf;
 }
 
 .add-car-button {
-  font-size: 48px;
-  border: none;
-  background: none;
-  line-height: 1;
-  cursor: pointer;
-  position: relative;
-  margin-bottom: 80px;
-  margin-left: -20px;
-  width: 50px;
-  height: 50px;
+    border: none;
+    background: none;
+    line-height: 1;
+    cursor: pointer;
 }
 
 .add-car-button::after {
@@ -816,7 +1185,7 @@ button {
 .add-car-box p {
   font-size: 16px;
   color: #333;
-  margin-top: -15px;
+  align-self: center;
 }
 
 .modal {
@@ -851,13 +1220,6 @@ button {
   gap: 12px;
 }
 
-.signup-input {
-  padding: 10px;
-  border: 1px solid #bbb;
-  border-radius: 6px;
-  font-size: 14px;
-}
-
 .car-image-upload {
   display: flex;
   flex-direction: column;
@@ -871,12 +1233,6 @@ button {
   object-fit: cover;
 }
 
-.custom-file-label {
-  cursor: pointer;
-  color: #007bff;
-  margin-top: 5px;
-}
-
 .submit-car-btn {
   padding: 12px;
   background-color: #28a745;
@@ -888,11 +1244,6 @@ button {
 }
 /*----------------------------- end my-cars.html-----------------------------*/
 
-
-
-
-
-
 .modal-content {
   background: #ffffff;
   border-radius: 12px;
@@ -903,8 +1254,6 @@ button {
   animation: fadeIn 0.3s ease-out;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
 }
-
-
 
 @keyframes fadeIn {
   from {
@@ -1071,16 +1420,12 @@ button {
   margin-top: 220px;
 }
 
-
-.main-content {
-  padding: 20px;
-}
-
 .report-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+  flex-wrap: wrap;
 }
 
 .report-header h3 {
@@ -1159,45 +1504,7 @@ button {
 .report-status i.warning {
   color: orange;
 }
-/*
-.modal-content form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-}
 
-.modal-content form label {
-    font-weight: bold;
-    margin-bottom: 5px;
-}
-
-.modal-content form input[type="text"],
-.modal-content form input[type="date"] {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    margin-bottom: 10px;
-}
-
-.modal-content form input[type="checkbox"] {
-    margin-right: 5px;
-}
-
-.modal-content form button {
-    padding: 10px 20px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.modal-content form button:hover {
-    background-color: #45a049;
-}
-*/
 button[type="button"] {
   padding: 10px 20px;
   font-size: 16px;
@@ -1226,25 +1533,67 @@ button[type="button"].submit:hover {
 .no-fixed-header .top-header {
   position: static;
 }
-
+/*-------------------------------- start home-page---------------------------*/
 .main-content {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: 20px;
+}
+
+#map {
+  height: 100%;
+  width: 100%;
+  z-index: 1;
+}
+
+#make-report-button {
+  background-color: #777777;
+  color: white;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  font-size: 18px;
+  font-weight: 500;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  z-index: 999;
+}
+
+#make-report-button:hover {
+  transform: translate(-50%, -50%) scale(1.05);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+}
+
+/* Fullscreen Map State */
+.map-fullscreen #map {
+  height: 100%;
+  width: 100%;
+}
+
+.map-fullscreen .map-toggle-button {
+  top: 110px; /* Position below the main nav */
 }
 
 .map-toggle-button {
   background-color: #d9d9d9;
   border: none;
-  border-radius: 20px;
-  padding: 6px 16px;
-  font-size: 14px;
-  font-weight: 500;
+  border-radius: 25px;
+  padding: 10px 22px;
+  font-weight: 600;
   cursor: pointer;
-  gap: 8px;
+  gap: 10px;
   pointer-events: auto;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   font-size: 16px;
   display: flex;
   justify-content: center;
@@ -1259,8 +1608,33 @@ button[type="button"].submit:hover {
   z-index: 1003;
 }
 
+.map-toggle-button.map-active {
+    left: 15px;
+    transform: none;
+    border-radius: 10px;
+    padding: 10px 18px 10px 14px;
+    background: #d9d9d9;
+    color: #333;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 16px;
+    z-index: 1005;
+    border: 1.5px solid #d5d5d5;
+    transition: left 0.3s, top 0.3s, background 0.2s, box-shadow 0.2s;
+}
+
+.map-toggle-button .back-arrow {
+    display: inline-block;
+    font-size: 21px;
+    margin-right: 5px;
+    color: #101110;
+    vertical-align: middle;
+}
+
 .map-toggle-button i {
-  font-size: 16px;
+  font-size: 18px;
 }
 
 .map {
@@ -1269,11 +1643,6 @@ button[type="button"].submit:hover {
   width: 100%;
   transition: all 0.3s ease-in-out;
   z-index: 0;
-}
-
-#map {
-  height: 100%;
-  width: 100%;
 }
 
 .map-fullscreen {
@@ -1291,63 +1660,237 @@ button[type="button"].submit:hover {
   z-index: 1002;
 }
 
-.input-container {
-  position: relative;
-  margin-left: 100px;
-  align-items: center;
-}
 
-.image-wrapper {
-  margin-top: 250px;
-  position: relative;
-  display: inline-block;
-}
 
-.image-wrapper img {
-  width: 215px;
-  height: 50px;
-}
-
-.plate-input {
-  position: absolute;
-  top: 0;
+.volunteer-updates {
+  position: fixed;
+  bottom: 0;
   left: 0;
-  margin-top: 30px;
-  width: 170px;
-  height: 50px;
-  border: none;
-  margin-left: 45px;
-  background-color: transparent;
+  width: 100%;
+  height: 31%;
+  background-color: #e0e0e0;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  padding: 20px;
+  max-height: 40%;
+  overflow-y: auto;
+  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1001;
+}
+
+.volunteer-updates.visible {
+  transform: translateY(0);
+}
+
+.volunteer-updates h3 {
+  margin: 0 0 15px 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.volunteer-update {
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  line-height: 1.4;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.volunteer-update-info {
+  flex-grow: 1;
+  margin-right: 10px;
+}
+
+.volunteer-update-info .description {
   font-size: 16px;
-  padding: 10px;
-  box-sizing: border-box;
-  z-index: 1;
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+
+.volunteer-update-info .time-details {
+  font-size: 14px;
+  color: #555;
+}
+
+.info-button {
+  width: 26px;
+  height: 26px;
+  background-color: black;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+  padding: 0;
+  line-height: 1;
+}
+
+.info-button:hover {
+  background-color: #444;
+}
+
+/*---------------------car-finder.html---------------------*/
+.car-finder-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+  margin-top: 15%;
+}
+
+.plate-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 50px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.plate-blue-part {
+  width: 40px;
+  height: 100%;
+  background-color: #007bff;
+}
+
+#plate-input {
+  flex-grow: 1;
+  height: 100%;
+  border: none;
+  background-color: #fdd835;
+  padding: 0 40px 0 15px;
+  font-size: 16px;
+  color: #333;
+  outline: none;
+}
+
+#plate-input::placeholder {
+  color: #555;
+}
+
+.plate-camera-icon {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 20px;
+  color: #333;
+  cursor: pointer;
+}
+
+.finder-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.find-car-button,
+.report-history-button {
+  width: 100%;
+  max-width: 250px;
+  height: 50px;
+  border-radius: 25px;
+  font-size: 18px;
+  font-weight: 500;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .find-car-button {
-  position: flex;
-  width: 90px;
-  height: 30px;
-  margin-top: 50px;
-  margin-left: 65px;
-  background-color: #ccc;
-  border: none;
-  border-radius: 5px;
-  font-size: 12px;
-  cursor: pointer;
+  background-color: #e0e0e0;
+  color: #333;
 }
 
 .report-history-button {
-  width: 215px;
-  height: 50px;
-  margin-top: 40px;
-  margin-left: -2px;
-  background-color: #ccc;
-  border: none;
-  border-radius: 5px;
-  font-size: 16px;
-  cursor: pointer;
+  background-color: #9e9e9e;
+  color: white;
 }
+
+.find-car-button:hover,
+.report-history-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.modal-car-finder {
+  display: none;
+  position: fixed;
+  z-index: 1200;
+  left: 0; top: 0; width: 100vw; height: 100vh;
+  background: rgba(24,32,41,0.24);
+  justify-content: center;
+  align-items: center;
+  transition: background 0.2s;
+}
+
+.modal-car-finder.active {
+  display: flex;
+  animation: modalAppear 0.25s;
+}
+
+@keyframes modalAppear {
+  from { opacity: 0; transform: scale(0.97);}
+  to   { opacity: 1; transform: scale(1);}
+}
+
+.modal-car-finder-content {
+  background: #fff;
+  min-width: 310px;
+  max-width: 94vw;
+  border-radius: 18px;
+  box-shadow: 0 12px 36px rgba(60,60,60,0.17);
+  padding: 34px 32px 24px 32px;
+  text-align: center;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.modal-car-finder-icon {
+  font-size: 42px;
+  margin-bottom: 8px;
+}
+
+.modal-car-finder-message {
+  font-size: 18px;
+  font-weight: 500;
+  color: #252c36;
+  margin-bottom: 5px;
+}
+
+.modal-car-finder-close {
+  position: absolute;
+  top: 16px; right: 18px;
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  color: #b5b5b5;
+  cursor: pointer;
+  transition: color 0.16s;
+}
+.modal-car-finder-close:hover {
+  color: #333;
+}
+
+/*---------------------car-details.html---------------------*/
 .car-info-wrapper {
   margin-top: 150px;
   display: flex;
@@ -1487,16 +2030,6 @@ hr {
   cursor: pointer;
 }
 
-.message-container {
-  display: flex;
-  flex-direction: column;
-  margin-top: 123.5px;
-  align-items: center;
-  width: 100%;
-  height: calc(100vh - 150px);
-  position: relative;
-}
-
 .message-header {
   display: flex;
   align-items: center;
@@ -1555,12 +2088,6 @@ hr {
   background-color: #d1e7dd;
 }
 
-.message-time {
-  font-size: 12px;
-  color: #888;
-  margin-left: 5px;
-}
-
 .message-input {
   display: flex;
   align-items: center;
@@ -1597,19 +2124,6 @@ hr {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   margin-top: 120px;
   width: 100%;
-}
-
-/*.profile-pic-container {
-    position: relative;
-    width: 150px;
-    height: 150px;
-}*/
-
-.profile-pic-container img {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  object-fit: cover;
 }
 
 .profile-pic-edit-icon {
@@ -1653,88 +2167,8 @@ hr {
   background-color: #45a049;
 }
 
-#overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: none;
-  z-index: 1000;
-}
-
-#overlay.show {
-  display: block;
-}
-
 body.menu-open {
   overflow: hidden;
-}
-
-.side-menu {
-  position: fixed;
-  top: 0;
-  left: -300px;
-  width: 300px;
-  height: 100%;
-  background-color: white;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
-  overflow-y: auto;
-  transition: left 0.3s ease;
-  z-index: 1100;
-}
-
-.side-menu.open {
-  margin-left: 850px;
-}
-
-.side-menu .profile-info {
-  text-align: center;
-  padding: 0;
-  background-color: #f4f4f4;
-}
-
-.side-menu .profile-info img {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-}
-
-.side-menu .profile-info p {
-  margin-left: 70px;
-}
-
-.side-menu nav ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-.side-menu nav ul li {
-  padding: 10px 20px;
-  border-bottom: 1px solid #ddd;
-}
-
-.side-menu nav ul li a {
-  text-decoration: none;
-  color: #333;
-  display: block;
-}
-
-.side-menu .toggle-switches {
-  padding: 20px;
-  background-color: #f4f4f4;
-}
-
-.side-menu .toggle-switches label {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 0;
-}
-
-.side-menu .toggle-switches input[type="checkbox"] {
-  cursor: pointer;
 }
 
 .sidebar {
@@ -1861,8 +2295,9 @@ input:checked + .slider:before {
 
 .notifications-container {
   padding: 20px;
-  margin-top: 123px;
+  margin-top: 120px;
   background-color: #f4f4f4;
+  overflow-y: auto;
 }
 
 .notifications-container h1 {
@@ -2058,7 +2493,6 @@ input:checked + .slider:before {
     align-items: right;
     justify-content: right;
     gap: 33px;
-    padding-right: 50px;
     padding-left: 16px;
   }
 }
@@ -2066,10 +2500,11 @@ input:checked + .slider:before {
 .car-details-container {
   padding: 20px;
   max-width: 600px;
-  margin: auto;
+  margin-top: 150px;
   background: #f3f3f3;
   border-radius: 10px;
   text-align: center;
+  overflow-y: auto;
 }
 
 .plate-section {
@@ -2180,11 +2615,6 @@ input:checked + .slider:before {
   color: #000;
   width: 130px;
   height: 42px;
-}
-
-.back-btn {
-  background-color: #e0e0e0;
-  color: #000;
 }
 
 .back-btn:hover,
@@ -2335,6 +2765,7 @@ input:checked + .slider:before {
 @media (max-width: 600px) {
   .car-details-container {
     padding: 10px;
+    margin-top: 40%;
   }
 
   .plate-section {
@@ -2349,7 +2780,6 @@ input:checked + .slider:before {
   }
 
   .car-content {
-    flex-direction: column;
     gap: 10px;
   }
 
@@ -2359,7 +2789,6 @@ input:checked + .slider:before {
   }
 
   .car-actions {
-    flex-direction: column;
     gap: 10px;
     max-width: 100%;
   }
@@ -2428,6 +2857,8 @@ input:checked + .slider:before {
   padding: 0 16px;
   width: 100%;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  color: white;
+  flex-shrink: 0;
 }
 
 .chat-left {
@@ -2449,28 +2880,11 @@ input:checked + .slider:before {
   background-color: rgba(255, 255, 255, 0.1);
 }
 
-.car-img {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #fff;
-}
-
 .plate-number2 {
   font-weight: 600;
   font-size: 18px;
   color: #fff;
   letter-spacing: 0.5px;
-}
-
-.call-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 50%;
-  transition: background-color 0.2s;
 }
 
 .call-btn:hover {
@@ -2675,8 +3089,8 @@ input:checked + .slider:before {
 
 /*-------------------chat-list.html------------------*/
 .chat-list-container {
-  max-width: 500px;
-  margin: 0 auto;
+  width: 100%;
+  margin-top: 120px;
   padding: 20px;
   font-family: "Inter", sans-serif;
 }
@@ -2708,7 +3122,7 @@ input:checked + .slider:before {
   background-color: #e0e0e0;
 }
 
-.car-img {
+.chat-item .car-img {
   width: 50px;
   height: 50px;
   border-radius: 6px;
@@ -2718,33 +3132,13 @@ input:checked + .slider:before {
 
 .chat-info {
   flex: 1;
+  overflow: hidden;
 }
 
 .chat-plate {
   font-weight: bold;
   font-size: 16px;
-  color: #222;
 }
-
-.chat-user {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 5px;
-}
-
-.user-img {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.user-name {
-  font-size: 14px;
-  color: #555;
-}
-
 
 /* Call UI Styles */
 .call-overlay {
@@ -2838,6 +3232,8 @@ input:checked + .slider:before {
 }
 
 .call-btn {
+  background: none;
+  padding: 8px;
   width: 70px;
   height: 70px;
   border-radius: 50%;
@@ -2995,13 +3391,6 @@ input:checked + .slider:before {
   }
 }
 
-
-.last-message {
-  font-size: 0.9em;
-  color: #666;
-  margin-top: 4px;
-}
-
 .last-message-row {
   display: flex;
   justify-content: space-between;
@@ -3016,11 +3405,15 @@ input:checked + .slider:before {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-size: 0.9em;
+  color: #666;
+  margin-top: 4px;
 }
 
 .last-time {
   margin-left: 10px;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 .chat-image {
   max-width: 200px;
@@ -3047,4 +3440,3 @@ input:checked + .slider:before {
   padding: 4px 8px;
   cursor: pointer;
 }
-
