@@ -9,16 +9,46 @@ document.addEventListener('DOMContentLoaded', function() {
     return;
   }
 
+  const volunteerToggle = document.getElementById('volunteer-updates-switch');
+  const statusBadge = document.getElementById('availability-status');
+
   fetch(`${BACKEND_URL}/api/volunteer/status`, {
     headers: { 'Authorization': `Bearer ${token}` }
   })
   .then(response => response.json())
   .then(data => {
     if (data.isVolunteer) {
+      volunteerToggle.checked = true;
+      if (statusBadge) statusBadge.textContent = '🟢';
       fetchVolunteerUpdates();
+    } else {
+      volunteerToggle.checked = false;
+      if (statusBadge) statusBadge.textContent = '🔴';
     }
   })
   .catch(error => console.error('Error fetching volunteer status:', error));
+
+  volunteerToggle.addEventListener('change', () => {
+    const available = volunteerToggle.checked;
+
+    fetch(`${BACKEND_URL}/api/volunteer/update-status`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ available })
+    })
+    .then(res => res.json())
+    .then(data => {
+      console.log('Availability updated:', data);
+      if (statusBadge) statusBadge.textContent = available ? '🟢' : '🔴';
+    })
+    .catch(err => {
+      console.error('Failed to update availability', err);
+      alert('Error updating availability status');
+    });
+  });
 
   function fetchVolunteerUpdates() {
     fetch(`${BACKEND_URL}/api/volunteer/updates`, {
@@ -132,24 +162,23 @@ document.addEventListener('DOMContentLoaded', function() {
       });
   }
 
+  const toggleMapButton = document.getElementById('toggle-map');
+  const mapContainer = document.querySelector('.map');
+  const makeReportBtn = document.getElementById('make-report-button');
 
-const toggleMapButton = document.getElementById('toggle-map');
-const mapContainer = document.querySelector('.map');
-const makeReportBtn = document.getElementById('make-report-button');
-
-function activateMapButton() {
+  function activateMapButton() {
     toggleMapButton.classList.add("map-active");
     if (!toggleMapButton.querySelector('.back-arrow')) {
         toggleMapButton.innerHTML = `<span class="back-arrow">&#8592;</span> <i class="fa-solid fa-map"></i> Reports Map`;
     }
-}
+  }
 
-function deactivateMapButton() {
+  function deactivateMapButton() {
     toggleMapButton.classList.remove("map-active");
     toggleMapButton.innerHTML = `<i class="fa-solid fa-map"></i> Reports Map`;
-}
+  }
 
-toggleMapButton.addEventListener('click', () => {
+  toggleMapButton.addEventListener('click', () => {
     mapContainer.classList.toggle('map-fullscreen');
     const isFullscreen = mapContainer.classList.contains('map-fullscreen');
 
@@ -165,9 +194,9 @@ toggleMapButton.addEventListener('click', () => {
     setTimeout(() => {
         map.invalidateSize();
     }, 300);
-});
+  });
 
-toggleMapButton.addEventListener('click', function (e) {
+  toggleMapButton.addEventListener('click', function (e) {
     if (toggleMapButton.classList.contains('map-active') && e.target.classList.contains('back-arrow')) {
         mapContainer.classList.remove('map-fullscreen');
         deactivateMapButton();
@@ -175,6 +204,5 @@ toggleMapButton.addEventListener('click', function (e) {
         setTimeout(() => { map.invalidateSize(); }, 300);
         e.stopPropagation();
     }
+  });
 });
-});
-
