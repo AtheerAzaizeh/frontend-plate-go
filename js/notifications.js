@@ -45,8 +45,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       viewButton.textContent = '🔍 View Details';
       viewButton.className = 'view-details-btn';
       viewButton.onclick = () => {
-        alert(`🚨 Rescue Details\n\nLocation: ${n.location || 'Unknown'}\nReason: ${n.reason || 'Not provided'}`);
-      };
+  showModal("🚨 Rescue Details", `
+    <strong>Location:</strong> ${n.location || 'Unknown'}<br>
+    <strong>Reason:</strong> ${n.reason || 'Not provided'}
+  `);
+};
+
 
       const navigateButton = document.createElement('button');
       navigateButton.textContent = '📍 Navigate';
@@ -165,4 +169,19 @@ document.addEventListener('DOMContentLoaded', async () => {
       container.prepend(div);
     });
   }
+
+  function showModal(title, message) {
+  const modal = document.getElementById('custom-modal');
+  const titleEl = document.getElementById('modal-title');
+  const messageEl = document.getElementById('modal-message');
+
+  titleEl.textContent = title;
+  messageEl.innerHTML = message;
+
+  modal.classList.remove('hidden-r');
+
+  const okBtn = document.getElementById('modal-ok');
+  okBtn.onclick = () => modal.classList.add('hidden-r');
+}
+
 });
