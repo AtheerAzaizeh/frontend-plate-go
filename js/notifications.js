@@ -91,6 +91,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
           const result = await response.json();
 
+          console.log("✅ Rescue response:", result);
+console.log("📦 chatId returned:", result.chatId);
+
+
           if (response.ok) {
   alert('✅ You accepted the rescue!');
   acceptButton.disabled = true;
