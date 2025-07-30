@@ -130,6 +130,7 @@ console.log("📦 chatId returned:", result.chatId);
       div.append(divnotifiybtn);
     }
 
+
     // 💬 MESSAGE notification
     else if (n.type === 'message' || n.chatId) {
       const chatButton = document.createElement('button');
