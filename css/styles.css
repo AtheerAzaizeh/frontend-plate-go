@@ -777,9 +777,6 @@ input[type="file"] {
    ========================================================================== */
 
 @media (max-width: 400px) {
-  .header #welcome-message {
-    display: none; /* Hide welcome message on small screens */
-  }
 
   .header {
     padding: 10px 15px;
@@ -2415,9 +2412,7 @@ input:checked + .slider:before {
 
 .notifications-container {
   padding: 20px;
-  margin-top: 120px;
   background-color: #f4f4f4;
-  overflow-y: auto;
 }
 
 .notifications-container h1 {
@@ -2435,13 +2430,14 @@ input:checked + .slider:before {
 }
 
 .notification-item {
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  background-color: #e0e0e0;
-  margin-bottom: 10px;
-  border-radius: 5px;
-  cursor: pointer;
+display: grid;
+    padding: 10px;
+    background-color: #e0e0e0;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    justify-items: stretch;
+    gap: 7px;
 }
 
 .notification-item img {
@@ -2463,8 +2459,8 @@ input:checked + .slider:before {
 }
 
 .rescue-form {
-  max-width: 500px;
-  margin-top: 150px;
+  margin: 0 auto;
+  max-width: 800px;
   background: white;
   padding: 20px;
   border-radius: 10px;
@@ -3569,4 +3565,11 @@ input:checked + .slider:before {
   cursor: pointer;
   margin-top : 5px;
   margin-left: 35px ;
+}
+
+.navigate-btn{
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 4px 8px;
+  margin-left: 10px;
 }
