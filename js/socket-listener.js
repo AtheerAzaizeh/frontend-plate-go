@@ -2,7 +2,6 @@
 
 const io = window.io // Assuming io is available globally, e.g., from socket.io-client script
 
-
 document.addEventListener("DOMContentLoaded", () => {
   const user = JSON.parse(localStorage.getItem("user"))
   const token = localStorage.getItem("token")
@@ -19,16 +18,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
   socket.on("connect", () => {
     console.log("Global socket connected")
-    // Join as user to receive personal notifications
     socket.emit("joinUser", user._id)
 
-    // Join as volunteer if user is a volunteer
     if (user.volunteerStatus === "available") {
       socket.emit("joinAsVolunteer")
     }
   })
 
-  // Handle rescue request notifications (for volunteers)
+  // 🚨 Rescue accepted by volunteer
+  socket.on("rescueAccepted", (data) => {
+    showGlobalNotification(`🚨 A volunteer accepted your request: ${data.acceptedBy}`, "rescue")
+    playNotificationSound()
+
+    if (window.location.pathname.includes("rescue-me.html") && typeof showModal === "function") {
+      showModal("🚨 Good news!", `A volunteer is on the way to help you.<br><br>Accepted by: <strong>${data.acceptedBy}</strong>`)
+    }
+  })
+
+  // 🔔 Rescue request for volunteers
   socket.on("newRescueRequest", async (data) => {
     if (user.volunteerStatus === "available") {
       showGlobalNotification(`🚨 ${data.message}`, "rescue")
@@ -37,32 +44,26 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   })
 
-  // Handle new message notifications (for all users)
+  // 💬 New chat message
   socket.on("newMessageNotification", (data) => {
-    // Only show notification if not currently in the chat page for this specific chat
     const currentPage = window.location.pathname
     const urlParams = new URLSearchParams(window.location.search)
     const currentChatId = urlParams.get("chatId")
 
-    // Don't show notification if user is currently in this chat
-    if (currentPage.includes("chat.html") && currentChatId === data.chatId) {
-      return
-    }
+    if (currentPage.includes("chat.html") && currentChatId === data.chatId) return
 
     showGlobalNotification(`💬 New message from ${data.senderName}: ${data.message.slice(0, 30)}...`, "message")
     playNotificationSound()
-
-    // Update notification badge if exists
     updateNotificationBadge()
   })
 
-  // Handle general notifications
+  // ℹ️ General info
   socket.on("generalNotification", (data) => {
     showGlobalNotification(data.message, data.type || "info")
     playNotificationSound()
   })
 
-    // Handle report notifications
+  // 📋 Reports
   socket.on("new-notification", (data) => {
     if (data.type === "report") {
       showGlobalNotification(`📋 ${data.message}`, "report")
@@ -71,26 +72,21 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   })
 
-
-  // Socket connection events
   socket.on("disconnect", () => {
     console.log("Global socket disconnected")
   })
 
   function showGlobalNotification(message, type = "info") {
-    // Remove existing notifications
     const existingNotifications = document.querySelectorAll(".global-notification")
     existingNotifications.forEach((notif) => notif.remove())
 
     const notification = document.createElement("div")
     notification.className = `global-notification ${type}`
 
-    // Create notification content
     const content = document.createElement("div")
     content.className = "notification-content"
     content.textContent = message
 
-    // Create close button
     const closeBtn = document.createElement("button")
     closeBtn.className = "notification-close"
     closeBtn.innerHTML = "×"
@@ -98,11 +94,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     notification.appendChild(content)
     notification.appendChild(closeBtn)
-
-    // Add to body
     document.body.appendChild(notification)
 
-    // Auto remove after 5 seconds
     setTimeout(() => {
       if (notification.parentNode) {
         notification.remove()
@@ -114,9 +107,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function playNotificationSound() {
     try {
-      // Try multiple sound file paths
       const soundPaths = ["sounds/alert.mp3", "./sounds/alert.mp3", "/sounds/alert.mp3"]
-
       let soundPlayed = false
 
       soundPaths.forEach((path) => {
@@ -124,8 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const audio = new Audio(path)
           audio.volume = 0.5
 
-          audio
-            .play()
+          audio.play()
             .then(() => {
               console.log("Notification sound played successfully from:", path)
               soundPlayed = true
@@ -136,7 +126,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       })
 
-      // Fallback: create a beep sound programmatically
       if (!soundPlayed) {
         createBeepSound()
       }
@@ -148,7 +137,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function createBeepSound() {
     try {
-      // Create a simple beep using Web Audio API
       const audioContext = new (window.AudioContext || window.webkitAudioContext)()
       const oscillator = audioContext.createOscillator()
       const gainNode = audioContext.createGain()
@@ -185,7 +173,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function updateNotificationBadge() {
-    // Update notification bell badge if it exists
     const notificationBell = document.querySelector(".ring")
     if (notificationBell) {
       let badge = notificationBell.querySelector(".notification-badge")
@@ -200,7 +187,4 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   }
-
-  // Make socket available globally for other scripts
-  window.globalSocket = socket
 })

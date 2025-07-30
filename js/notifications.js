@@ -92,10 +92,22 @@ document.addEventListener('DOMContentLoaded', async () => {
           const result = await response.json();
 
           if (response.ok) {
-            alert('✅ You accepted the rescue!');
-            acceptButton.disabled = true;
-            acceptButton.textContent = '⛔ Already Taken';
-            acceptButton.style.backgroundColor = 'gray';
+  alert('✅ You accepted the rescue!');
+  acceptButton.disabled = true;
+  acceptButton.textContent = '⛔ Already Taken';
+  acceptButton.style.backgroundColor = 'gray';
+
+  // ✅ Show chat button
+  if (result.chatId) {
+    const chatButton = document.createElement('a');
+    chatButton.href = `chat.html?chatId=${result.chatId}`;
+    chatButton.className = 'chat-link-btn';
+    chatButton.textContent = '💬 Open Chat';
+    chatButton.style.marginLeft = '10px';
+    divnotifiybtn.appendChild(chatButton);
+  }
+
+
           } else {
             alert(result.message || '❌ Rescue already taken');
             acceptButton.disabled = true;
