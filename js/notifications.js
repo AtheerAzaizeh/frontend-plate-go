@@ -103,12 +103,7 @@ console.log("📦 chatId returned:", result.chatId);
 
   // ✅ Show chat button
   if (result.chatId) {
-    const chatButton = document.createElement('a');
-    chatButton.href = `chat.html?chatId=${result.chatId}`;
-    chatButton.className = 'chat-link-btn';
-    chatButton.textContent = '💬 Open Chat';
-    chatButton.style.marginLeft = '10px';
-    divnotifiybtn.appendChild(chatButton);
+    window.location.href = `chat.html?chatId=${result.chatId}`;
   }
 
 
