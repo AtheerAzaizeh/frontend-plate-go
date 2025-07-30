@@ -12,25 +12,32 @@
     <title>Report History</title>
 </head>
 <body>
-    <div class="header">
-        <div class="profile">
-            <img id="profile-picture" src="" alt="Profile Picture">
-            <span id="welcome-message">Welcome </span>
-        </div>
-        <div class="logo">
-            <a href="home-page.html"><img src="images/platego.png" alt="Plate&Go"></a>
-        </div>
-        <div class="menu">
-            <a href="notifications.html" class="ring"><img src="images/notification-bell.svg" alt="Bell Icon" width="30" height="30"></a>
-            <span class="san" id="menu-toggle"><img src="images/menu-icon.svg" alt="Menu Icon" width="30" height="30"></span>
-        </div>      
+  <div class="header">
+    <div class="profile">
+      <img id="profile-picture" src="" alt="Profile Picture">
+      <span id="welcome-message">Welcome </span>
     </div>
-    <div class="main">
-        <a href="car-finder.html"><img src="images/search.png" alt="search icon"></a>
-        <a href="chat-list.html"><img src="images/message.png" alt="message icon"></a>
-        <a href="my-cars.html"><img src="images/car.png" alt="car icon"></a> 
+    <div class="logo">
+      <a href="home-page.html"><img src="images/platego.png" alt="Plate&Go"></a>
     </div>
-
+    <div class="menu">
+      <a href="notifications.html" class="ring"><img src="images/notification-bell.svg" alt="Bell Icon" width="30" height="30"></a>
+      <span class="san" id="menu-toggle"><img src="images/menu-icon.svg" alt="Menu Icon" width="30" height="30"></span>
+    </div>      
+  </div>
+  <div class="main">
+    <a href="car-finder.html"><img src="images/search.png" alt="search icon"></a>
+    <a href="chat-list.html"><img src="images/message.png" alt="message icon"></a>
+    <a href="my-cars.html"><img src="images/car.png" alt="car icon"></a> 
+  </div>
+  
+<main>
+<div class="section-header">
+    <a href="#" class="back-button" onclick="window.history.back(); return false;">
+      <i class="fa-solid fa-arrow-left"></i>
+    </a>
+    <h3>Report History</h3>
+</div>  
   <div class="report-wrapper">
     <div class="report-header">
               <div class="report-filters">
@@ -40,8 +47,6 @@
           </select>
           <input type="date" id="filterDate" />
         </div>
-      <span class="lightbulb">💡</span>
-      <h2>Report History</h2>
       <input type="text" id="searchReport" placeholder="Search Report" />
       <div class="filters">
         <span>Filter</span>
@@ -51,6 +56,7 @@
 
     <ul id="report-list" class="report-list"></ul>
   </div>
+</main>
   <!-- Overlay for Menu -->
   <div id="overlay"></div>
 
