@@ -16,7 +16,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const div = document.createElement('div');
     div.className = 'notification-item';
     console.log("🔍 rescueId:", n.rescueId, "message:", n.message);
-
+    const divnotifiybtn = document.createElement('div');
+    divnotifiybtn.className = 'notification-btns';
     const messageText = document.createElement('span');
     messageText.textContent = `${n.message} • ${new Date(n.createdAt).toLocaleString()}`;
     div.appendChild(messageText);
@@ -105,8 +106,8 @@ document.addEventListener('DOMContentLoaded', async () => {
           acceptButton.style.backgroundColor = 'gray';
         }
       };
-
-      div.append(viewButton, navigateButton, acceptButton);
+      divnotifiybtn.append(viewButton, navigateButton, acceptButton);
+      div.append(divnotifiybtn);
     }
 
     // 💬 MESSAGE notification
@@ -118,7 +119,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         const chatUrl = `chat.html?chatId=${n.chatId}`;
         window.location.href = chatUrl;
       };
-      div.appendChild(chatButton);
+      divnotifiybtn.append(chatButton);
+      div.append(divnotifiybtn);
     }
 
     // 🛑 REPORT notification

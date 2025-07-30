@@ -2429,27 +2429,11 @@ input:checked + .slider:before {
   margin-bottom: 10px;
 }
 
-.notification-item {
-display: grid;
-    padding: 10px;
-    background-color: #e0e0e0;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    justify-items: stretch;
-    gap: 7px;
-}
-
 .notification-item img {
   width: 50px;
   height: 50px;
   border-radius: 50%;
   margin-right: 10px;
-}
-
-.notification-item span {
-  flex: 1;
-  font-size: 14px;
 }
 
 .notification-icon {
@@ -3544,6 +3528,7 @@ display: grid;
   border-radius: 6px;
   padding: 4px 8px;
   cursor: pointer;
+  margin: 10px 0;
 }
 
 .accept-rescue-btn {
@@ -3554,6 +3539,7 @@ display: grid;
   border-radius: 6px;
   padding: 4px 8px;
   cursor: pointer;
+    margin: 10px 0;
 }
 
 
@@ -3567,9 +3553,31 @@ display: grid;
   margin-left: 35px ;
 }
 
-.navigate-btn{
+.navigate-btn , .open-chat-btn{
   cursor: pointer;
   border-radius: 6px;
   padding: 4px 8px;
   margin-left: 10px;
+    margin: 10px 0;
+}
+
+.notification-item{
+  align-items: center;
+  background-color: #d9d9d9;
+  border-radius: 6px;
+  padding: 12px;
+  max-width: 2500px;
+}
+
+.notification-btns{
+  display: inline-flex;
+  gap: 20px;
+  margin-left: 15px;
+}
+
+.notification-list{
+  display: flex;
+  flex-direction: column;
+  gap: 35px;
+  justify-self: center;
 }
