@@ -1,260 +1,133 @@
 // js/socket-listener.js
 
 document.addEventListener("DOMContentLoaded", () => {
-  // 1. Read user & token
-  // In your DOMContentLoaded or equivalent
-const socket = io(BACKEND_URL, {
-  transports: ['websocket'],
-  auth: { token: localStorage.getItem('token') }
-});
-
-  const user = JSON.parse(localStorage.getItem("user"));
+  // 1️⃣ Read user & token
+  const user  = JSON.parse(localStorage.getItem("user"));
   const token = localStorage.getItem("token");
-  console.log("▶️ Logged-in user from localStorage:", user, "token:", token);
-
   if (!user || !token) {
-    console.warn("No user or token found—socket listener will not initialize.");
+    console.warn("No user or token — socket listener will not initialize.");
     return;
   }
 
+  // 2️⃣ Connect Socket.IO
+  const socket = io(BACKEND_URL, {
+    withCredentials: true,
+    transports: ["websocket","polling"],
+    auth: { token }
+  });
 
-  // 3. On connect, join personal room
+  // 3️⃣ On connect, join rooms
   socket.on("connect", () => {
-    console.log("🔗 Socket connected with id", socket.id);
-    const joinId = user._id || user.id;
-    console.log("➡️ Emitting joinUser with:", joinId);
-    socket.emit("joinUser", joinId);
-    if (user.volunteerStatus === "available") {
-      console.log("➡️ Emitting joinAsVolunteer");
+    console.log("🔗 Socket connected:", socket.id);
+    socket.emit("joinUser", user._id || user.id);
+    if (user.role === "volunteer" && user.available) {
       socket.emit("joinAsVolunteer");
     }
   });
 
-// 5. Debug: log and display every incoming event payload only
-socket.onAny((event, ...args) => {
-  // 1️⃣ Log raw data (you still get the event name in console)
-  console.log(`🔔 Received event "${event}":`, args);
-
-  // 2️⃣ Play notification sound
-  playNotificationSound();
-  updateNotificationBadge();
-  // 3️⃣ Build payload JSON
-  const payload = args.length > 1 ? args : args[0];
-  let details;
-  try {
-    details = JSON.stringify(payload, null, 2);
-  } catch {
-    details = String(payload);
-  }
-
-  // 4️⃣ Create notification element
-  const notification = document.createElement("div");
-  notification.className = "global-notification notification hide";
-
-  // Content: only the JSON payload in a <pre>
-  const content = document.createElement("div");
-  content.className = "notification-content";
-  content.innerHTML = `<pre>${details}</pre>`;
-
-  // Close button
-  const closeBtn = document.createElement("button");
-  closeBtn.className = "notification-close";
-  closeBtn.innerHTML = "×";
-  closeBtn.onclick = () => dismiss(notification);
-
-  // Assemble
-  notification.appendChild(content);
-  notification.appendChild(closeBtn);
-  document.body.appendChild(notification);
-
-  // animate in
-  requestAnimationFrame(() => {
-    notification.classList.replace("hide", "show");
+  socket.on("connect_error", err => {
+    console.error("❌ Socket connection error:", err);
   });
 
-  // auto-dismiss after 8s
-  setTimeout(() => dismiss(notification), 8000);
-
-  // helper to slide out & remove
-  function dismiss(el) {
-    el.classList.replace("show", "hide");
-    el.addEventListener("transitionend", () => el.remove(), { once: true });
-  }
-});
-
-  // 6. Rescue accepted by volunteer
-  socket.on("rescueAccepted", data => {
-    console.log("🏷️  Handling rescueAccepted:", data);
-    showGlobalNotification(
-      `🚨 Volunteer accepted your request: ${data.acceptedBy}`,
-      "rescue"
-    );
-    playNotificationSound();
-    if (
-      window.location.pathname.includes("rescue-me.html") &&
-      typeof showModal === "function"
-    ) {
-      showModal(
-        "🚨 Good news!",
-        `A volunteer is on the way!<br><br>Accepted by: <strong>${data.acceptedBy}</strong>`
-      );
-    }
-  });
-
-// Join volunteers room
-if (user?.role === "volunteer" && user.available) {
-  socket.emit("joinAsVolunteer");
-}
-
-// Listen for new rescues
-socket.on("newRescue", (rescue) => {
-  // You can:
-// 1️⃣ Show a modal/popup
-  showModal(
-    "🚨 New Rescue Request",
-    `Location: ${rescue.location}<br/>Time: ${new Date(rescue.time).toLocaleString()}<br/>
-     Reason: ${rescue.reason}<br/>
-     Requested by: ${rescue.requestedBy}`
-  );
-
-// 2️⃣ Or push it into a list:
-//  const list = document.getElementById('rescues-list');
-//  const item = document.createElement('li');
-//  item.innerHTML = `…`;
-//  list.prepend(item);
-});
-
-  // 8. New report notification
-  socket.on("newReportNotification", data => {
-    console.log("🏷️  Handling newReportNotification:", data);
-    showGlobalNotification(
-      `📋 New report on your car (${data.plate}): ${data.message}`,
-      "report"
-    );
-    playNotificationSound();
+  // ─── HELPER: Clickable notification ───────────────────────────────────────────
+  function showNotification(message, type, url) {
+    playNotificationSoundOnce();
     updateNotificationBadge();
-    saveNotificationToDB(data.message);
-  });
 
-  // 9. New chat message
-  socket.on("newMessageNotification", data => {
-    console.log("🏷️  Handling newMessageNotification:", data);
-    const currentPage = window.location.pathname;
-    const urlParams = new URLSearchParams(window.location.search);
-    const currentChatId = urlParams.get("chatId");
-    if (currentPage.includes("chat.html") && currentChatId === data.chatId) {
-      console.log("👀 In chat view, skipping notification");
-      return;
-    }
-    showGlobalNotification(
-      `💬 New message from ${data.senderName}: ${data.message.slice(0, 30)}...`,
-      "message"
-    );
-    playNotificationSound();
-    updateNotificationBadge();
-  });
-
-  // 10. General info
-  socket.on("generalNotification", data => {
-    console.log("🏷️  Handling generalNotification:", data);
-    showGlobalNotification(data.message, data.type || "info");
-    playNotificationSound();
-  });
-
-socket.on("new-notification", data => {
-  if (data.type === "rescue") {
-    console.log("🔍 rescueId:", data.rescueId, "message:", data.message);
-  }
-  else if (data.type === "report") {
-    console.log("🔍 reportId:", data.linkedId, "message:", data.message);
-  }
-  showGlobalNotification(data.message, data.type);
-  playNotificationSound();
-  updateNotificationBadge();
-});
-  // 12. Disconnection
-  socket.on("disconnect", () => {
-    console.log("⚠️  Global socket disconnected");
-  });
-
-  // ─────────────────────────────────────────────────────────────────────
-  // Helper functions
-  // ─────────────────────────────────────────────────────────────────────
-
-  function showGlobalNotification(message, type = "info") {
+    // Remove existing
     document.querySelectorAll(".global-notification").forEach(n => n.remove());
+
     const notification = document.createElement("div");
     notification.className = `global-notification ${type}`;
+    notification.onclick = () => {
+      window.location.href = url;
+    };
+
     const content = document.createElement("div");
     content.className = "notification-content";
-    content.textContent = message;
+    content.innerHTML = message;
+
     const closeBtn = document.createElement("button");
     closeBtn.className = "notification-close";
     closeBtn.innerHTML = "×";
-    closeBtn.onclick = () => notification.remove();
+    closeBtn.onclick = e => {
+      e.stopPropagation();
+      notification.remove();
+    };
+
     notification.appendChild(content);
     notification.appendChild(closeBtn);
     document.body.appendChild(notification);
-    console.log("🟢 Global notification shown:", message);
-    setTimeout(() => {
-      if (notification.parentNode) notification.remove();
-    }, 5000);
+
+    setTimeout(() => notification.remove(), 7000);
   }
 
-  function playNotificationSound() {
-    try {
-      const paths = ["sounds/alert.mp3", "./sounds/alert.mp3", "/sounds/alert.mp3"];
-      let played = false;
-      paths.forEach(path => {
-        if (!played) {
-          const audio = new Audio(path);
-          audio.volume = 0.5;
-          audio
-            .play()
-            .then(() => {
-              console.log("🔊 Sound played from:", path);
-              played = true;
-            })
-            .catch(e => {
-              console.log("🔇 Failed to play from", path, ":", e.message);
-            });
-        }
-      });
-      if (!played) createBeepSound();
-    } catch (err) {
-      console.error("❌ Error playing sound:", err);
-      createBeepSound();
-    }
+  // ─── HELPER: Throttled sound ──────────────────────────────────────────────────
+  let _soundCooldown = false;
+  function playNotificationSoundOnce() {
+    if (_soundCooldown) return;
+    _soundCooldown = true;
+    playNotificationSound();
+    setTimeout(() => { _soundCooldown = false; }, 1000);
   }
 
-  function createBeepSound() {
-    try {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.frequency.value = 800;
-      osc.type = "sine";
-      gain.gain.setValueAtTime(0.3, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 0.5);
-      console.log("🔔 Beep created programmatically");
-    } catch (err) {
-      console.error("❌ Could not create beep:", err);
-    }
-  }
+  // ─── SOCKET EVENTS ───────────────────────────────────────────────────────────
 
-  function saveNotificationToDB(message) {
-    if (!token) return;
+  // 4️⃣ Report notifications
+  socket.on("newReportNotification", data => {
+    console.log("🏷️ newReportNotification:", data);
+    const { reportId, plate, message } = data;
+    showNotification(
+      `📋 New report on your car (${plate}): ${message}`,
+      "report",
+      `/report-details.html?reportId=${reportId}`
+    );
+    saveNotificationToDB(data);
+  });
+
+  // 5️⃣ Chat message notifications
+  socket.on("newMessageNotification", data => {
+    console.log("🏷️ newMessageNotification:", data);
+    const { chatId, senderName, message } = data;
+    showNotification(
+      `💬 New message from ${senderName}: ${message.slice(0,30)}...`,
+      "message",
+      `/chat.html?chatId=${chatId}`
+    );
+  });
+
+  // 6️⃣ Rescue accepted (for requesters)
+  socket.on("rescueAccepted", data => {
+    console.log("🏷️ rescueAccepted:", data);
+    const { rescueId, acceptedBy } = data;
+    showNotification(
+      `🚨 Volunteer accepted your request: ${acceptedBy}`,
+      "rescue",
+      `/tracking.html?rescueId=${rescueId}`
+    );
+  });
+
+  // 7️⃣ New rescue requests (for volunteers)
+  socket.on("newRescueRequest", data => {
+    console.log("🏷️ newRescueRequest:", data);
+    const { rescueId, message } = data;
+    showNotification(
+      `🚨 ${message}`,
+      "rescue",
+      `/tracking.html?rescueId=${rescueId}`
+    );
+    saveNotificationToDB(data);
+  });
+
+  // ─── SAVE TO DB & BADGE ────────────────────────────────────────────────────────
+  function saveNotificationToDB(data) {
     fetch(`${BACKEND_URL}/api/notification/my`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`
       },
-      body: JSON.stringify({ message }),
+      body: JSON.stringify(data)
     }).catch(err => console.error("❌ Error saving notification:", err));
   }
 
@@ -271,4 +144,35 @@ socket.on("new-notification", data => {
       badge.textContent = String((+badge.textContent || 0) + 1);
     }
   }
+
+  // ─── SOUND ────────────────────────────────────────────────────────────────────
+  function playNotificationSound() {
+    const paths = ["sounds/alert.mp3","./sounds/alert.mp3","/sounds/alert.mp3"];
+    let played = false;
+    for (const path of paths) {
+      if (played) break;
+      const audio = new Audio(path);
+      audio.volume = 0.5;
+      audio.play().then(() => { played = true; })
+                  .catch(() => {/* try next */});
+    }
+    if (!played) createBeepSound();
+  }
+  function createBeepSound() {
+    try {
+      const ctx = new (window.AudioContext||window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = 800; osc.type = "sine";
+      gain.gain.setValueAtTime(0.3, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime+0.5);
+      osc.start(ctx.currentTime); osc.stop(ctx.currentTime+0.5);
+    } catch {}
+  }
+
+  // ─── DISCONNECT ──────────────────────────────────────────────────────────────
+  socket.on("disconnect", () => {
+    console.log("⚠️ Socket disconnected");
+  });
 });

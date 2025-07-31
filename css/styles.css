@@ -2923,11 +2923,7 @@ input:checked + .slider:before {
     font-size: 22px;
   }
 
-  .btn {
-    width: 48%;
-  }
-
-  .car-actions {
+ .car-actions {
     flex-direction: row;
     gap: 15px;
   }
