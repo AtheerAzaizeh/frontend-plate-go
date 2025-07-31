@@ -44,6 +44,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const notifications = await res.json();
   container.innerHTML = '';
 
+  const validNotifications = notifications.filter(n => n.rescueId && user?.role === 'volunteer');
+
   for (const n of notifications) {
     const div = document.createElement('div');
     div.className = 'notification-item';
@@ -89,18 +91,39 @@ document.addEventListener('DOMContentLoaded', async () => {
       navigateButton.textContent = '📍 Navigate';
       navigateButton.className = 'navigate-btn';
 
-      navigateButton.onclick = async () => {
-        // Try rescueData.location first (could be string or object), fallback to n.location
-        let address = buildAddress(rescueData?.location) || buildAddress(n.location);
-        if (!address) {
-          showModal("Missing Location", "❌ No address found for this rescue request.");
-          return;
+navigateButton.onclick = async () => {
+  try {
+    const rescueRes = await fetch(`${BACKEND_URL}/api/rescue/${n.rescueId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (rescueRes.ok) {
+      const rescueData = await rescueRes.json();
+      if (
+        rescueData.coordinates &&
+        typeof rescueData.coordinates.lat === 'number' &&
+        typeof rescueData.coordinates.lng === 'number'
+      ) {
+        startLiveNavigation(n.rescueId, rescueData.coordinates.lat, rescueData.coordinates.lng);
+      } else {
+        showModal("Missing Coordinates", "❌ No GPS location found for this request.");
+      }
+    } else {
+      showModal("Missing Coordinates", "❌ No GPS location found for this request.");
+    }
+  } catch (err) {
+    showModal("Error", "❌ Could not fetch rescue details.");
+  }
+};
+
+
+      navigateButton.onclick = () => {
+        if (!n.coordinates || !n.coordinates.lat || !n.coordinates.lng) {
+          return showModal("Missing Coordinates", "❌ No GPS location found for this request.");
         }
-        const coords = await geocodeAddress(address);
-        if (coords) {
-          startLiveNavigation(n.rescueId, coords.lat, coords.lng);
-        } else {
-          showModal("Missing Coordinates", `❌ Could not find GPS for address:<br>${address}`);
+        startLiveNavigation(n.rescueId, n.coordinates.lat, n.coordinates.lng);
+      };navigateButton.onclick = () => {
+        if (!n.coordinates || !n.coordinates.lat || !n.coordinates.lng) {
+          return showModal("Missing Coordinates", "❌ No GPS location found for this request.");
         }
       };
 
