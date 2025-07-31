@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // ✅ Move socket logic HERE to access showModal
   const socket = window.io(BACKEND_URL);
   if (user?._id) {
-    socket.emit("joinUserRoom", user._id);
+    socket.emit("joinAsVolunteer", user._id);
   }
 
   socket.on("rescueAccepted", (data) => {
