@@ -1,8 +1,13 @@
 // js/socket-listener.js
 
-
 document.addEventListener("DOMContentLoaded", () => {
   // 1. Read user & token
+  // In your DOMContentLoaded or equivalent
+const socket = io(BACKEND_URL, {
+  transports: ['websocket'],
+  auth: { token: localStorage.getItem('token') }
+});
+
   const user = JSON.parse(localStorage.getItem("user"));
   const token = localStorage.getItem("token");
   console.log("▶️ Logged-in user from localStorage:", user, "token:", token);
@@ -53,11 +58,6 @@ document.addEventListener("DOMContentLoaded", () => {
       );
     }
   });
-// In your DOMContentLoaded or equivalent
-const socket = io(BACKEND_URL, {
-  transports: ['websocket'],
-  auth: { token: localStorage.getItem('token') }
-});
 
 // Join volunteers room
 if (user?.role === "volunteer" && user.available) {
