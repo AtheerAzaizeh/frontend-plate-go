@@ -12,12 +12,6 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  // 2. Connect socket
-  console.log("▶️ Connecting socket to:", BACKEND_URL);
-const socket = io(BACKEND_URL, {
-  withCredentials: true,
-  transports: ['websocket','polling']
-});
 
   // 3. On connect, join personal room
   socket.on("connect", () => {
@@ -59,16 +53,34 @@ const socket = io(BACKEND_URL, {
       );
     }
   });
+// In your DOMContentLoaded or equivalent
+const socket = io(BACKEND_URL, {
+  transports: ['websocket'],
+  auth: { token: localStorage.getItem('token') }
+});
 
-  // 7. New rescue request (for volunteers)
-  socket.on("newRescueRequest", data => {
-    console.log("🏷️  Handling newRescueRequest:", data);
-      showGlobalNotification(`🚨 ${data.message}`, "rescue");
-      playNotificationSound();
-      updateNotificationBadge();
-      saveNotificationToDB(data.message);
-    
-  });
+// Join volunteers room
+if (user?.role === "volunteer" && user.available) {
+  socket.emit("joinAsVolunteer");
+}
+
+// Listen for new rescues
+socket.on("newRescue", (rescue) => {
+  // You can:
+// 1️⃣ Show a modal/popup
+  showModal(
+    "🚨 New Rescue Request",
+    `Location: ${rescue.location}<br/>Time: ${new Date(rescue.time).toLocaleString()}<br/>
+     Reason: ${rescue.reason}<br/>
+     Requested by: ${rescue.requestedBy}`
+  );
+
+// 2️⃣ Or push it into a list:
+//  const list = document.getElementById('rescues-list');
+//  const item = document.createElement('li');
+//  item.innerHTML = `…`;
+//  list.prepend(item);
+});
 
   // 8. New report notification
   socket.on("newReportNotification", data => {
