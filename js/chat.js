@@ -249,6 +249,7 @@ stopBtn.onclick = () => {
     const input = document.getElementById("message-input");
     const text = input.value.trim();
     const imageBase64 = imagePreview.src?.startsWith("data:image") ? imagePreview.src : null;
+    
     if (!text && !imageBase64) return;
     input.value = "";
 
