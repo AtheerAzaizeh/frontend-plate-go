@@ -98,5 +98,18 @@
   <div class="volunteer-updates" id="volunteer-updates">
     <h3 id="updates-title">Volunteer updates</h3>
   </div>
+
+  <div id="modal" class="modal-r hidden-r">
+  <div class="modal-content location-popup" style="text-align: center;">
+    <p id="modal-message" style="font-weight: bold; color: red;"></p>
+    <button id="modal-ok-btn" class="btn report-btn" style="margin-top: 10px;">OK</button>
+  </div>
+</div>
+
+<script>
+  document.getElementById("modal-ok-btn").onclick = () => {
+    document.getElementById("modal").classList.add("hidden-r");
+  };
+</script>
 </body>
 </html>

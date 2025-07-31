@@ -48,6 +48,19 @@
         </form>
     </div>
 
+    <div id="modal" class="modal-r hidden-r">
+  <div class="modal-content location-popup" style="text-align: center;">
+    <p id="modal-message" style="font-weight: bold; color: green;"></p>
+    <button id="modal-ok-btn" class="btn report-btn" style="margin-top: 10px;">OK</button>
+  </div>
+</div>
+
+<script>
+  document.getElementById("modal-ok-btn").onclick = () => {
+    document.getElementById("modal").classList.add("hidden-r");
+  };
+</script>
+
      <script src="js/config.js"></script>
     <script src="js/edit-profile.js"></script>
 </body>

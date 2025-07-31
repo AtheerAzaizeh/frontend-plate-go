@@ -1,8 +1,16 @@
 // home-page.js
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   const token = localStorage.getItem('token');
   const user = JSON.parse(localStorage.getItem('user'));
+
+  // ✅ Modal message utility
+  const showModalMessage = (msg) => {
+    const modal = document.getElementById("modal");
+    const msgBox = document.getElementById("modal-message");
+    msgBox.textContent = msg;
+    modal.classList.remove("hidden-r");
+  };
 
   if (!token) {
     window.location.href = 'index.html';
@@ -15,18 +23,18 @@ document.addEventListener('DOMContentLoaded', function() {
   fetch(`${BACKEND_URL}/api/volunteer/status`, {
     headers: { 'Authorization': `Bearer ${token}` }
   })
-  .then(response => response.json())
-  .then(data => {
-    if (data.isVolunteer) {
-      volunteerToggle.checked = true;
-      if (statusBadge) statusBadge.textContent = '🟢';
-      fetchVolunteerUpdates();
-    } else {
-      volunteerToggle.checked = false;
-      if (statusBadge) statusBadge.textContent = '🔴';
-    }
-  })
-  .catch(error => console.error('Error fetching volunteer status:', error));
+    .then(response => response.json())
+    .then(data => {
+      if (data.isVolunteer) {
+        volunteerToggle.checked = true;
+        if (statusBadge) statusBadge.textContent = '🟢';
+        fetchVolunteerUpdates();
+      } else {
+        volunteerToggle.checked = false;
+        if (statusBadge) statusBadge.textContent = '🔴';
+      }
+    })
+    .catch(error => console.error('Error fetching volunteer status:', error));
 
   volunteerToggle.addEventListener('change', () => {
     const available = volunteerToggle.checked;
@@ -39,15 +47,15 @@ document.addEventListener('DOMContentLoaded', function() {
       },
       body: JSON.stringify({ available })
     })
-    .then(res => res.json())
-    .then(data => {
-      console.log('Availability updated:', data);
-      if (statusBadge) statusBadge.textContent = available ? '🟢' : '🔴';
-    })
-    .catch(err => {
-      console.error('Failed to update availability', err);
-      alert('Error updating availability status');
-    });
+      .then(res => res.json())
+      .then(data => {
+        console.log('Availability updated:', data);
+        if (statusBadge) statusBadge.textContent = available ? '🟢' : '🔴';
+      })
+      .catch(err => {
+        console.error('Failed to update availability', err);
+        showModalMessage('Error updating availability status');
+      });
   });
 
   function fetchVolunteerUpdates() {
@@ -55,27 +63,27 @@ document.addEventListener('DOMContentLoaded', function() {
       method: 'GET',
       headers: { 'Authorization': `Bearer ${token}` }
     })
-    .then(response => {
-      if (!response.ok) {
-        return response.json().then(err => { throw new Error(err.message || 'Unknown error') });
-      }
-      return response.json();
-    })
-    .then(data => {
-      if (!Array.isArray(data)) throw new Error('Expected array of updates');
-      const updatesContainer = document.getElementById('volunteer-updates');
+      .then(response => {
+        if (!response.ok) {
+          return response.json().then(err => { throw new Error(err.message || 'Unknown error') });
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (!Array.isArray(data)) throw new Error('Expected array of updates');
+        const updatesContainer = document.getElementById('volunteer-updates');
 
-      data.forEach(update => {
-        const updateDiv = document.createElement('div');
-        updateDiv.classList.add('volunteer-update');
-        updateDiv.innerHTML = `
-          <span>${update.reason}, ${update.location} ${update.time}</span>
-          <button class="info-button">i</button>
-        `;
-        updatesContainer.appendChild(updateDiv);
-      });
-    })
-    .catch(error => console.error('Error fetching the updates:', error));
+        data.forEach(update => {
+          const updateDiv = document.createElement('div');
+          updateDiv.classList.add('volunteer-update');
+          updateDiv.innerHTML = `
+            <span>${update.reason}, ${update.location} ${update.time}</span>
+            <button class="info-button">i</button>
+          `;
+          updatesContainer.appendChild(updateDiv);
+        });
+      })
+      .catch(error => console.error('Error fetching the updates:', error));
   }
 
   const map = L.map('map').setView([32.09007825320591, 34.80367638400265], 13);
@@ -87,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(success, error);
     } else {
-      alert('Geolocation is not supported by this browser.');
+      showModalMessage('Geolocation is not supported by this browser.');
     }
   }
 
@@ -117,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function error(err) {
     console.error(`ERROR(${err.code}): ${err.message}`);
-    alert('Unable to retrieve your location.');
+    showModalMessage('Unable to retrieve your location.');
   }
 
   locateUser();
@@ -169,7 +177,7 @@ document.addEventListener('DOMContentLoaded', function() {
   function activateMapButton() {
     toggleMapButton.classList.add("map-active");
     if (!toggleMapButton.querySelector('.back-arrow')) {
-        toggleMapButton.innerHTML = `<span class="back-arrow">&#8592;</span> <i class="fa-solid fa-map"></i> Reports Map`;
+      toggleMapButton.innerHTML = `<span class="back-arrow">&#8592;</span> <i class="fa-solid fa-map"></i> Reports Map`;
     }
   }
 
@@ -185,24 +193,24 @@ document.addEventListener('DOMContentLoaded', function() {
     makeReportBtn.style.display = isFullscreen ? 'none' : 'block';
 
     if (isFullscreen) {
-        activateMapButton();
-        fetchAndDisplayReportsOnMap && fetchAndDisplayReportsOnMap();
+      activateMapButton();
+      fetchAndDisplayReportsOnMap && fetchAndDisplayReportsOnMap();
     } else {
-        deactivateMapButton();
+      deactivateMapButton();
     }
 
     setTimeout(() => {
-        map.invalidateSize();
+      map.invalidateSize();
     }, 300);
   });
 
   toggleMapButton.addEventListener('click', function (e) {
     if (toggleMapButton.classList.contains('map-active') && e.target.classList.contains('back-arrow')) {
-        mapContainer.classList.remove('map-fullscreen');
-        deactivateMapButton();
-        makeReportBtn.style.display = 'block';
-        setTimeout(() => { map.invalidateSize(); }, 300);
-        e.stopPropagation();
+      mapContainer.classList.remove('map-fullscreen');
+      deactivateMapButton();
+      makeReportBtn.style.display = 'block';
+      setTimeout(() => { map.invalidateSize(); }, 300);
+      e.stopPropagation();
     }
   });
 });

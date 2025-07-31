@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-     <script src="js/config.js"></script>
+    <script src="js/config.js"></script>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <script src="js/socket-listener.js"></script>
     <script defer type="module" src="js/car-details.js"></script>
@@ -36,10 +36,10 @@
   </div>
 
   <main class="car-details-container">
-  <div class="plate-section">
-    <img class="plate-bg" src="images/plate.jpg" alt="Plate Background">
-    <span id="plate-number" class="plate-number">--</span>
-  </div>
+    <div class="plate-section">
+      <img class="plate-bg" src="images/plate.jpg" alt="Plate Background">
+      <span id="plate-number" class="plate-number">--</span>
+    </div>
 
     <h2>Car Details</h2>
 
@@ -48,135 +48,135 @@
       <img id="company-logo" class="car-logo" src="images/default-logo.png" alt="Company Logo">
     </div>
 
-   <div class="car-info">
-  <div class="info-row">
-    <span class="info-label">Manufacturer</span>
-    <span id="manufacturer" class="info-value">--</span>
-  </div>
-  <div class="divider"></div>
-
-  <div class="info-row">
-    <span class="info-label">Model</span>
-    <span id="model" class="info-value">--</span>
-  </div>
-  <div class="divider"></div>
-
-  <div class="info-row">
-    <span class="info-label">Year of manufacture</span>
-    <span id="year" class="info-value">--</span>
-  </div>
-  <div class="divider"></div>
-
-  <div class="info-row">
-    <span class="info-label">Color</span>
-    <span id="color" class="info-value">--</span>
-  </div>
-</div>
-
-<div class="car-actions">
-  <button class="btn back-btn" onclick="window.history.back()">Back</button>
-  <button class="btn report-btn" id="report-btn">Report</button>
-</div>
-
-<div id="report-modal" class="modal-r hidden-r">
-  <div class="modal-content location-popup">
-      <span id="close-modal" class="close-x">&times;</span>
-    <!-- Step 1: Reason -->
-    <div id="step-reason">
-      <h3 class="popup-title">Report reason</h3>
-      <select id="report-reason" class="input-field full-width">
-        <option value="">Select</option>
-        <option value="Car blocking">Car blocking</option>
-        <option value="Lights on">Lights on</option>
-        <option value="Child forgotten">Child forgotten</option>
-        <option value="Mechanical issue">Mechanical issue</option>
-        <option value="Other">Other</option>
-      </select>
-    </div>
-
-    <!-- Step 2: Location -->
-    <div id="step-location" style="display: none;">
-      <h3 class="popup-title">choose your location</h3>
-
-      <select id="city" class="input-city">
-        <option value="">City</option>
-      </select>
-
-      <div class="horizontal-group">
-        <select id="street" class="input-street">
-          <option value="">Street</option>
-        </select>
-
-        <input type="text" id="street-number" class="input-street-number" placeholder="#" />
+    <div class="car-info">
+      <div class="info-row">
+        <span class="info-label">Manufacturer</span>
+        <span id="manufacturer" class="info-value">--</span>
       </div>
+      <div class="divider"></div>
 
-      <div class="action-buttons">
-        <button class="btn back-btn2">Back</button>
-        <button class="btn report-btn2">Report</button>
+      <div class="info-row">
+        <span class="info-label">Model</span>
+        <span id="model" class="info-value">--</span>
+      </div>
+      <div class="divider"></div>
+
+      <div class="info-row">
+        <span class="info-label">Year of manufacture</span>
+        <span id="year" class="info-value">--</span>
+      </div>
+      <div class="divider"></div>
+
+      <div class="info-row">
+        <span class="info-label">Color</span>
+        <span id="color" class="info-value">--</span>
       </div>
     </div>
-  </div>
-</div>
-<div id="report-success" class="modal-r hidden-r">
-  <div class="modal-content location-popup" style="justify-content: center; text-align: center;">
-    <h3 style="font-size: 18px; font-weight: bold;">Report sent</h3>
-    <p style="margin: 10px 0;">Your report has been<br>sent successfully</p>
-    <button id="ok-success" class="btn report-btn" style="width: 100px; margin-top: 10px;">OK</button>
-  </div>
-</div>
-<!-- Contact Owner Modal -->
-<div id="contact-owner" class="modal-r hidden-r">
-  <div class="modal-content location-popup" style="justify-content: center; text-align: center; position: relative;">
-    <span id="close-contact-owner" class="close-x">&times;</span>
-    <h3 style="font-size: 18px; font-weight: bold;">Contact car's owner?</h3>
 
-    <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 12px; align-items: center;">
-      <button id="send-message" class="btn grey-light">Send a message</button>
-      <button id="make-call" class="btn grey-dark">Make a call</button>
+    <div class="car-actions">
+      <button class="btn back-btn" onclick="window.history.back()">Back</button>
+      <button class="btn report-btn" id="report-btn">Report</button>
     </div>
-  </div>
-</div>
-  <!-- Overlay for Menu -->
-  <div id="overlay"></div>
 
-  <!-- Side Menu -->
-  <div class="side-menu" id="side-menu">
-    <div class="profile-info">
-      <img id="profile-picture-menu" src="" alt="Profile Picture" />
-      <a href="edit-profile.html"><i class="fa-solid fa-pencil"></i></a>
-     <p>Name: 
-  <span id="profile-name"></span> 
-  <span id="availability-status" class="status-badge">🔴</span>
-    </p>
-      <p>Email: <span id="profile-email"></span></p>
+    <div id="report-modal" class="modal-r hidden-r">
+      <div class="modal-content location-popup">
+        <span id="close-modal" class="close-x">&times;</span>
+        <p id="modal-message" style="color: red; font-weight: bold; display: none;"></p> <!-- ✅ Added line -->
+        
+        <!-- Step 1: Reason -->
+        <div id="step-reason">
+          <h3 class="popup-title">Report reason</h3>
+          <select id="report-reason" class="input-field full-width">
+            <option value="">Select</option>
+            <option value="Car blocking">Car blocking</option>
+            <option value="Lights on">Lights on</option>
+            <option value="Child forgotten">Child forgotten</option>
+            <option value="Mechanical issue">Mechanical issue</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <!-- Step 2: Location -->
+        <div id="step-location" style="display: none;">
+          <h3 class="popup-title">choose your location</h3>
+          <select id="city" class="input-city">
+            <option value="">City</option>
+          </select>
+
+          <div class="horizontal-group">
+            <select id="street" class="input-street">
+              <option value="">Street</option>
+            </select>
+            <input type="text" id="street-number" class="input-street-number" placeholder="#" />
+          </div>
+
+          <div class="action-buttons">
+            <button class="btn back-btn2">Back</button>
+            <button class="btn report-btn2">Report</button>
+          </div>
+        </div>
+      </div>
     </div>
-    <nav>
-      <ul>
-        <li><a href="rescue-me.html"><i class="fa-solid fa-triangle-exclamation"></i> Rescue me</a></li>
-        <li><a href="#" id="volunteer-link"><i class="fa-solid fa-heart"></i> <span id="volunteer-text">Become a Volunteer</span></a></li>
-        <li><a href="my-cars.html"><i class="fa-solid fa-car"></i> Car management</a></li>
-        <li><a href="report_history.html"><i class="fa-solid fa-clipboard-list"></i> Report list</a></li>
-      </ul>
-    </nav>
-    <div class="toggle-switches">
-      <label>Start volunteering
-        <label class="switch">
-          <input type="checkbox" id="volunteer-updates-switch" />
-          <span class="slider"></span>
+
+    <div id="report-success" class="modal-r hidden-r">
+      <div class="modal-content location-popup" style="justify-content: center; text-align: center;">
+        <h3 style="font-size: 18px; font-weight: bold;">Report sent</h3>
+        <p style="margin: 10px 0;">Your report has been<br>sent successfully</p>
+        <button id="ok-success" class="btn report-btn" style="width: 100px; margin-top: 10px;">OK</button>
+      </div>
+    </div>
+
+    <!-- Contact Owner Modal -->
+    <div id="contact-owner" class="modal-r hidden-r">
+      <div class="modal-content location-popup" style="justify-content: center; text-align: center; position: relative;">
+        <span id="close-contact-owner" class="close-x">&times;</span>
+        <h3 style="font-size: 18px; font-weight: bold;">Contact car's owner?</h3>
+        <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 12px; align-items: center;">
+          <button id="send-message" class="btn grey-light">Send a message</button>
+          <button id="make-call" class="btn grey-dark">Make a call</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Overlay for Menu -->
+    <div id="overlay"></div>
+
+    <!-- Side Menu -->
+    <div class="side-menu" id="side-menu">
+      <div class="profile-info">
+        <img id="profile-picture-menu" src="" alt="Profile Picture" />
+        <a href="edit-profile.html"><i class="fa-solid fa-pencil"></i></a>
+        <p>Name: 
+          <span id="profile-name"></span> 
+          <span id="availability-status" class="status-badge">🔴</span>
+        </p>
+        <p>Email: <span id="profile-email"></span></p>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="rescue-me.html"><i class="fa-solid fa-triangle-exclamation"></i> Rescue me</a></li>
+          <li><a href="#" id="volunteer-link"><i class="fa-solid fa-heart"></i> <span id="volunteer-text">Become a Volunteer</span></a></li>
+          <li><a href="my-cars.html"><i class="fa-solid fa-car"></i> Car management</a></li>
+          <li><a href="report_history.html"><i class="fa-solid fa-clipboard-list"></i> Report list</a></li>
+        </ul>
+      </nav>
+      <div class="toggle-switches">
+        <label>Start volunteering
+          <label class="switch">
+            <input type="checkbox" id="volunteer-updates-switch" />
+            <span class="slider"></span>
+          </label>
         </label>
-      </label>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="settings.html"><i class="fa-solid fa-gear"></i> Settings</a></li>
+          <li><a href="index.html" id="logout"><i class="fa-solid fa-sign-out-alt"></i> Log out</a></li>
+        </ul>
+      </nav>
     </div>
-    <nav>
-      <ul>
-        <li><a href="settings.html"><i class="fa-solid fa-gear"></i> Settings</a></li>
-        <li><a href="index.html" id="logout"><i class="fa-solid fa-sign-out-alt"></i> Log out</a></li>
-      </ul>
-    </nav>
-  </div>
-
   </main>
-<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script src="js/menu-toggle.js"></script>
 </body>
 </html>
-
-

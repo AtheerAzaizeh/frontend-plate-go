@@ -1,5 +1,3 @@
-
-
 document.addEventListener("DOMContentLoaded", async () => {
   const token = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("user"));
@@ -20,11 +18,19 @@ document.addEventListener("DOMContentLoaded", async () => {
   const canvas = document.getElementById("capture-canvas");
   const captureBtn = document.getElementById("capture-btn");
 
+  // ✅ Modal message utility
+  const showModalMessage = (msg) => {
+    const modal = document.getElementById("modal");
+    const msgBox = document.getElementById("modal-message");
+    msgBox.textContent = msg;
+    modal.classList.remove("hidden-r");
+  };
+
   let socket;
   let otherUser = null;
 
   if (!token || !user) {
-    alert("Please login first.");
+    showModalMessage("Please login first.");
     window.location.href = "index.html";
     return;
   }
@@ -100,18 +106,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   } catch (err) {
     console.error("Chat load error:", err);
-    alert("Failed to load chat: " + err.message);
+    showModalMessage("Failed to load chat: " + err.message);
     return;
   }
 
   document.querySelector(".call-btn").addEventListener("click", () => {
-    if (!otherUser) return alert("Cannot find the other user in this chat");
-    if (!window.callManager?.isReady()) return alert("Call system is not ready. Please refresh and try again.");
+    if (!otherUser) return showModalMessage("Cannot find the other user in this chat");
+    if (!window.callManager?.isReady()) return showModalMessage("Call system is not ready. Please refresh and try again.");
     const carPlate = plateEl.textContent || "Unknown";
     try {
       window.callManager.initiateCall(otherUser.id, otherUser.name, carPlate);
     } catch (error) {
-      alert("Failed to start call: " + error.message);
+      showModalMessage("Failed to start call: " + error.message);
     }
   });
 

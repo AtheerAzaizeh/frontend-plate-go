@@ -312,28 +312,28 @@ function addCarBoxToContainer(container) {
         });
 
         // Delete car
-        deleteBtn.addEventListener('click', () => {
-            const confirmDelete = confirm('Are you sure you want to delete this car?');
-            if (confirmDelete) {
-                fetch(`${BACKEND_URL}/api/cars/${car._id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                })
-                    .then(response => {
-                        if (response.ok) {
-                            window.location.reload();
-                        } else {
-                            alert('Failed to delete car.');
-                        }
-                    })
-                    .catch(err => {
-                        console.error('Delete error:', err);
-                        alert('Error deleting car. Please try again.');
-                    });
-            }
-        });
+       deleteBtn.addEventListener('click', () => {
+  showConfirmModal('Are you sure you want to delete this car?', () => {
+  fetch(`${BACKEND_URL}/api/cars/${car._id}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  })
+  .then(response => {
+    if (response.ok) {
+      window.location.reload();
+    } else {
+      showCarFinderModal({ message: 'Failed to delete car.', type: 'error' });
+    }
+  })
+  .catch(err => {
+    console.error('Delete error:', err);
+    showCarFinderModal({ message: 'Error deleting car. Please try again.', type: 'error' });
+  });
+});
+});
+
 
         // Edit car
         editBtn.addEventListener('click', () => {
@@ -421,3 +421,24 @@ document.getElementById("carImageInput").addEventListener("change", function(e) 
 
     setTimeout(() => { e.target.value = ""; }, 1200);
 });
+
+function showConfirmModal(message, onConfirm) {
+  const modal = document.getElementById("confirm-modal");
+  const msg = document.getElementById("confirm-message");
+  const yesBtn = document.getElementById("confirm-yes-btn");
+  const cancelBtn = document.getElementById("confirm-cancel-btn");
+
+  msg.textContent = message;
+  modal.classList.remove("hidden-r");
+
+  const close = () => modal.classList.add("hidden-r");
+
+  cancelBtn.onclick = () => {
+    close();
+  };
+
+  yesBtn.onclick = () => {
+    close();
+    onConfirm();
+  };
+}

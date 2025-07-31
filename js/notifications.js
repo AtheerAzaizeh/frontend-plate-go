@@ -15,14 +15,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   for (const n of notifications) {
     const div = document.createElement('div');
     div.className = 'notification-item';
-    console.log("🔍 rescueId:", n.rescueId, "message:", n.message);
     const divnotifiybtn = document.createElement('div');
     divnotifiybtn.className = 'notification-btns';
     const messageText = document.createElement('span');
     messageText.textContent = `${n.message} • ${new Date(n.createdAt).toLocaleString()}`;
     div.appendChild(messageText);
 
-    // 🚨 RESCUE notification
     if (n.rescueId && user?.role === 'volunteer') {
       let isAlreadyTaken = false;
 
@@ -45,18 +43,17 @@ document.addEventListener('DOMContentLoaded', async () => {
       viewButton.textContent = '🔍 View Details';
       viewButton.className = 'view-details-btn';
       viewButton.onclick = () => {
-  showModal("🚨 Rescue Details", `
-    <strong>Location:</strong> ${n.location || 'Unknown'}<br>
-    <strong>Reason:</strong> ${n.reason || 'Not provided'}
-  `);
-};
-
+        showModal("🚨 Rescue Details", `
+          <strong>Location:</strong> ${n.location || 'Unknown'}<br>
+          <strong>Reason:</strong> ${n.reason || 'Not provided'}
+        `);
+      };
 
       const navigateButton = document.createElement('button');
       navigateButton.textContent = '📍 Navigate';
       navigateButton.className = 'navigate-btn';
       navigateButton.onclick = () => {
-        if (!n.location) return alert("❌ No location provided.");
+        if (!n.location) return showModal("Missing Location", "❌ No location provided.");
         const query = encodeURIComponent(n.location);
         window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
       };
@@ -73,72 +70,64 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (acceptButton.disabled) return;
 
         if (!n.rescueId) {
-          alert("❌ Missing rescueId.");
-          return;
+          return showModal("Missing Rescue ID", "❌ rescueId not found.");
         }
 
-        const confirmAccept = confirm('Are you sure you want to accept this rescue request?');
-        if (!confirmAccept) return;
+        showConfirmationModal(
+          "Confirm Rescue",
+          "Are you sure you want to accept this rescue request?",
+          async () => {
+            try {
+              const response = await fetch(`${BACKEND_URL}/api/rescue/accept/${n.rescueId}`, {
+                method: 'PUT',
+                headers: {
+                  'Authorization': `Bearer ${token}`,
+                  'Content-Type': 'application/json'
+                }
+              });
 
-        try {
-          const response = await fetch(`${BACKEND_URL}/api/rescue/accept/${n.rescueId}`, {
-            method: 'PUT',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
+              const result = await response.json();
+              if (response.ok) {
+                showModal("Accepted", '✅ You accepted the rescue!');
+                acceptButton.disabled = true;
+                acceptButton.textContent = '⛔ Already Taken';
+                acceptButton.style.backgroundColor = 'gray';
+
+                if (result.chatId) {
+                  window.location.href = `chat.html?chatId=${result.chatId}`;
+                }
+              } else {
+                showModal("Failed", result.message || '❌ Rescue already taken');
+                acceptButton.disabled = true;
+                acceptButton.textContent = '⛔ Already Taken';
+                acceptButton.style.backgroundColor = 'gray';
+              }
+            } catch (err) {
+              console.error('Accept rescue error:', err);
+              showModal("Error", '❌ Error accepting rescue');
+              acceptButton.disabled = true;
+              acceptButton.textContent = '⛔ Failed';
+              acceptButton.style.backgroundColor = 'gray';
             }
-          });
-
-          const result = await response.json();
-
-          console.log("✅ Rescue response:", result);
-console.log("📦 chatId returned:", result.chatId);
-
-
-          if (response.ok) {
-  alert('✅ You accepted the rescue!');
-  acceptButton.disabled = true;
-  acceptButton.textContent = '⛔ Already Taken';
-  acceptButton.style.backgroundColor = 'gray';
-
-  // ✅ Show chat button
-  if (result.chatId) {
-    window.location.href = `chat.html?chatId=${result.chatId}`;
-  }
-
-
-          } else {
-            alert(result.message || '❌ Rescue already taken');
-            acceptButton.disabled = true;
-            acceptButton.textContent = '⛔ Already Taken';
-            acceptButton.style.backgroundColor = 'gray';
           }
-        } catch (err) {
-          console.error('Accept rescue error:', err);
-          alert('❌ Error accepting rescue');
-          acceptButton.disabled = true;
-          acceptButton.textContent = '⛔ Failed';
-          acceptButton.style.backgroundColor = 'gray';
-        }
+        );
       };
+
       divnotifiybtn.append(viewButton, navigateButton, acceptButton);
       div.append(divnotifiybtn);
     }
 
-    // 💬 MESSAGE notification
     else if (n.type === 'message' || n.chatId) {
       const chatButton = document.createElement('button');
       chatButton.textContent = '💬 Open Chat';
       chatButton.className = 'open-chat-btn';
       chatButton.onclick = () => {
-        const chatUrl = `chat.html?chatId=${n.chatId}`;
-        window.location.href = chatUrl;
+        window.location.href = `chat.html?chatId=${n.chatId}`;
       };
       divnotifiybtn.append(chatButton);
       div.append(divnotifiybtn);
     }
 
-    // 🛑 REPORT notification
     else if (n.type === 'report' || n.reportId || n.message?.includes("New report submitted")) {
       console.log("Report notification — buttons skipped.");
     }
@@ -146,20 +135,22 @@ console.log("📦 chatId returned:", result.chatId);
     container.appendChild(div);
   }
 
-  // Mark all notifications as read
   await fetch(`${BACKEND_URL}/api/notification/mark-read`, {
     method: 'PUT',
     headers: { Authorization: `Bearer ${token}` }
   });
 
-  // Socket.io setup
   const socket = window.io(BACKEND_URL);
 
   if (user?.role === "volunteer") {
     socket.emit("joinAsVolunteer");
 
     socket.on("newRescueRequest", (data) => {
-      alert(`🚨 New Rescue Request!\n\nLocation: ${data.location}\nReason: ${data.message}\nTime: ${new Date(data.time).toLocaleString()}`);
+      showModal("🚨 New Rescue Request", `
+        <strong>Location:</strong> ${data.location}<br>
+        <strong>Reason:</strong> ${data.message}<br>
+        <strong>Time:</strong> ${new Date(data.time).toLocaleString()}
+      `);
 
       const div = document.createElement('div');
       div.className = 'notification-item';
@@ -171,28 +162,46 @@ console.log("📦 chatId returned:", result.chatId);
       viewButton.textContent = '🔍 View Details';
       viewButton.className = 'view-details-btn';
       viewButton.onclick = () => {
-        alert(`🚨 Rescue Details\n\nLocation: ${data.location || 'Unknown'}\nReason: ${data.message || 'Not provided'}`);
+        showModal("🚨 Rescue Details", `
+          <strong>Location:</strong> ${data.location || 'Unknown'}<br>
+          <strong>Reason:</strong> ${data.message || 'Not provided'}
+        `);
       };
 
       div.appendChild(messageText);
       div.appendChild(viewButton);
-
       container.prepend(div);
     });
   }
 
   function showModal(title, message) {
-  const modal = document.getElementById('custom-modal');
-  const titleEl = document.getElementById('modal-title');
-  const messageEl = document.getElementById('modal-message');
+    const modal = document.getElementById('custom-modal');
+    const titleEl = document.getElementById('modal-title');
+    const messageEl = document.getElementById('modal-message');
 
-  titleEl.textContent = title;
-  messageEl.innerHTML = message;
+    titleEl.textContent = title;
+    messageEl.innerHTML = message;
 
-  modal.classList.remove('hidden-r');
+    modal.classList.remove('hidden-r');
 
-  const okBtn = document.getElementById('modal-ok');
-  okBtn.onclick = () => modal.classList.add('hidden-r');
-}
+    const okBtn = document.getElementById('modal-ok');
+    okBtn.onclick = () => modal.classList.add('hidden-r');
+  }
 
+  function showConfirmationModal(title, message, onConfirm) {
+    const modal = document.getElementById('custom-modal');
+    const titleEl = document.getElementById('modal-title');
+    const messageEl = document.getElementById('modal-message');
+    const okBtn = document.getElementById('modal-ok');
+
+    titleEl.textContent = title;
+    messageEl.innerHTML = message;
+
+    modal.classList.remove('hidden-r');
+
+    okBtn.onclick = () => {
+      modal.classList.add('hidden-r');
+      onConfirm();
+    };
+  }
 });
