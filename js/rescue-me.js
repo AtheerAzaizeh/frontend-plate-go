@@ -101,9 +101,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // ✅ Move socket logic HERE to access showModal
   const socket = window.io(BACKEND_URL);
-  if (user?._id) {
-    socket.emit("joinAsVolunteer", user._id);
-  }
+if (user?.role === "volunteer" && user.available) {
+  socket.emit("joinAsVolunteer");
+}
 
   socket.on("rescueAccepted", (data) => {
     showModal("🚨 Good news!", `A volunteer is on the way to help you.<br><br>Accepted by: <strong>${data.acceptedBy}</strong>`);
