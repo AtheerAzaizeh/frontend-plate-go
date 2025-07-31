@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('img').value = user.img;
     } else {
         console.error('No user data found in localStorage');
+        return;
     }
 
     document.getElementById('edit-profile-form').addEventListener('submit', function(event) {
@@ -22,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
             img: document.getElementById('img').value
         };
 
-        fetch(`${BACKEND_URL}/api/users/${user.userID}`, {
+        fetch(`${BACKEND_URL}/api/user/${user._id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -30,7 +31,10 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             body: JSON.stringify(updatedUser)
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) throw new Error("Failed to update profile");
+            return response.json();
+        })
         .then(data => {
             console.log('User updated:', data);
             localStorage.setItem('user', JSON.stringify({ ...user, ...updatedUser }));
@@ -39,3 +43,5 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(error => console.error('Error updating profile:', error));
     });
 });
+
+
