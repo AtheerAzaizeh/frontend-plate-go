@@ -118,9 +118,7 @@ const socket = io(BACKEND_URL, {
                   maximumAge: 3000,
                   timeout: 5000
                 });
-                if (result.chatId) {
-                  window.location.href = `chat.html?chatId=${result.chatId}`;
-                }
+
               } else {
                 showModal("Failed", result.message || '❌ Rescue already taken');
                 acceptButton.disabled = true;
