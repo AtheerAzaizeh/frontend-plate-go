@@ -61,9 +61,15 @@ const socket = io(BACKEND_URL, {
       navigateButton.textContent = '📍 Navigate';
       navigateButton.className = 'navigate-btn';
       navigateButton.onclick = () => {
-        if (!n.location) return showModal("Missing Location", "❌ No location provided.");
-        const query = encodeURIComponent(n.location);
-        window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
+        if (!n.coordinates || !n.coordinates.lat || !n.coordinates.lng) {
+          return showModal("Missing Coordinates", "❌ No GPS location found for this request.");
+        }
+        startLiveNavigation(n.rescueId, n.coordinates.lat, n.coordinates.lng);
+      };navigateButton.onclick = () => {
+        if (!n.coordinates || !n.coordinates.lat || !n.coordinates.lng) {
+          return showModal("Missing Coordinates", "❌ No GPS location found for this request.");
+        }
+        startLiveNavigation(n.rescueId, n.coordinates.lat, n.coordinates.lng);
       };
 
       const acceptButton = document.createElement('button');

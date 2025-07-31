@@ -1,63 +1,66 @@
 // home-page.js
 
 document.addEventListener('DOMContentLoaded', function () {
-  const token = localStorage.getItem('token');
+ const token = localStorage.getItem('token');
   const user = JSON.parse(localStorage.getItem('user'));
   const mapModal = document.getElementById('track-map-modal');
   const mapModalContainer = document.getElementById('track-map-container');
   let volunteerMarker = null;
   let routeControl = null;
+  let currentRescueId = null;
 
   const socket = io(BACKEND_URL, {
-  withCredentials: true,
-  transports: ['websocket', 'polling']
+    withCredentials: true,
+    transports: ['websocket', 'polling']
   });
 
-
-  function trackVolunteer(rescueId, resLat, resLng) {
-  socket.emit("joinRescue", rescueId);
-  mapModal.classList.remove("hidden-r");
-  const etaBox = document.getElementById(`eta-display`);
-
-  socket.on("volunteerLocation", ({ lat, lng }) => {
-    const volLatLng = L.latLng(lat, lng);
-    const resLatLng = L.latLng(resLat, resLng);
-
-    if (!volunteerMarker) {
-      volunteerMarker = L.marker(volLatLng).addTo(trackMap);
-    } else {
-      volunteerMarker.setLatLng(volLatLng);
-    }
-
-    if (routeControl) trackMap.removeControl(routeControl);
-    routeControl = L.Routing.control({
-      waypoints: [volLatLng, resLatLng],
-      routeWhileDragging: false,
-      addWaypoints: false,
-      draggableWaypoints: false,
-      show: false
-    }).addTo(trackMap);
-
-  fetch(`https://api.openrouteservice.org/v2/directions/driving-car?api_key=eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjA1YTUyYzhmZmJiZTQ1MDA4MzI0ZDg4OTU2MWVlMjEyIiwiaCI6Im11cm11cjY0In0=&start=${lng},${lat}&end=${resLng},${resLat}`)
-      .then(res => res.json())
-      .then(data => {
-        const etaMin = Math.round(data.routes[0].summary.duration / 60);
-        etaBox.innerText = `Estimated arrival: ${etaMin} minutes`;
-      });
-  });
-  }
-  
-  document.getElementById("track-map-close").onclick = () => {
-  mapModal.classList.add("hidden-r");
-  if (routeControl) trackMap.removeControl(routeControl);
-  if (volunteerMarker) trackMap.removeLayer(volunteerMarker);
-  };
-
-  // Initialize track map
   const trackMap = L.map('track-map-container').setView([32.09, 34.80], 13);
   L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
   }).addTo(trackMap);
+
+  function startLiveNavigation(rescueId, resLat, resLng) {
+    currentRescueId = rescueId;
+    socket.emit("joinRescue", rescueId);
+    mapModal.classList.remove("hidden-r");
+    const etaBox = document.getElementById(`eta-display`);
+
+    socket.on("volunteerLocation", ({ lat, lng }) => {
+      const volLatLng = L.latLng(lat, lng);
+      const resLatLng = L.latLng(resLat, resLng);
+
+      if (!volunteerMarker) {
+        volunteerMarker = L.marker(volLatLng).addTo(trackMap);
+      } else {
+        volunteerMarker.setLatLng(volLatLng);
+      }
+
+      if (routeControl) trackMap.removeControl(routeControl);
+      routeControl = L.Routing.control({
+        waypoints: [volLatLng, resLatLng],
+        routeWhileDragging: false,
+        addWaypoints: false,
+        draggableWaypoints: false,
+        show: false
+      }).addTo(trackMap);
+
+      fetch(`https://api.openrouteservice.org/v2/directions/driving-car?api_key=eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjA1YTUyYzhmZmJiZTQ1MDA4MzI0ZDg4OTU2MWVlMjEyIiwiaCI6Im11cm11cjY0In0=&start=${lng},${lat}&end=${resLng},${resLat}`)
+        .then(res => res.json())
+        .then(data => {
+          const etaMin = Math.round(data.routes[0].summary.duration / 60);
+          etaBox.innerText = `Estimated arrival: ${etaMin} minutes`;
+        });
+    });
+  }
+
+  window.startLiveNavigation = startLiveNavigation;
+
+  document.getElementById("track-map-close").onclick = () => {
+    mapModal.classList.add("hidden-r");
+    if (routeControl) trackMap.removeControl(routeControl);
+    if (volunteerMarker) trackMap.removeLayer(volunteerMarker);
+  };
+
 
   // ✅ Modal message utility
   const showModalMessage = (msg) => {

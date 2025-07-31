@@ -359,7 +359,7 @@ function addCarBoxToContainer(container) {
     }
 });
 
-function showCarFinderModal({ message, type = "info", timeout = 2000 }) {
+function showCarFinderModal({ message, type = "info", timeout = false }) {
   const modal = document.getElementById("modalCarFinder");
   const msg = document.getElementById("modalCarFinderMessage");
   const icon = document.getElementById("modalCarFinderIcon");
