@@ -92,7 +92,24 @@ document.addEventListener('DOMContentLoaded', async () => {
                 acceptButton.disabled = true;
                 acceptButton.textContent = '⛔ Already Taken';
                 acceptButton.style.backgroundColor = 'gray';
+                socket.emit("joinRescue", n.rescueId);
 
+                navigator.geolocation.watchPosition(position => {
+                  const { latitude, longitude } = position.coords;
+                
+                  socket.emit("volunteerLocationUpdate", {
+                    rescueId: n.rescueId,
+                    lat: latitude,
+                    lng: longitude
+                  });
+                }, error => {
+                  console.error("Error tracking location:", error);
+                  showModal("❌ Location Error", "Could not track your location.");
+                }, {
+                  enableHighAccuracy: true,
+                  maximumAge: 3000,
+                  timeout: 5000
+                });
                 if (result.chatId) {
                   window.location.href = `chat.html?chatId=${result.chatId}`;
                 }

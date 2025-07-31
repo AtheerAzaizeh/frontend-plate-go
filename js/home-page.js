@@ -138,7 +138,7 @@ document.addEventListener('DOMContentLoaded', function () {
   let reportMarkers = [];
 
   function fetchAndDisplayReportsOnMap() {
-    fetch(`${BACKEND_URL}/api/reports/all`, {
+    fetch(`${BACKEND_URL}/api/reports/my`, {
       method: 'GET',
       headers: { 'Authorization': `Bearer ${token}` }
     })
@@ -148,22 +148,24 @@ document.addEventListener('DOMContentLoaded', function () {
         reportMarkers = [];
         console.log(data.reports);
 
-        data.reports.forEach(report => {
-          if (report.coordinates && report.coordinates.lat && report.coordinates.lng) {
-            const { lat, lng } = report.coordinates;
-
-            const popupContent = `
-              <strong>Reason:</strong> ${report.reason}<br>
-              <strong>Plate:</strong> ${report.plate}<br>
-              <strong>Reported By:</strong> ${report.sender?.firstName || 'Unknown'}
-            `;
-
-            const marker = L.marker([lat, lng]).addTo(map)
-              .bindPopup(popupContent);
-
-            reportMarkers.push(marker);
-          }
-        });
+      data.reports.forEach(report => {
+        if (report.coordinates && report.coordinates.lat && report.coordinates.lng) {
+          const { lat, lng } = report.coordinates;
+        
+          const popupContent = `
+            <strong>Reason:</strong> ${report.reason}<br>
+            <strong>Plate:</strong> ${report.plate}<br>
+            <strong>Reported By:</strong> ${report.sender?.firstName || 'Unknown'}<br><br>
+            <button onclick="trackVolunteer('${report._id}', ${lat}, ${lng})"> Display Track Map </button>
+            <div id="eta-${report._id}" style="margin-top:5px;"></div>
+          `;
+        
+          const marker = L.marker([lat, lng]).addTo(map)
+            .bindPopup(popupContent);
+        
+          reportMarkers.push(marker);
+        }
+      });
       })
       .catch(error => {
         console.error('Error loading reports:', error);
@@ -213,4 +215,38 @@ document.addEventListener('DOMContentLoaded', function () {
       e.stopPropagation();
     }
   });
+
+  let volunteerMarker = null;
+  let routeControl = null;
+
+function trackVolunteer(rescueId, resLat, resLng) {
+  socket.emit("joinRescue", rescueId);
+
+  socket.on("volunteerLocation", ({ lat, lng }) => {
+    const volLatLng = L.latLng(lat, lng);
+    const resLatLng = L.latLng(resLat, resLng);
+
+    if (!volunteerMarker) {
+      volunteerMarker = L.marker(volLatLng, { icon: blueIcon }).addTo(map);
+    } else {
+      volunteerMarker.setLatLng(volLatLng);
+    }
+
+    if (routeControl) map.removeControl(routeControl);
+    routeControl = L.Routing.control({
+      waypoints: [volLatLng, resLatLng],
+      routeWhileDragging: false,
+      addWaypoints: false,
+      draggableWaypoints: false,
+      show: false
+    }).addTo(map);
+
+    fetch(`https://api.openrouteservice.org/v2/directions/driving-car?api_key=eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjA1YTUyYzhmZmJiZTQ1MDA4MzI0ZDg4OTU2MWVlMjEyIiwiaCI6Im11cm11cjY0In0=&start=${lng},${lat}&end=${resLng},${resLat}`)
+      .then(res => res.json())
+      .then(data => {
+        const etaMin = Math.round(data.routes[0].summary.duration / 60);
+        document.getElementById(`eta-${rescueId}`).innerText = `Time to arrive: ${etaMin} Minutes`;
+      });
+  });
+}
 });

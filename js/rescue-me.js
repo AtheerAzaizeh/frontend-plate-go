@@ -112,3 +112,4 @@ const socket = io(BACKEND_URL, {
     showModal("🚨 Good news!", `A volunteer is on the way to help you.<br><br>Accepted by: <strong>${data.acceptedBy}</strong>`);
   });
 });
+
