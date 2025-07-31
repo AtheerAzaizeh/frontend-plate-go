@@ -37,6 +37,8 @@ const socket = io(BACKEND_URL, {
 
   // 5. Debug: log every incoming event
   socket.onAny((event, ...args) => {
+    playNotificationSound();
+    showGlobalNotification(`🔔 New event: ${event}`, "notification");
     console.log(`🔔 Received event “${event}”:`, args);
   });
 
