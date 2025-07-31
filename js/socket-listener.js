@@ -63,7 +63,7 @@ const socket = io(BACKEND_URL, {
   // 7. New rescue request (for volunteers)
   socket.on("newRescueRequest", data => {
     console.log("🏷️  Handling newRescueRequest:", data);
-    if (user.volunteerStatus === "available") {
+    if (user.role === "volunteer") {
       showGlobalNotification(`🚨 ${data.message}`, "rescue");
       playNotificationSound();
       updateNotificationBadge();
