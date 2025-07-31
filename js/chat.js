@@ -17,7 +17,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   const videoEl = document.getElementById("camera-stream");
   const canvas = document.getElementById("capture-canvas");
   const captureBtn = document.getElementById("capture-btn");
-
+  const recordBtn = document.getElementById("record-voice-btn");
+  const stopBtn = document.getElementById("stop-record-btn");
+  let mediaRecorder;
+  let audioChunks = [];
   // ✅ Modal message utility
   const showModalMessage = (msg) => {
     const modal = document.getElementById("modal");
@@ -107,7 +110,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (dateSeperator) chatMessages.appendChild(dateSeperator);
 
       messages.forEach((msg) => {
-        appendMessage(msg.text, msg.sender._id === user._id, formatTime(msg.timestamp), msg.image);
+        appendMessage(msg.text, msg.sender._id === user._id, formatTime(msg.timestamp), msg.image , msg.audio);
       });
       chatMessages.scrollTop = chatMessages.scrollHeight;
     }
@@ -191,9 +194,6 @@ socket.on("messageRead", ({ chatId, userId }) => {
     previewWrapper.style.display = "none";
     document.getElementById("image-input").value = "";
   };
-
-  let mediaRecorder;
-  let audioChunks = [];
 
   recordBtn.onclick = async () => {
   try {
@@ -286,7 +286,7 @@ stopBtn.onclick = () => {
     }
   }
 
-  function appendMessage(text, fromMe, time, image = null) {
+  function appendMessage(text, fromMe, time, image = null , audio = null) {
     const container = document.createElement("div");
     container.className = `message-container ${fromMe ? "message-right-container" : "message-left-container"}`;
 
