@@ -1,4 +1,11 @@
+
 document.addEventListener('DOMContentLoaded', async () => {
+  
+const socket = io(BACKEND_URL, {
+  withCredentials: true,
+  transports: ['websocket','polling']
+});
+
   const token = localStorage.getItem('token');
   const user = JSON.parse(localStorage.getItem('user'));
   const container = document.getElementById('notification-list');
@@ -22,6 +29,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     div.appendChild(messageText);
 
     if (n.rescueId && user?.role === 'volunteer') {
+      socket.emit("joinAsVolunteer");
       let isAlreadyTaken = false;
 
       try {
@@ -156,11 +164,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     method: 'PUT',
     headers: { Authorization: `Bearer ${token}` }
   });
-
-const socket = io(BACKEND_URL, {
-  withCredentials: true,
-  transports: ['websocket','polling']
-});
 
   if (user?.role === "volunteer") {
     socket.emit("joinAsVolunteer");
