@@ -5,27 +5,44 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Rescue Tracking • Plate&Go</title>
 
-  <!-- Your global styles + Leaflet CSS -->
+  <!-- Your global styles + Leaflet CSS + Routing Machine CSS -->
   <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet/dist/leaflet.css"
+  />
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css"
+  />
 
   <style>
-    /* ensure header/nav stay above map */
-    #map { position: absolute; top: 70px; bottom: 70px; left: 0; right: 0; }
-    .eta-box { background: rgba(255,255,255,0.9); padding: 0.5rem; border-radius: 0.25rem; font-size: 0.9rem; }
+    /* Map under header & above bottom nav */
+    #map {
+      position: absolute;
+      top: 70px;    /* height of your .header */
+      bottom: 70px; /* height of your .main nav */
+      left: 0;
+      right: 0;
+    }
+    .eta-box {
+      background: rgba(255,255,255,0.9);
+      padding: 0.5rem 0.75rem;
+      border-radius: 0.25rem;
+      font-size: 0.9rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
   </style>
 </head>
 <body>
-  <!-- Header (copied from your project) -->
+  <!-- Header -->
   <div class="header">
     <div class="profile">
       <img id="profile-picture" src="" alt="Profile Picture" />
-      <span id="welcome-message">Welcome </span>
+      <span id="welcome-message">Welcome</span>
     </div>
     <div class="logo">
-      <a href="home-page.html">
-        <img src="images/platego.png" alt="Plate&Go" />
-      </a>
+      <a href="home-page.html"><img src="images/platego.png" alt="Plate&Go" /></a>
     </div>
     <div class="menu">
       <a href="notifications.html" class="ring">
@@ -37,21 +54,19 @@
     </div>
   </div>
 
-  <!-- Side-menu / Main navigation -->
+  <!-- Main Navigation Icons -->
   <div class="main">
     <a href="car-finder.html"><img src="images/search.png" alt="search icon" /></a>
-    <a href="chat-list.html"><img src="images/message.png" alt="message icon" /></a>
+    <a href="chat-list.html"><img src="images/message.png" alt="message icon"></a>
     <a href="my-cars.html"><img src="images/car.png" alt="car icon" /></a>
   </div>
 
-  <!-- Map container -->
+  <!-- Map -->
   <div id="map"></div>
-
-  <!-- Bottom nav (duplicate of .main if needed) -->
-  <!-- Optional: put the .main nav fixed at bottom instead of side, adjust in CSS -->
 
   <!-- Scripts -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script src="js/tracking.js"></script>
 </body>
