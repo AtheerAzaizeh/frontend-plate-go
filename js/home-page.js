@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function () {
       show: false
     }).addTo(trackMap);
 
-  fetch(`https://api.openrouteservice.org/v2/directions/driving-car?api_key=YOUR_API_KEY&start=${lng},${lat}&end=${resLng},${resLat}`)
+  fetch(`https://api.openrouteservice.org/v2/directions/driving-car?api_key=eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjA1YTUyYzhmZmJiZTQ1MDA4MzI0ZDg4OTU2MWVlMjEyIiwiaCI6Im11cm11cjY0In0=&start=${lng},${lat}&end=${resLng},${resLat}`)
       .then(res => res.json())
       .then(data => {
         const etaMin = Math.round(data.routes[0].summary.duration / 60);
