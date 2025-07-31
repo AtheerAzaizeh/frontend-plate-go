@@ -79,8 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const { reportId, plate, message } = data;
     showNotification(
       `📋 New report on your car (${plate}): ${message}`,
-      "report",
-      `/report-details.html?reportId=${reportId}`
+      "report"
     );
     saveNotificationToDB(data);
   });
