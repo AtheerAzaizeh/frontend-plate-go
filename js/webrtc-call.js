@@ -249,19 +249,42 @@ class CallManager {
     }
 
     // Handle connection state changes
-    this.peerConnection.onconnectionstatechange = () => {
-      console.log("Connection state:", this.peerConnection.connectionState)
-
-      if (this.peerConnection.connectionState === "connected") {
-        this.showNotification("Call connected", "success")
-      } else if (
-        this.peerConnection.connectionState === "disconnected" ||
-        this.peerConnection.connectionState === "failed"
-      ) {
-        this.endCall()
+    this.peerConnection.oniceconnectionstatechange = () => {
+      const state = this.peerConnection.iceConnectionState;
+      console.log("ICE connection state:", state);
+    
+      if (state === "disconnected" || state === "failed") {
+        this.showNotification("Connection lost. Trying to reconnect...", "warning");
+        this.tryReconnect();
+      } else if (state === "connected") {
+        this.showNotification("Call connection stable", "success");
       }
     }
   }
+
+  async tryReconnect() {
+  console.log("Trying to re-establish connection...");
+
+  try {
+    this.cleanupPeer();
+
+    await this.createPeerConnection();
+
+    const offer = await this.peerConnection.createOffer();
+    await this.peerConnection.setLocalDescription(offer);
+
+    this.socket.emit("webrtc-offer", {
+      callId: this.currentCallId,
+      targetUserId: this.remoteUserId,
+      offer: offer,
+    });
+
+    this.showNotification("Reconnection attempt sent...", "info");
+  } catch (err) {
+    console.error("Reconnection failed:", err);
+    this.showNotification("Reconnection failed", "error");
+  }
+}
 
   async createOffer() {
     try {
@@ -301,13 +324,17 @@ class CallManager {
     }
   }
 
-  async handleAnswer(data) {
-    try {
-      await this.peerConnection.setRemoteDescription(data.answer)
-    } catch (error) {
-      console.error("Error handling answer:", error)
+async handleAnswer(data) {
+  try {
+    if (!this.peerConnection) {
+      await this.createPeerConnection();
     }
+    await this.peerConnection.setRemoteDescription(data.answer);
+  } catch (error) {
+    console.error("Error handling answer:", error);
+    this.tryReconnect();  
   }
+}
 
   async handleIceCandidate(data) {
     try {
@@ -333,28 +360,17 @@ class CallManager {
     this.cleanup()
   }
 
-  cleanup() {
-    // Stop local stream
-    if (this.localStream) {
-      this.localStream.getTracks().forEach((track) => track.stop())
-      this.localStream = null
-    }
-
-    // Close peer connection
-    if (this.peerConnection) {
-      this.peerConnection.close()
-      this.peerConnection = null
-    }
-
-    // Reset state
-    this.isCallActive = false
-    this.isIncomingCall = false
-    this.currentCallId = null
-    this.remoteUserId = null
-    this.remoteStream = null
-
-    this.stopRingtone()
+cleanupPeer() {
+  if (this.peerConnection) {
+    this.peerConnection.close();
+    this.peerConnection = null;
   }
+
+  if (this.remoteStream) {
+    this.remoteStream.getTracks().forEach(t => t.stop());
+    this.remoteStream = null;
+  }
+}
 
   // UI Methods
   showCallingUI(targetName, carPlate) {
@@ -397,10 +413,10 @@ class CallManager {
         </div>
         <div class="call-actions">
           <button class="call-btn accept-call" onclick="window.callManager.acceptCall()">
-            <img src="images/accept-call.svg" alt="Accept" />
+            <img src="images/accept-call.png" alt="Accept" />
           </button>
           <button class="call-btn reject-call" onclick="window.callManager.rejectCall()">
-            <img src="images/end-call.svg" alt="Reject" />
+            <img src="images/end-call.png" alt="Reject" />
           </button>
         </div>
       </div>
