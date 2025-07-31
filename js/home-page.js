@@ -4,7 +4,8 @@ document.addEventListener('DOMContentLoaded', function () {
   const token = localStorage.getItem('token');
   const user = JSON.parse(localStorage.getItem('user'));
 
-  // ✅ Modal message utility
+  let initializing = true; // ✅ Used to block toggle logic on first load
+
   const showModalMessage = (msg) => {
     const modal = document.getElementById("modal");
     const msgBox = document.getElementById("modal-message");
@@ -33,10 +34,16 @@ document.addEventListener('DOMContentLoaded', function () {
         volunteerToggle.checked = false;
         if (statusBadge) statusBadge.textContent = '🔴';
       }
+      initializing = false; // ✅ Enable change events after initial setup
     })
-    .catch(error => console.error('Error fetching volunteer status:', error));
+    .catch(error => {
+      console.error('Error fetching volunteer status:', error);
+      initializing = false; // ✅ Still unblock even on failure
+    });
 
   volunteerToggle.addEventListener('change', () => {
+    if (initializing) return; // ⛔ Prevent firing during initialization
+
     const available = volunteerToggle.checked;
 
     fetch(`${BACKEND_URL}/api/volunteer/update-status`, {
