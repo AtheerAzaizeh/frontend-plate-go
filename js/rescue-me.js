@@ -100,7 +100,10 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // ✅ Move socket logic HERE to access showModal
-  const socket = window.io(BACKEND_URL);
+const socket = io(BACKEND_URL, {
+  withCredentials: true,
+  transports: ['websocket','polling']
+});
   if (user?._id) {
     socket.emit("joinUserRoom", user._id);
   }

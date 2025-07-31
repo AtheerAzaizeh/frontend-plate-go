@@ -14,7 +14,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // 2. Connect socket
   console.log("▶️ Connecting socket to:", BACKEND_URL);
-  const socket = io(BACKEND_URL);
+const socket = io(BACKEND_URL, {
+  withCredentials: true,
+  transports: ['websocket','polling']
+});
 
   // 3. On connect, join personal room
   socket.on("connect", () => {

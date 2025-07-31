@@ -61,7 +61,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   // ✅ Socket.IO real-time updates
-  const socket = io(BACKEND_URL);
+  const socket = io(BACKEND_URL, {
+    withCredentials: true,
+    transports: ['websocket','polling']
+  });
   socket.emit("joinUser", user._id);
 
   socket.on("chatListUpdate", ({ chatId, lastMessageText, timestamp }) => {

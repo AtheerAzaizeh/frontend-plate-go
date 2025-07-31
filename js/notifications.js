@@ -140,7 +140,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     headers: { Authorization: `Bearer ${token}` }
   });
 
-  const socket = window.io(BACKEND_URL);
+const socket = io(BACKEND_URL, {
+  withCredentials: true,
+  transports: ['websocket','polling']
+});
 
   if (user?.role === "volunteer") {
     socket.emit("joinAsVolunteer");
