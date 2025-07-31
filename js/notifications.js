@@ -18,7 +18,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     const divnotifiybtn = document.createElement('div');
     divnotifiybtn.className = 'notification-btns';
     const messageText = document.createElement('span');
-    messageText.textContent = `${n.message} • ${new Date(n.createdAt).toLocaleString()}`;
+   let reporter = n.sender?.firstName || "Someone";
+let carPlate = n.carPlate || "your car";
+let reason = n.reason || "No reason provided";
+let location = n.location || "Unknown location";
+let time = n.createdAt ? new Date(n.createdAt).toLocaleString() : "Unknown time";
+
+messageText.textContent = `📝 ${reporter} reported your ${carPlate} — Reason: ${reason} — Time: ${time} — Location: ${location}`;
+
     div.appendChild(messageText);
 
     if (n.rescueId && user?.role === 'volunteer') {
