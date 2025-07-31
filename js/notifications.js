@@ -60,6 +60,7 @@ const socket = io(BACKEND_URL, {
       const navigateButton = document.createElement('button');
       navigateButton.textContent = '📍 Navigate';
       navigateButton.className = 'navigate-btn';
+
 navigateButton.onclick = async () => {
   try {
     const rescueRes = await fetch(`${BACKEND_URL}/api/rescue/${n.rescueId}`, {
@@ -83,6 +84,19 @@ navigateButton.onclick = async () => {
     showModal("Error", "❌ Could not fetch rescue details.");
   }
 };
+
+
+      navigateButton.onclick = () => {
+        if (!n.coordinates || !n.coordinates.lat || !n.coordinates.lng) {
+          return showModal("Missing Coordinates", "❌ No GPS location found for this request.");
+        }
+        startLiveNavigation(n.rescueId, n.coordinates.lat, n.coordinates.lng);
+      };navigateButton.onclick = () => {
+        if (!n.coordinates || !n.coordinates.lat || !n.coordinates.lng) {
+          return showModal("Missing Coordinates", "❌ No GPS location found for this request.");
+        }
+        startLiveNavigation(n.rescueId, n.coordinates.lat, n.coordinates.lng);
+      };
 
 
       const acceptButton = document.createElement('button');
