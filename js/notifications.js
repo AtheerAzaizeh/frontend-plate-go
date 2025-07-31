@@ -20,11 +20,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     const messageText = document.createElement('span');
 
 if (n.type === 'report' || n.reportId || n.message?.includes("New report submitted")) {
-  let reporter = n.sender?.firstName || "Someone";
-  let carPlate = n.carPlate || "your car";
-  let reason = n.reason || "No reason provided";
-  let location = n.location || "Unknown location";
-  let time = n.createdAt ? new Date(n.createdAt).toLocaleString() : "Unknown time";
+  let reporter = sender?.firstName || "Someone";
+  let carPlate = carPlate || "your car";
+  let reason = reason || "No reason provided";
+  let location = location || "Unknown location";
+  let time = createdAt ? new Date(n.createdAt).toLocaleString() : "Unknown time";
 
   messageText.textContent = `📝 ${reporter} reported your ${carPlate} — Reason: ${reason} — Time: ${time} — Location: ${location}`;
 } else {
