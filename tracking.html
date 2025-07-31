@@ -1,11 +1,56 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rescue Tracking • Plate&Go</title>
+
+  <!-- Your global styles + Leaflet CSS -->
+  <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <style>#map { height:100vh; }</style>
+
+  <style>
+    /* ensure header/nav stay above map */
+    #map { position: absolute; top: 70px; bottom: 70px; left: 0; right: 0; }
+    .eta-box { background: rgba(255,255,255,0.9); padding: 0.5rem; border-radius: 0.25rem; font-size: 0.9rem; }
+  </style>
 </head>
 <body>
+  <!-- Header (copied from your project) -->
+  <div class="header">
+    <div class="profile">
+      <img id="profile-picture" src="" alt="Profile Picture" />
+      <span id="welcome-message">Welcome </span>
+    </div>
+    <div class="logo">
+      <a href="home-page.html">
+        <img src="images/platego.png" alt="Plate&Go" />
+      </a>
+    </div>
+    <div class="menu">
+      <a href="notifications.html" class="ring">
+        <img src="images/notification-bell.svg" alt="Bell Icon" width="30" height="30" />
+      </a>
+      <span class="san" id="menu-toggle">
+        <img src="images/menu-icon.svg" alt="Menu Icon" width="30" height="30" />
+      </span>
+    </div>
+  </div>
+
+  <!-- Side-menu / Main navigation -->
+  <div class="main">
+    <a href="car-finder.html"><img src="images/search.png" alt="search icon" /></a>
+    <a href="chat-list.html"><img src="images/message.png" alt="message icon" /></a>
+    <a href="my-cars.html"><img src="images/car.png" alt="car icon" /></a>
+  </div>
+
+  <!-- Map container -->
   <div id="map"></div>
+
+  <!-- Bottom nav (duplicate of .main if needed) -->
+  <!-- Optional: put the .main nav fixed at bottom instead of side, adjust in CSS -->
+
+  <!-- Scripts -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script src="js/tracking.js"></script>
