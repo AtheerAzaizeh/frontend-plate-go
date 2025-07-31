@@ -141,7 +141,10 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify(payload),
       });
 
-      if (!res.ok) throw new Error(await res.text());
+      if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(errorData.error || errorData.message || res.statusText);
+          }
 
       // Success UI
       document.getElementById("report-modal").classList.add("hidden-r");

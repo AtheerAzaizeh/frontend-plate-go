@@ -93,6 +93,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       headers: { Authorization: `Bearer ${token}` }
     });
 
+    socket.on("newMessage", (data) => {
+      const isFromMe = data.senderId === user._id;
+      appendMessage(data.text, isFromMe, formatTime(data.timestamp), data.image);
+    });
+    
     if (msgRes.ok) {
       const messages = await msgRes.json();
       const dateSeperator = chatMessages.querySelector(".date-separator");

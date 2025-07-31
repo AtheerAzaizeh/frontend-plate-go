@@ -266,7 +266,6 @@ function loadCities() {
       phoneNumber: form.phoneNumber.value,
       email: form.email.value,
       password: form.password.value,
-      volunteerStatus: form.volunteerStatus.value,
       address: form.address.value,
       img: state.profileImageUrl,
       carCompany: form.carCompany.value,
