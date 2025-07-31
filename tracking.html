@@ -6,7 +6,7 @@
   <title>Rescue Tracking • Plate&Go</title>
 
   <!-- Your global styles + Leaflet CSS + Routing Machine CSS -->
-  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="styles.css" />
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet/dist/leaflet.css"
@@ -17,11 +17,10 @@
   />
 
   <style>
-    /* Map under header & above bottom nav */
     #map {
       position: absolute;
-      top: 70px;    /* height of your .header */
-      bottom: 70px; /* height of your .main nav */
+      top: 70px;    /* height of .header */
+      bottom: 70px; /* height of .main */
       left: 0;
       right: 0;
     }
@@ -35,7 +34,7 @@
   </style>
 </head>
 <body>
-  <!-- Header -->
+  <!-- header + main nav as before -->
   <div class="header">
     <div class="profile">
       <img id="profile-picture" src="" alt="Profile Picture" />
@@ -46,28 +45,29 @@
     </div>
     <div class="menu">
       <a href="notifications.html" class="ring">
-        <img src="images/notification-bell.svg" alt="Bell Icon" width="30" height="30" />
+        <img src="images/notification-bell.svg" alt="Bell" width="30" height="30" />
       </a>
       <span class="san" id="menu-toggle">
-        <img src="images/menu-icon.svg" alt="Menu Icon" width="30" height="30" />
+        <img src="images/menu-icon.svg" alt="Menu" width="30" height="30" />
       </span>
     </div>
   </div>
 
-  <!-- Main Navigation Icons -->
   <div class="main">
-    <a href="car-finder.html"><img src="images/search.png" alt="search icon" /></a>
-    <a href="chat-list.html"><img src="images/message.png" alt="message icon"></a>
-    <a href="my-cars.html"><img src="images/car.png" alt="car icon" /></a>
+    <a href="car-finder.html"><img src="images/search.png" alt="search"></a>
+    <a href="chat-list.html"><img src="images/message.png" alt="chat"></a>
+    <a href="my-cars.html"><img src="images/car.png" alt="car"></a>
   </div>
 
-  <!-- Map -->
   <div id="map"></div>
 
-  <!-- Scripts -->
+  <!-- Leaflet, Routing Machine, Socket.IO (CDN), then our script -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
-  <script src="/socket.io/socket.io.js"></script>
+  <script
+    src="https://cdn.socket.io/4.6.1/socket.io.min.js"
+    integrity="sha384-2x9a..." crossorigin="anonymous">
+  </script>
   <script src="js/tracking.js"></script>
 </body>
 </html>
