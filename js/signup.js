@@ -68,21 +68,38 @@
   /**
    * Fetches and populates the city selection dropdown.
    */
-  function loadCities() {
-    fetch("../backend/data-json/israel_cities.json")
-      .then(res => res.json())
-      .then(data => {
-        const cityNames = [...new Set(data.map(city => city.city))].sort();
-        populateSelect(elements.addressSelect, cityNames, "Select City");
-      })
-      .catch(err => console.error("Error loading cities:", err));
-  }
+function loadCities() {
+  const GITHUB_CITIES_URL =
+    'https://raw.githubusercontent.com/GabMic/' +
+    'israeli-cities-and-streets-list/master/' +
+    'israeli_street_and_cities_names.json';
+
+  fetch(GITHUB_CITIES_URL)
+    .then(res => {
+      if (!res.ok) throw new Error(`Failed to fetch cities (status ${res.status})`);
+      return res.json();
+    })
+    .then(data => {
+      // Extract every entry.city_name, dedupe and sort
+      const cityNames = Array.from(
+        new Set(data.streets.map(entry => entry.city_name))
+      ).sort((a, b) =>
+        // Optionally sort with Hebrew locale:
+        a.localeCompare(b, 'he') 
+      );
+
+      // Clear any existing options, then populate
+      elements.addressSelect.innerHTML = '';
+      populateSelect(elements.addressSelect, cityNames, 'Select City');
+    })
+    .catch(err => console.error('Error loading cities:', err));
+}
 
   /**
    * Fetches car data and populates the car company dropdown.
    */
   function loadCarData() {
-    fetch("../backend/data-json/car_data_by_make_model_year.json")
+    fetch("../data/car_data_by_make_model_year.json")
       .then(res => res.json())
       .then(data => {
         state.carData = data;
