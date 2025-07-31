@@ -17,7 +17,22 @@ const socket = io(BACKEND_URL, {
   const notifications = await res.json();
   container.innerHTML = '';
 
-  const validNotifications = notifications.filter(n => n.rescueId && user?.role === 'volunteer');
+async function geocodeAddress(address) {
+  const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
+  const response = await fetch(url, {
+    headers: {
+      'Accept-Language': 'en' // Optionally force English
+    }
+  });
+  const results = await response.json();
+  if (results && results.length > 0) {
+    return {
+      lat: parseFloat(results[0].lat),
+      lng: parseFloat(results[0].lon)
+    };
+  }
+  return null;
+}
 
   for (const n of notifications) {
     const div = document.createElement('div');
@@ -60,28 +75,26 @@ const socket = io(BACKEND_URL, {
       const navigateButton = document.createElement('button');
       navigateButton.textContent = '📍 Navigate';
       navigateButton.className = 'navigate-btn';
-
 navigateButton.onclick = async () => {
-  try {
-    const rescueRes = await fetch(`${BACKEND_URL}/api/rescue/${n.rescueId}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    if (rescueRes.ok) {
-      const rescueData = await rescueRes.json();
-      if (
-        rescueData.coordinates &&
-        typeof rescueData.coordinates.lat === 'number' &&
-        typeof rescueData.coordinates.lng === 'number'
-      ) {
-        startLiveNavigation(n.rescueId, rescueData.coordinates.lat, rescueData.coordinates.lng);
-      } else {
-        showModal("Missing Coordinates", "❌ No GPS location found for this request.");
-      }
-    } else {
-      showModal("Missing Coordinates", "❌ No GPS location found for this request.");
-    }
-  } catch (err) {
-    showModal("Error", "❌ Could not fetch rescue details.");
+  let coords = null;
+
+  // Try to get coordinates from rescue object (if available)
+  if (rescueData && rescueData.coordinates && rescueData.coordinates.lat && rescueData.coordinates.lng) {
+    coords = {
+      lat: rescueData.coordinates.lat,
+      lng: rescueData.coordinates.lng
+    };
+  }
+
+  // If still missing, try geocoding the address
+  if (!coords && n.location) {
+    coords = await geocodeAddress(n.location);
+  }
+
+  if (coords) {
+    startLiveNavigation(n.rescueId, coords.lat, coords.lng);
+  } else {
+    showModal("Missing Coordinates", "❌ No GPS location found or could not geocode address.");
   }
 };
 
