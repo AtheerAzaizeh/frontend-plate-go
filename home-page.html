@@ -106,6 +106,15 @@
   </div>
 </div>
 
+<div id="track-map-modal" class="hidden-r track-modal">
+  <div class="track-header">
+    <span>🚗 Volunteer is on the way...</span>
+    <button id="track-map-close">✖</button>
+  </div>
+  <div id="eta-display" class="eta-box">Calculating ETA...</div>
+  <div id="track-map-container" style="height: 300px;"></div>
+</div>
+
 <script>
   document.getElementById("modal-ok-btn").onclick = () => {
     document.getElementById("modal").classList.add("hidden-r");
