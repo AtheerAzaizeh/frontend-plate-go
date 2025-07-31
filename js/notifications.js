@@ -60,11 +60,30 @@ const socket = io(BACKEND_URL, {
       const navigateButton = document.createElement('button');
       navigateButton.textContent = '📍 Navigate';
       navigateButton.className = 'navigate-btn';
-      navigateButton.onclick = () => {
-        if (!n.location) return showModal("Missing Location", "❌ No location provided.");
-        const query = encodeURIComponent(n.location);
-        window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
-      };
+navigateButton.onclick = async () => {
+  try {
+    const rescueRes = await fetch(`${BACKEND_URL}/api/rescue/${n.rescueId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (rescueRes.ok) {
+      const rescueData = await rescueRes.json();
+      if (
+        rescueData.coordinates &&
+        typeof rescueData.coordinates.lat === 'number' &&
+        typeof rescueData.coordinates.lng === 'number'
+      ) {
+        startLiveNavigation(n.rescueId, rescueData.coordinates.lat, rescueData.coordinates.lng);
+      } else {
+        showModal("Missing Coordinates", "❌ No GPS location found for this request.");
+      }
+    } else {
+      showModal("Missing Coordinates", "❌ No GPS location found for this request.");
+    }
+  } catch (err) {
+    showModal("Error", "❌ Could not fetch rescue details.");
+  }
+};
+
 
       const acceptButton = document.createElement('button');
       acceptButton.textContent = isAlreadyTaken ? '⛔ Already Taken' : '✅ Accept Rescue';
