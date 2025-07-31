@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const chatId = urlParams.get("chatId");
   const plate = urlParams.get("plate");
   const BACKEND_URL = window.BACKEND_URL || "https://platego-smi4.onrender.com";
-
+  const newMsgSound = new Audio("sounds/alert.mp3");
   const io = window.io;
 
   const plateEl = document.getElementById("plate-number");
@@ -96,8 +96,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     socket.on("newMessage", (data) => {
       const isFromMe = data.senderId === user._id;
       appendMessage(data.text, isFromMe, formatTime(data.timestamp), data.image);
+      if (!isFromMe) newMsgSound.play();
+      socket.emit("messageRead", { chatId: currentChatId, userId: user._id });
     });
-    
+
     if (msgRes.ok) {
       const messages = await msgRes.json();
       const dateSeperator = chatMessages.querySelector(".date-separator");
@@ -126,10 +128,42 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
+  let typingTimeout;
   document.getElementById("send-btn").onclick = () => sendMessage();
   document.getElementById("message-input").addEventListener("keypress", (e) => {
+    socket.emit("typing", { chatId: currentChatId, userId: user._id });
+
+    clearTimeout(typingTimeout);
+    typingTimeout = setTimeout(() => {
+    socket.emit("stopTyping", { chatId: currentChatId, userId: user._id });
+    }, 1000);
+
     if (e.key === "Enter") sendMessage();
   });
+
+  const typingIndicator = document.getElementById("typing-indicator");
+
+  socket.on("typing", ({ userId }) => {
+  if (otherUser && otherUser.id === userId) {
+    typingIndicator.style.display = "block";
+    typingIndicator.textContent = `${otherUser.name} is typing...`;
+  }
+});
+
+socket.on("stopTyping", ({ userId }) => {
+  if (otherUser && otherUser.id === userId) {
+    typingIndicator.style.display = "none";
+  }
+});
+
+const readReceipt = document.getElementById("read-receipt"); 
+
+socket.on("messageRead", ({ chatId, userId }) => {
+  if (userId === otherUser?.id && chatId === currentChatId) {
+    readReceipt.textContent = "Seen ✔️";
+    readReceipt.style.display = "inline";
+  }
+});
 
   document.getElementById("image-btn").onclick = async () => {
     previewWrapper.style.display = "none";
