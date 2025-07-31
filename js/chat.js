@@ -107,7 +107,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (dateSeperator) chatMessages.appendChild(dateSeperator);
 
       messages.forEach((msg) => {
-        appendMessage(msg.text, msg.sender._id === user._id, formatTime(msg.timestamp), msg.image);
+        appendMessage(msg.text, msg.sender._id === user._id, formatTime(msg.timestamp), msg.image , msg.audio);
       });
       chatMessages.scrollTop = chatMessages.scrollHeight;
     }
@@ -286,7 +286,7 @@ stopBtn.onclick = () => {
     }
   }
 
-  function appendMessage(text, fromMe, time, image = null) {
+  function appendMessage(text, fromMe, time, image = null , audio = null) {
     const container = document.createElement("div");
     container.className = `message-container ${fromMe ? "message-right-container" : "message-left-container"}`;
 
