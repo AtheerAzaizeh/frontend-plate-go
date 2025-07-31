@@ -100,10 +100,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // ✅ Move socket logic HERE to access showModal
-const socket = io(BACKEND_URL, {
-  withCredentials: true,
-  transports: ['websocket','polling']
-});
+  const socket = window.io(BACKEND_URL);
   if (user?._id) {
     socket.emit("joinUserRoom", user._id);
   }
@@ -112,4 +109,3 @@ const socket = io(BACKEND_URL, {
     showModal("🚨 Good news!", `A volunteer is on the way to help you.<br><br>Accepted by: <strong>${data.acceptedBy}</strong>`);
   });
 });
-

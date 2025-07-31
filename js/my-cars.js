@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const yearSelect = document.getElementById("yearSelect");
     const colorSelect = document.getElementById("colorSelect");
 
-    fetch("../data/car_data_by_make_model_year.json")
+    fetch("data/car_data_by_make_model_year.json")
         .then(res => res.json())
         .then(data => {
             carData = data;
@@ -359,7 +359,7 @@ function addCarBoxToContainer(container) {
     }
 });
 
-function showCarFinderModal({ message, type = "info", timeout = false }) {
+function showCarFinderModal({ message, type = "info", timeout = 2000 }) {
   const modal = document.getElementById("modalCarFinder");
   const msg = document.getElementById("modalCarFinderMessage");
   const icon = document.getElementById("modalCarFinderIcon");
