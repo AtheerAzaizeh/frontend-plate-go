@@ -192,6 +192,59 @@ socket.on("messageRead", ({ chatId, userId }) => {
     document.getElementById("image-input").value = "";
   };
 
+  let mediaRecorder;
+  let audioChunks = [];
+
+  recordBtn.onclick = async () => {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaRecorder = new MediaRecorder(stream);
+
+    audioChunks = [];
+    mediaRecorder.ondataavailable = (e) => audioChunks.push(e.data);
+
+    mediaRecorder.onstop = async () => {
+      const blob = new Blob(audioChunks, { type: "audio/webm" });
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const base64Audio = reader.result;
+
+        const res = await fetch(`${BACKEND_URL}/api/message`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            chatId: currentChatId,
+            text: "", // no text
+            image: null,
+            audio: base64Audio,
+          }),
+        });
+
+        if (!res.ok) throw new Error("Failed to send audio message");
+        const timestamp = new Date().toISOString();
+        appendMessage("🎧 Voice message", true, formatTime(timestamp), null, base64Audio);
+      };
+      reader.readAsDataURL(blob);
+    };
+
+    mediaRecorder.start();
+    recordBtn.style.display = "none";
+    stopBtn.style.display = "inline";
+  } catch (err) {
+    console.error("Recording error:", err);
+  }
+};
+
+stopBtn.onclick = () => {
+  mediaRecorder.stop();
+  stopBtn.style.display = "none";
+  recordBtn.style.display = "inline";
+};
+
+
   async function sendMessage() {
     const input = document.getElementById("message-input");
     const text = input.value.trim();
@@ -246,6 +299,14 @@ socket.on("messageRead", ({ chatId, userId }) => {
       img.alt = "Photo";
       img.className = "chat-image";
       message.appendChild(img);
+    }
+
+    
+    if (audio) {
+      const audioEl = document.createElement("audio");
+      audioEl.controls = true;
+      audioEl.src = audio;
+      message.appendChild(audioEl);
     }
 
     if (text) {
