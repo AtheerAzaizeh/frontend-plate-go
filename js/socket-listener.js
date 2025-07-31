@@ -35,12 +35,45 @@ const socket = io(BACKEND_URL, {
     console.error("❌ Socket connection error:", err);
   });
 
-  // 5. Debug: log every incoming event
-  socket.onAny((event, ...args) => {
-    playNotificationSound();
-    showGlobalNotification(`🔔 New event: ${event}`, "notification");
-    console.log(`🔔 Received event “${event}”:`, args);
-  });
+socket.onAny((event, ...args) => {
+  // 1️⃣ Always log raw data to console
+  console.log(`🔔 Received event "${event}":`, args);
+
+  // 2️⃣ Play your notification sound
+  playNotificationSound();
+
+  // 3️⃣ Prepare a human-readable JSON payload
+  const payload = args.length > 1 ? args : args[0];
+  let details;
+  try {
+    details = JSON.stringify(payload, null, 2);
+  } catch (e) {
+    details = String(payload);
+  }
+
+  // 4️⃣ Show it in your global notification UI
+  //    We replace textContent with innerHTML and wrap JSON in a <pre> for formatting
+  document.querySelectorAll(".global-notification").forEach(n => n.remove());
+  const notification = document.createElement("div");
+  notification.className = `global-notification notification`;
+  const content = document.createElement("div");
+  content.className = "notification-content";
+  content.innerHTML = 
+    `<strong>Event:</strong> ${event}<br>` +
+    `<pre style="white-space: pre-wrap; max-height: 200px; overflow-y: auto;">${details}</pre>`;
+  const closeBtn = document.createElement("button");
+  closeBtn.className = "notification-close";
+  closeBtn.innerHTML = "×";
+  closeBtn.onclick = () => notification.remove();
+  notification.appendChild(content);
+  notification.appendChild(closeBtn);
+  document.body.appendChild(notification);
+
+  // auto-dismiss
+  setTimeout(() => {
+    if (notification.parentNode) notification.remove();
+  }, 8000);
+});
 
   // 6. Rescue accepted by volunteer
   socket.on("rescueAccepted", data => {
