@@ -1,8 +1,5 @@
 // js/socket-listener.js
 
-// Assumes you include socket.io-client in your HTML, e.g.
-// <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-// And that BACKEND_URL is defined globally before this script.
 
 document.addEventListener("DOMContentLoaded", () => {
   // 1. Read user & token
