@@ -30,49 +30,56 @@ const socket = io(BACKEND_URL, {
     }
   });
 
-  // 4. Connection error
-  socket.on("connect_error", err => {
-    console.error("❌ Socket connection error:", err);
-  });
-
+// 5. Debug: log and display every incoming event payload only
 socket.onAny((event, ...args) => {
-  // 1️⃣ Always log raw data to console
+  // 1️⃣ Log raw data (you still get the event name in console)
   console.log(`🔔 Received event "${event}":`, args);
 
-  // 2️⃣ Play your notification sound
+  // 2️⃣ Play notification sound
   playNotificationSound();
-
-  // 3️⃣ Prepare a human-readable JSON payload
+  updateNotificationBadge();
+  // 3️⃣ Build payload JSON
   const payload = args.length > 1 ? args : args[0];
   let details;
   try {
     details = JSON.stringify(payload, null, 2);
-  } catch (e) {
+  } catch {
     details = String(payload);
   }
 
-  // 4️⃣ Show it in your global notification UI
-  //    We replace textContent with innerHTML and wrap JSON in a <pre> for formatting
-  document.querySelectorAll(".global-notification").forEach(n => n.remove());
+  // 4️⃣ Create notification element
   const notification = document.createElement("div");
-  notification.className = `global-notification notification`;
+  notification.className = "global-notification notification hide";
+
+  // Content: only the JSON payload in a <pre>
   const content = document.createElement("div");
   content.className = "notification-content";
-  content.innerHTML = 
-    `<strong>Event:</strong> ${event}<br>` +
-    `<pre style="white-space: pre-wrap; max-height: 200px; overflow-y: auto;">${details}</pre>`;
+  content.innerHTML = `<pre>${details}</pre>`;
+
+  // Close button
   const closeBtn = document.createElement("button");
   closeBtn.className = "notification-close";
   closeBtn.innerHTML = "×";
-  closeBtn.onclick = () => notification.remove();
+  closeBtn.onclick = () => dismiss(notification);
+
+  // Assemble
   notification.appendChild(content);
   notification.appendChild(closeBtn);
   document.body.appendChild(notification);
 
-  // auto-dismiss
-  setTimeout(() => {
-    if (notification.parentNode) notification.remove();
-  }, 8000);
+  // animate in
+  requestAnimationFrame(() => {
+    notification.classList.replace("hide", "show");
+  });
+
+  // auto-dismiss after 8s
+  setTimeout(() => dismiss(notification), 8000);
+
+  // helper to slide out & remove
+  function dismiss(el) {
+    el.classList.replace("show", "hide");
+    el.addEventListener("transitionend", () => el.remove(), { once: true });
+  }
 });
 
   // 6. Rescue accepted by volunteer
