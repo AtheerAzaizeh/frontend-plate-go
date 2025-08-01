@@ -76,7 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // 4️⃣ Report notifications
   socket.on("newReportNotification", data => {
     console.log("🏷️ newReportNotification:", data);
-    const { reportId, plate, message  } = data;
+    const { reportId, plate, message } = data;
     showNotification(
       `📋 New report on your car (${plate}): ${message}`,
       "report"
