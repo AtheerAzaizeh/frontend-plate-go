@@ -110,20 +110,26 @@ async function hashURL(url) {
     },err=>console.error(err),{enableHighAccuracy:true,maximumAge:3000});
   }
 
-  // 6️⃣ Initial fetch
-  fetch(`${BACKEND_URL}/api/rescue/${rescueId}/positions`,{
-    headers:{Authorization:`Bearer ${token}`}
+let requester = null; // Declare it at the top
+
+// Later in your fetch block:
+fetch(`${BACKEND_URL}/api/rescue/${rescueId}/positions`, {
+  headers: { Authorization: `Bearer ${token}` }
+})
+  .then(r => r.json())
+  .then(({ requester: reqData, volunteer }) => {
+    requester = reqData; // Assign the fetched data
+
+    if (requester?.lat && requester?.lng) {
+      requesterMarker.setLatLng([requester.lat, requester.lng]);
+      map.setView([requester.lat, requester.lng], 13);
+    }
+
+    if (volunteer?.lat && volunteer?.lng) {
+      volunteerMarker.setLatLng([volunteer.lat, volunteer.lng]);
+    }
+
+    updateRoute();
   })
-    .then(r=>r.json())
-    .then(({requester,volunteer})=>{
-      if (requester?.lat && requester?.lng) {
-        requesterMarker.setLatLng([requester.lat,requester.lng]);
-        map.setView([requester.lat,requester.lng],13);
-      }
-      if (volunteer?.lat && volunteer?.lng) {
-        volunteerMarker.setLatLng([volunteer.lat,volunteer.lng]);
-      }
-      updateRoute();
-    })
-    .catch(()=>console.warn('No initial positions'));
+  .catch(() => console.warn('No initial positions'));
 });

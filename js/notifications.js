@@ -3,223 +3,130 @@ document.addEventListener('DOMContentLoaded', async () => {
   const user = JSON.parse(localStorage.getItem('user'));
   const container = document.getElementById('notification-list');
 
-  const res = await fetch(`${BACKEND_URL}/api/notification/my`, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-
-  const notifications = await res.json();
-  container.innerHTML = '';
-
-const reportNotifications = notifications.filter(n => n.type === 'report');
-
-for (const n of reportNotifications) {
-  // 2. Pull out exactly what you need
-  const {
-    sender,
-    carPlate = 'your car',
-    reason = 'No reason provided',
-    location = 'Unknown location',
-    createdAt
-  } = n;
-  
-  // 3. Format your values
-  const reporterName = sender?.firstName || 'Someone';
-  const timeString  = createdAt
-    ? new Date(createdAt).toLocaleString()
-    : 'Unknown time';
-  
-  // 4. Build the DOM
-  const div          = document.createElement('div');
-  div.className      = 'notification-item';
-  const messageText  = document.createElement('span');
-  messageText.textContent =
-    `📝 ${reporterName} reported your ${carPlate} — Reason: ${reason} — Time: ${timeString} — Location: ${location}`;
-  
-  div.appendChild(messageText);
-  container.appendChild(div);
-
-    if (n.type === 'report' || n.reportId || n.message?.includes("New report submitted")) {
-      const viewButton = document.createElement('button');
-      viewButton.textContent = '🔍 View Report';
-      viewButton.className = 'view-details-btn';
-      viewButton.onclick = () => {
-        showModal("🚨 Report Details", `
-          <strong>Location:</strong> ${n.location || 'Unknown'}<br>
-          <strong>Reason:</strong> ${n.reason || 'Not provided'}
-        `);
-      };
-      divnotifiybtn.append(viewButton);
-      div.append(divnotifiybtn);
-}
-
-
-    if (n.rescueId && user?.role === 'volunteer') {
-      let isAlreadyTaken = false;
-
-      try {
-        const rescueRes = await fetch(`${BACKEND_URL}/api/rescue/${n.rescueId}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        if (rescueRes.ok) {
-          const rescueData = await rescueRes.json();
-          isAlreadyTaken = rescueData.status !== 'pending';
-        } else {
-          isAlreadyTaken = true;
-        }
-      } catch (err) {
-        console.warn("Error fetching live rescue status:", err);
-        isAlreadyTaken = true;
-      }
-
-      const viewButton = document.createElement('button');
-      viewButton.textContent = '🔍 View Details';
-      viewButton.className = 'view-details-btn';
-      viewButton.onclick = () => {
-        showModal("🚨 Rescue Details", `
-          <strong>Location:</strong> ${n.location || 'Unknown'}<br>
-          <strong>Reason:</strong> ${n.reason || 'Not provided'}
-        `);
-      };
-
-      const navigateButton = document.createElement('button');
-      navigateButton.textContent = '📍 Navigate';
-      navigateButton.className = 'navigate-btn';
-      navigateButton.onclick = () => {
-        if (!n.location) return showModal("Missing Location", "❌ No location provided.");
-        const query = encodeURIComponent(n.location);
-        window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
-      };
-
-      const acceptButton = document.createElement('button');
-      acceptButton.textContent = isAlreadyTaken ? '⛔ Already Taken' : '✅ Accept Rescue';
-      acceptButton.className = 'accept-rescue-btn';
-      acceptButton.disabled = isAlreadyTaken;
-      if (isAlreadyTaken) {
-        acceptButton.style.backgroundColor = 'gray';
-      }
-
-      acceptButton.onclick = async () => {
-        if (acceptButton.disabled) return;
-
-        if (!n.rescueId) {
-          return showModal("Missing Rescue ID", "❌ rescueId not found.");
-        }
-
-        showConfirmationModal(
-          "Confirm Rescue",
-          "Are you sure you want to accept this rescue request?",
-          async () => {
-            try {
-              const response = await fetch(`${BACKEND_URL}/api/rescue/accept/${n.rescueId}`, {
-                method: 'PUT',
-                headers: {
-                  'Authorization': `Bearer ${token}`,
-                  'Content-Type': 'application/json'
-                }
-              });
-
-              const result = await response.json();
-              if (response.ok) {
-                showModal("Accepted", '✅ You accepted the rescue!');
-                acceptButton.disabled = true;
-                acceptButton.textContent = '⛔ Already Taken';
-                acceptButton.style.backgroundColor = 'gray';
-
-                if (result.chatId) {
-                  window.location.href = `chat.html?chatId=${result.chatId}`;
-                }
-              } else {
-                showModal("Failed", result.message || '❌ Rescue already taken');
-                acceptButton.disabled = true;
-                acceptButton.textContent = '⛔ Already Taken';
-                acceptButton.style.backgroundColor = 'gray';
-              }
-            } catch (err) {
-              console.error('Accept rescue error:', err);
-              showModal("Error", '❌ Error accepting rescue');
-              acceptButton.disabled = true;
-              acceptButton.textContent = '⛔ Failed';
-              acceptButton.style.backgroundColor = 'gray';
-            }
-          }
-        );
-      };
-
-      divnotifiybtn.append(viewButton, navigateButton, acceptButton);
-      div.append(divnotifiybtn);
-    }
-
-    else if (n.type === 'message' || n.chatId) {
-      const chatButton = document.createElement('button');
-      chatButton.textContent = '💬 Open Chat';
-      chatButton.className = 'open-chat-btn';
-      chatButton.onclick = () => {
-        window.location.href = `chat.html?chatId=${n.chatId}`;
-      };
-      divnotifiybtn.append(chatButton);
-      div.append(divnotifiybtn);
-    }
-
-    else if (n.type === 'report' || n.reportId || n.message?.includes("New report submitted")) {
-      console.log("Report notification — buttons skipped.");
-    }
-
-    container.appendChild(div);
+  // 1. Fetch current user’s notifications
+  let notifications = [];
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/notification/my`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (!res.ok) throw new Error(`Status ${res.status}`);
+    notifications = await res.json();
+  } catch (err) {
+    console.error('Failed to load notifications:', err);
+    container.innerHTML = '<p class="error">Unable to load notifications.</p>';
+    return;
   }
 
-  await fetch(`${BACKEND_URL}/api/notification/mark-read`, {
-    method: 'PUT',
-    headers: { Authorization: `Bearer ${token}` }
-  });
+  // 2. Only keep “report”-type notifications
+  const reportNotifications = notifications.filter(n => n.type === 'report');
 
+  // 3. Render each report notification
+  container.innerHTML = '';
+  for (const n of reportNotifications) {
+    const {
+      sender,
+      carPlate   = 'your car',
+      reason     = 'No reason provided',
+      location   = 'Unknown location',
+      createdAt
+    } = n;
+
+    const reporterName = sender?.firstName || 'Someone';
+    const timeString   = createdAt
+      ? new Date(createdAt).toLocaleString()
+      : 'Unknown time';
+
+    // Root item
+    const item = document.createElement('div');
+    item.className = 'notification-item';
+
+    // Message text
+    const messageText = document.createElement('span');
+    messageText.textContent =
+      `📝 ${reporterName} reported your ${carPlate} — Reason: ${reason} — Time: ${timeString} — Location: ${location}`;
+    item.appendChild(messageText);
+
+    // Buttons container
+    const btns = document.createElement('div');
+    btns.className = 'notification-btns';
+
+    // “View Report” button
+    const viewBtn = document.createElement('button');
+    viewBtn.className = 'view-details-btn';
+    viewBtn.textContent = '🔍 View Report';
+    viewBtn.addEventListener('click', () => {
+      showModal(
+        '🚨 Report Details',
+        `<strong>Location:</strong> ${location}<br>` +
+        `<strong>Reason:</strong> ${reason}`
+      );
+    });
+    btns.appendChild(viewBtn);
+
+    item.appendChild(btns);
+    container.appendChild(item);
+  }
+
+  // 4. Mark all notifications as read
+  try {
+    await fetch(`${BACKEND_URL}/api/notification/mark-read`, {
+      method: 'PUT',
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  } catch (err) {
+    console.warn('Could not mark notifications read:', err);
+  }
+
+  // 5. Real-time rescue alerts for volunteers
   const socket = window.io(BACKEND_URL);
+  if (user?.role === 'volunteer') {
+    socket.emit('joinAsVolunteer');
+    socket.on('newRescueRequest', data => {
+      // show popup
+      showModal(
+        '🚨 New Rescue Request',
+        `<strong>Location:</strong> ${data.location}<br>` +
+        `<strong>Reason:</strong> ${data.message}<br>` +
+        `<strong>Time:</strong> ${new Date(data.time).toLocaleString()}`
+      );
 
-  if (user?.role === "volunteer") {
-    socket.emit("joinAsVolunteer");
-
-    socket.on("newRescueRequest", (data) => {
-      showModal("🚨 New Rescue Request", `
-        <strong>Location:</strong> ${data.location}<br>
-        <strong>Reason:</strong> ${data.message}<br>
-        <strong>Time:</strong> ${new Date(data.time).toLocaleString()}
-      `);
-
+      // prepend to list
       const div = document.createElement('div');
       div.className = 'notification-item';
+      const text = document.createElement('span');
+      text.textContent = `🚨 ${data.message} • ${new Date(data.time).toLocaleString()}`;
 
-      const messageText = document.createElement('span');
-      messageText.textContent = `🚨 ${data.message} • ${new Date(data.time).toLocaleString()}`;
+      const view = document.createElement('button');
+      view.className = 'view-details-btn';
+      view.textContent = '🔍 View Details';
+      view.addEventListener('click', () => {
+        showModal(
+          '🚨 Rescue Details',
+          `<strong>Location:</strong> ${data.location}<br>` +
+          `<strong>Reason:</strong> ${data.message}`
+        );
+      });
 
-      const viewButton = document.createElement('button');
-      viewButton.textContent = '🔍 View Details';
-      viewButton.className = 'view-details-btn';
-      viewButton.onclick = () => {
-        showModal("🚨 Rescue Details", `
-          <strong>Location:</strong> ${data.location || 'Unknown'}<br>
-          <strong>Reason:</strong> ${data.message || 'Not provided'}
-        `);
-      };
-
-      div.appendChild(messageText);
-      div.appendChild(viewButton);
+      div.append(text, view);
       container.prepend(div);
     });
   }
 
-  function showModal(title, message) {
-    const modal = document.getElementById('custom-modal');
-    const titleEl = document.getElementById('modal-title');
-    const messageEl = document.getElementById('modal-message');
+  // Helper: generic modal
+  function showModal(title, html) {
+    const modal      = document.getElementById('custom-modal');
+    const titleEl    = modal.querySelector('#modal-title');
+    const messageEl  = modal.querySelector('#modal-message');
+    const okBtn      = modal.querySelector('#modal-ok');
 
-    titleEl.textContent = title;
-    messageEl.innerHTML = message;
-
+    titleEl.textContent   = title;
+    messageEl.innerHTML    = html;
     modal.classList.remove('hidden-r');
 
-    const okBtn = document.getElementById('modal-ok');
-    okBtn.onclick = () => modal.classList.add('hidden-r');
+    okBtn.onclick = () => {
+      modal.classList.add('hidden-r');
+    };
   }
-
   function showConfirmationModal(title, message, onConfirm) {
     const modal = document.getElementById('custom-modal');
     const titleEl = document.getElementById('modal-title');
