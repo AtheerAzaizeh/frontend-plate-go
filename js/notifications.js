@@ -37,7 +37,17 @@ if (n.type === 'report' || n.reportId || n.message?.includes("New report submitt
 div.appendChild(messageText);
 
     if (n.type === 'report' || n.reportId || n.message?.includes("New report submitted")) {
-  // apply custom sentence here
+      const viewButton = document.createElement('button');
+      viewButton.textContent = '🔍 View Report';
+      viewButton.className = 'view-details-btn';
+      viewButton.onclick = () => {
+        showModal("🚨 Report Details", `
+          <strong>Location:</strong> ${n.location || 'Unknown'}<br>
+          <strong>Reason:</strong> ${n.reason || 'Not provided'}
+        `);
+      };
+      divnotifiybtn.append(viewButton);
+      div.append(divnotifiybtn);
 }
 
 
