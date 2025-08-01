@@ -1,6 +1,45 @@
 // js/socket-listener.js
 
 document.addEventListener("DOMContentLoaded", () => {
+  const trackMap = L.map('track-map-container').setView([32.09, 34.80], 13);
+
+// 2. Define the icons you want to use
+const volunteerIcon = L.icon({
+  iconUrl: '/images/volunteer-pin.png',
+  iconSize: [30, 40],
+  iconAnchor: [15, 40],
+});
+const userIcon = L.icon({
+  iconUrl: '/images/user-pin.png',
+  iconSize: [30, 40],
+  iconAnchor: [15, 40],
+});
+
+// 3. Keep track of markers by ID
+const volunteerMarkers = {};
+const userMarkers = {};
+
+// 4. Define your updateUserMarker helper
+function updateUserMarker(userId, lat, lng) {
+  if (userMarkers[userId]) {
+    // just move existing marker
+    userMarkers[userId].setLatLng([lat, lng]);
+  } else {
+    // create a new marker
+    const m = L.marker([lat, lng], { icon: userIcon }).addTo(trackMap);
+    userMarkers[userId] = m;
+  }
+}
+
+// 5. (Likewise, if you need one for volunteers)
+function updateVolunteerMarker(volId, lat, lng) {
+  if (volunteerMarkers[volId]) {
+    volunteerMarkers[volId].setLatLng([lat, lng]);
+  } else {
+    const m = L.marker([lat, lng], { icon: volunteerIcon }).addTo(trackMap);
+    volunteerMarkers[volId] = m;
+  }
+}
   // 1️⃣ Read user & token
   const user  = JSON.parse(localStorage.getItem("user"));
   const token = localStorage.getItem("token");
