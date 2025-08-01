@@ -16,6 +16,21 @@ document.addEventListener("DOMContentLoaded", () => {
     auth: { token }
   });
 
+  socket.emit('joinRescueRoom', { rescueId: 'abc123', userId: 'user456' });
+  // Send location every few seconds
+navigator.geolocation.watchPosition((pos) => {
+  const coords = {
+    lat: pos.coords.latitude,
+    lng: pos.coords.longitude
+  };
+  socket.emit('locationUpdate', { rescueId: 'abc123', userId: 'user456', coords });
+});
+
+// Receive location updates
+socket.on('locationUpdate', ({ userId, coords }) => {
+  // Update marker on map
+  updateUserMarker(userId, coords);
+});
   // 3️⃣ On connect, join rooms
   socket.on("connect", () => {
     console.log("🔗 Socket connected:", socket.id);

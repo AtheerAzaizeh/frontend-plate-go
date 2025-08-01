@@ -12,11 +12,17 @@ document.addEventListener('DOMContentLoaded', () => {
   if (user.img)
     document.getElementById('profile-picture').src = user.img;
 
-  // 1️⃣ map init
-  const map = L.map('map', { zoomControl: false }).setView([32.09,34.80],13);
-  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{
-    attribution:'&copy; OpenStreetMap contributors'
-  }).addTo(map);
+const map = L.map('map').setView([initialLat, initialLng], 13);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+const markers = {};
+function updateUserMarker(userId, coords) {
+  if (!markers[userId]) {
+    markers[userId] = L.marker([coords.lat, coords.lng]).addTo(map);
+  } else {
+    markers[userId].setLatLng([coords.lat, coords.lng]);
+  }
+}
 
   // 2️⃣ markers
   const userIcon = L.icon({ iconUrl:'images/user-pin.png',     iconSize:[36,36] });
