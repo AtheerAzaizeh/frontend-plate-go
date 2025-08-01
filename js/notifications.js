@@ -10,31 +10,33 @@ document.addEventListener('DOMContentLoaded', async () => {
   const notifications = await res.json();
   container.innerHTML = '';
 
-  const validNotifications = notifications.filter(n => n.rescueId && user?.role === 'volunteer');
+const reportNotifications = notifications.filter(n => n.type === 'report');
 
-  for (const n of notifications) {
-    const div = document.createElement('div');
-    div.className = 'notification-item';
-    const divnotifiybtn = document.createElement('div');
-    divnotifiybtn.className = 'notification-btns';
-    const messageText = document.createElement('span');
-
-if (n.type === 'report' || n.reportId || n.message?.includes("New report submitted")) {
-  let reporter = sender?.firstName || "Someone";
-  let carPlate = carPlate || "your car";
-  let reason = reason || "No reason provided";
-  let location = location || "Unknown location";
-  let time = createdAt ? new Date(n.createdAt).toLocaleString() : "Unknown time";
-
-  messageText.textContent = `📝 ${reporter} reported your ${carPlate} — Reason: ${reason} — Time: ${time} — Location: ${location}`;
-} else {
-  // fallback or rescue/chat message
-  const msg = n.message || "No message";
-  const time = n.createdAt ? new Date(n.createdAt).toLocaleString() : "Unknown time";
-  messageText.textContent = `${msg} • ${time}`;
-}
-
-div.appendChild(messageText);
+for (const n of reportNotifications) {
+  // 2. Pull out exactly what you need
+  const {
+    sender,
+    carPlate = 'your car',
+    reason = 'No reason provided',
+    location = 'Unknown location',
+    createdAt
+  } = n;
+  
+  // 3. Format your values
+  const reporterName = sender?.firstName || 'Someone';
+  const timeString  = createdAt
+    ? new Date(createdAt).toLocaleString()
+    : 'Unknown time';
+  
+  // 4. Build the DOM
+  const div          = document.createElement('div');
+  div.className      = 'notification-item';
+  const messageText  = document.createElement('span');
+  messageText.textContent =
+    `📝 ${reporterName} reported your ${carPlate} — Reason: ${reason} — Time: ${timeString} — Location: ${location}`;
+  
+  div.appendChild(messageText);
+  container.appendChild(div);
 
     if (n.type === 'report' || n.reportId || n.message?.includes("New report submitted")) {
       const viewButton = document.createElement('button');
