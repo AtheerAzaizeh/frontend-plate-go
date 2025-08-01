@@ -1,4 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
+    let initialLat = 0, initialLng = 0;
+    if (requester?.lat && requester?.lng) {
+      initialLat = requester.lat;
+      initialLng = requester.lng;
+    }
   const params   = new URLSearchParams(window.location.search);
   const rescueId = params.get('rescueId');
   if (!rescueId) return alert('No rescueId provided.');
@@ -23,6 +28,19 @@ function updateUserMarker(userId, coords) {
     markers[userId].setLatLng([coords.lat, coords.lng]);
   }
 }
+
+async function hashURL(url) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(url);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  return hashHex;
+}
+
+// Usage
+    hashURL('https://platego-smi4.onrender.com/api/rescue/abc123')
+  .then(console.log); // Outputs SHA-256 hash
 
   // 2️⃣ markers
   const userIcon = L.icon({ iconUrl:'images/user-pin.png',     iconSize:[36,36] });
