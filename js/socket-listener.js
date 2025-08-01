@@ -1,32 +1,6 @@
 // js/socket-listener.js
 
 document.addEventListener("DOMContentLoaded", () => {
-
-// 3. Keep track of markers by ID
-const volunteerMarkers = {};
-const userMarkers = {};
-
-// 4. Define your updateUserMarker helper
-function updateUserMarker(userId, lat, lng) {
-  if (userMarkers[userId]) {
-    // just move existing marker
-    userMarkers[userId].setLatLng([lat, lng]);
-  } else {
-    // create a new marker
-    const m = L.marker([lat, lng], { icon: userIcon }).addTo(trackMap);
-    userMarkers[userId] = m;
-  }
-}
-
-// 5. (Likewise, if you need one for volunteers)
-function updateVolunteerMarker(volId, lat, lng) {
-  if (volunteerMarkers[volId]) {
-    volunteerMarkers[volId].setLatLng([lat, lng]);
-  } else {
-    const m = L.marker([lat, lng], { icon: volunteerIcon }).addTo(trackMap);
-    volunteerMarkers[volId] = m;
-  }
-}
   // 1️⃣ Read user & token
   const user  = JSON.parse(localStorage.getItem("user"));
   const token = localStorage.getItem("token");
@@ -42,21 +16,6 @@ function updateVolunteerMarker(volId, lat, lng) {
     auth: { token }
   });
 
-  socket.emit('joinRescueRoom', { rescueId: 'abc123', userId: 'user456' });
-  // Send location every few seconds
-navigator.geolocation.watchPosition((pos) => {
-  const coords = {
-    lat: pos.coords.latitude,
-    lng: pos.coords.longitude
-  };
-  socket.emit('locationUpdate', { rescueId: 'abc123', userId: 'user456', coords });
-});
-
-// Receive location updates
-socket.on('locationUpdate', ({ userId, coords }) => {
-  // Update marker on map
-  updateUserMarker(userId, coords);
-});
   // 3️⃣ On connect, join rooms
   socket.on("connect", () => {
     console.log("🔗 Socket connected:", socket.id);
@@ -117,7 +76,7 @@ socket.on('locationUpdate', ({ userId, coords }) => {
   // 4️⃣ Report notifications
   socket.on("newReportNotification", data => {
     console.log("🏷️ newReportNotification:", data);
-    const { reportId, plate, message } = data;
+    const { reportId, plate, message  } = data;
     showNotification(
       `📋 New report on your car (${plate}): ${message}`,
       "report"
