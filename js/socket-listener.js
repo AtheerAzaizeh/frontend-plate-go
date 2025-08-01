@@ -1,19 +1,6 @@
 // js/socket-listener.js
 
 document.addEventListener("DOMContentLoaded", () => {
-  const trackMap = L.map('track-map-container').setView([32.09, 34.80], 13);
-
-// 2. Define the icons you want to use
-const volunteerIcon = L.icon({
-  iconUrl: '/images/volunteer-pin.png',
-  iconSize: [30, 40],
-  iconAnchor: [15, 40],
-});
-const userIcon = L.icon({
-  iconUrl: '/images/user-pin.png',
-  iconSize: [30, 40],
-  iconAnchor: [15, 40],
-});
 
 // 3. Keep track of markers by ID
 const volunteerMarkers = {};
